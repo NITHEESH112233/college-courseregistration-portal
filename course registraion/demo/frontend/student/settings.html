@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Settings - VIT-AP Course Registration</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .page-title {
+      font-family: var(--font-serif);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--vit-maroon);
+      margin-bottom: 4px;
+    }
+
+    .page-subtitle {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+    }
+
+    /* 2 Column Settings Grid Layout */
+    .settings-grid-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 24px;
+    }
+
+    @media (max-width: 1024px) {
+      .settings-grid-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .settings-section-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .settings-card-title {
+      font-family: var(--font-serif);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--vit-maroon);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Account Preferences Layout */
+    .account-pref-flex {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .avatar-upload-box {
+      text-align: center;
+    }
+
+    .change-photo-link {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--vit-maroon);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .change-photo-link:hover {
+      text-decoration: underline;
+    }
+
+    .form-two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      flex: 1;
+    }
+
+    .form-group-sm {
+      margin-bottom: 16px;
+    }
+
+    .form-label-sm {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .form-input-sm {
+      width: 100%;
+      padding: 10px 12px;
+      font-family: var(--font-sans);
+      font-size: 0.88rem;
+      border: 1px solid #CBD5E1;
+      border-radius: var(--radius-sm);
+      outline: none;
+      background-color: var(--bg-main);
+      color: var(--text-dark);
+    }
+
+    .form-input-sm:focus {
+      background-color: var(--bg-card);
+      border-color: var(--vit-maroon);
+    }
+
+    /* Theme Option Boxes */
+    .theme-selector-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .theme-box {
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 14px 10px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+      background-color: var(--bg-main);
+    }
+
+    .theme-box:hover {
+      border-color: var(--vit-maroon);
+    }
+
+    .theme-box.active {
+      border-color: var(--vit-maroon);
+      background-color: var(--bg-card);
+      color: var(--vit-maroon);
+      box-shadow: 0 0 0 1px var(--vit-maroon);
+    }
+
+    .theme-box i {
+      font-size: 1.1rem;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    /* Toggle Switch */
+    .switch-toggle-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      margin-top: 16px;
+    }
+
+    .switch-toggle {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .switch-toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider-round {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #CBD5E1;
+      transition: .4s;
+      border-radius: 24px;
+    }
+
+    .slider-round:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider-round {
+      background-color: var(--vit-maroon);
+    }
+
+    input:checked + .slider-round:before {
+      transform: translateX(20px);
+    }
+
+    /* Notification Checkbox List */
+    .checkbox-item-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .checkbox-item-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      accent-color: var(--vit-maroon);
+      cursor: pointer;
+    }
+
+    .checkbox-title {
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: var(--text-dark);
+    }
+
+    .checkbox-desc {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div>
+        <div class="sidebar-header">
+          <img src="../assets/vit_logo.png" alt="VIT Logo" class="sidebar-logo">
+          <div>
+            <div class="sidebar-title">VIT-AP University</div>
+            <div class="sidebar-subtitle">Academic Portal</div>
+          </div>
+        </div>
+
+        <div class="nav-group">
+          <a href="dashboard.html" class="nav-item">
+            <i class="fa-solid fa-house"></i> Dashboard
+          </a>
+          <a href="masterlist.html" class="nav-item">
+            <i class="fa-solid fa-list-check"></i> Masterlist
+          </a>
+          <a href="quick_register.html" class="nav-item quick-register-btn">
+            <i class="fa-regular fa-calendar-check"></i> Quick Register
+          </a>
+          <a href="course_basket.html" class="nav-item">
+            <i class="fa-solid fa-book-open"></i> Course Basket
+          </a>
+          <a href="timetable.html" class="nav-item">
+            <i class="fa-regular fa-clock"></i> Time Table
+          </a>
+          <a href="view_registered.html" class="nav-item">
+            <i class="fa-solid fa-graduation-cap"></i> View Registered
+          </a>
+          <a href="academic_profile.html" class="nav-item">
+            <i class="fa-regular fa-user"></i> Academic Profile
+          </a>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <a href="settings.html" class="nav-item active" style="background-color: var(--accent-light-blue); color: var(--primary-navy); font-weight: 700;">
+          <i class="fa-solid fa-gear"></i> Settings
+        </a>
+        <a href="login.html" class="nav-item" style="color: #EF4444;">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+      
+      <!-- Top Navigation Header -->
+      <header class="top-header">
+        <div class="portal-brand-title">Academic Excellence System</div>
+
+        <div class="header-meta">
+          <div class="header-tabs">
+            <a href="dashboard.html" class="header-tab">Dashboard</a>
+            <a href="course_basket.html" class="header-tab">Courses</a>
+            <a href="masterlist.html" class="header-tab">Masterlist</a>
+            <a href="view_registered.html" class="header-tab">Registered</a>
+          </div>
+          <div class="header-user-actions">
+            <button class="icon-btn" title="Notifications" onclick="window.location.href='notifications.html'"><i class="fa-regular fa-bell"></i></button>
+            <button class="icon-btn active" title="Settings" onclick="window.location.href='settings.html'"><i class="fa-solid fa-gear"></i></button>
+            <a href="academic_profile.html" class="avatar-circle">JD</a>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <main class="page-content animate-fade-in">
+
+        <h1 class="page-title">Settings</h1>
+        <p class="page-subtitle">Manage your portal preferences and security.</p>
+
+        <!-- Settings Grid Layout -->
+        <div class="settings-grid-layout">
+          
+          <!-- Left Column Cards -->
+          <div>
+            
+            <!-- Account Preferences Card -->
+            <div class="settings-section-card">
+              <h2 class="settings-card-title"><i class="fa-regular fa-user"></i> Account Preferences</h2>
+
+              <div class="account-pref-flex">
+                <div class="avatar-upload-box">
+                  <div class="avatar-circle" style="width: 80px; height: 80px; font-size: 1.8rem; margin: 0 auto 8px auto;">JD</div>
+                  <a href="#" class="change-photo-link" onclick="showNotification('Photo upload dialog opened', 'info')">Change Photo</a>
+                </div>
+
+                <div class="form-two-col">
+                  <div class="form-group-sm">
+                    <label class="form-label-sm">FULL NAME</label>
+                    <input type="text" class="form-input-sm" value="John Doe">
+                  </div>
+                  <div class="form-group-sm">
+                    <label class="form-label-sm">STUDENT ID</label>
+                    <input type="text" class="form-input-sm" value="21BCE0001" readonly style="opacity: 0.7;">
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group-sm" style="margin-bottom: 20px;">
+                <label class="form-label-sm">UNIVERSITY EMAIL</label>
+                <input type="email" class="form-input-sm" value="john.doe@vitap.edu.in">
+                <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px;">Contact IT desk to change official email.</div>
+              </div>
+
+              <button class="btn-primary" style="padding: 10px 20px;" onclick="showNotification('Account preferences saved successfully!', 'success')">
+                Save Changes
+              </button>
+            </div>
+
+            <!-- Interface Settings Card -->
+            <div class="settings-section-card">
+              <h2 class="settings-card-title"><i class="fa-solid fa-sliders"></i> Interface Settings</h2>
+
+              <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 10px;">THEME</div>
+              <div class="theme-selector-grid">
+                <div class="theme-box" id="theme-btn-light" onclick="selectTheme(this, 'light')">
+                  <i class="fa-regular fa-sun"></i> Light
+                </div>
+                <div class="theme-box" id="theme-btn-dark" onclick="selectTheme(this, 'dark')">
+                  <i class="fa-regular fa-moon"></i> Dark
+                </div>
+                <div class="theme-box" id="theme-btn-system" onclick="selectTheme(this, 'system')">
+                  <i class="fa-solid fa-desktop"></i> System
+                </div>
+              </div>
+
+              <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin-bottom: 10px;">FONT SIZE</div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+                <span style="cursor: pointer;" onclick="showNotification('Font size set to Compact', 'info')">Compact</span>
+                <span style="font-weight: 700; color: var(--vit-maroon); cursor: pointer;">Standard</span>
+                <span style="cursor: pointer;" onclick="showNotification('Font size set to Large', 'info')">Large</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right Column Cards -->
+          <div>
+            
+            <!-- Security Card -->
+            <div class="settings-section-card">
+              <h2 class="settings-card-title"><i class="fa-solid fa-shield-halved"></i> Security</h2>
+
+              <div style="font-size: 0.82rem; font-weight: 700; color: var(--vit-maroon); margin-bottom: 12px;">Change Password</div>
+              
+              <div class="form-group-sm">
+                <input type="password" class="form-input-sm" placeholder="Current Password">
+              </div>
+              <div class="form-group-sm">
+                <input type="password" class="form-input-sm" placeholder="New Password">
+              </div>
+              <div class="form-group-sm" style="margin-bottom: 16px;">
+                <input type="password" class="form-input-sm" placeholder="Confirm New Password">
+              </div>
+
+              <button class="btn-outline" style="width: 100%; justify-content: center; margin-bottom: 20px;" onclick="showNotification('Password updated successfully!', 'success')">
+                Update Password
+              </button>
+
+              <div class="switch-toggle-wrapper">
+                <div>
+                  <div style="font-size: 0.85rem; font-weight: 700; color: var(--vit-maroon);">Two-Factor Auth</div>
+                  <div style="font-size: 0.72rem; color: var(--text-muted);">Add an extra layer of security.</div>
+                </div>
+                <label class="switch-toggle">
+                  <input type="checkbox" checked onchange="showNotification('Two-Factor Authentication toggled', 'info')">
+                  <span class="slider-round"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Notifications Card -->
+            <div class="settings-section-card">
+              <h2 class="settings-card-title"><i class="fa-regular fa-bell"></i> Notifications</h2>
+
+              <div class="checkbox-item-row">
+                <input type="checkbox" id="notif-reg" checked>
+                <div>
+                  <label for="notif-reg" class="checkbox-title">Registration Alerts</label>
+                  <div class="checkbox-desc">Updates on slot openings and waitlists.</div>
+                </div>
+              </div>
+
+              <div class="checkbox-item-row">
+                <input type="checkbox" id="notif-grade" checked>
+                <div>
+                  <label for="notif-grade" class="checkbox-title">Grade Posting</label>
+                  <div class="checkbox-desc">Instant alert when new grades are published.</div>
+                </div>
+              </div>
+
+              <div class="checkbox-item-row">
+                <input type="checkbox" id="notif-univ">
+                <div>
+                  <label for="notif-univ" class="checkbox-title">University Announcements</label>
+                  <div class="checkbox-desc">General academic news and events.</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </main>
+
+      <!-- Footer -->
+      <footer class="portal-footer">
+        <div>© 2024 VIT-AP University. All Rights Reserved.</div>
+        <div class="footer-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Contact Support</a>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <script src="../js/app.js"></script>
+  <script>
+    function selectTheme(elem, theme) {
+      document.querySelectorAll('.theme-box').forEach(b => b.classList.remove('active'));
+      elem.classList.add('active');
+      setTheme(theme);
+    }
+
+    // Set active button state based on stored theme
+    const currentTheme = localStorage.getItem('vitap_theme') || 'light';
+    const activeBtn = document.getElementById('theme-btn-' + currentTheme);
+    if (activeBtn) activeBtn.classList.add('active');
+  </script>
+</body>
+</html>

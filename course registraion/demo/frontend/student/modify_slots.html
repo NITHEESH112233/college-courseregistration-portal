@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modify Course Slots - VIT-AP Course Registration</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .page-title {
+      font-family: var(--font-serif);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--vit-maroon);
+      margin-bottom: 6px;
+    }
+
+    .page-subtitle {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      line-height: 1.45;
+    }
+
+    .section-label-heading {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    /* Registered Courses Selection Cards Row */
+    .registered-cards-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    @media (max-width: 992px) {
+      .registered-cards-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .course-select-card {
+      background-color: var(--bg-card);
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .course-select-card:hover {
+      border-color: var(--vit-maroon);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .course-select-card.selected {
+      border-color: var(--vit-maroon);
+      box-shadow: 0 0 0 1px var(--vit-maroon), var(--shadow-sm);
+      background-color: var(--bg-card);
+    }
+
+    .selected-badge-pill {
+      position: absolute;
+      top: -10px;
+      right: 16px;
+      background-color: var(--vit-maroon);
+      color: #FFFFFF;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 12px;
+    }
+
+    .card-course-code {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .card-course-title {
+      font-family: var(--font-serif);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--vit-maroon);
+      margin-bottom: 12px;
+    }
+
+    .card-meta-item {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    /* Alternate Slots Section */
+    .alternate-slots-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+
+    .alternate-slots-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--bg-main);
+    }
+
+    .alternate-title {
+      font-family: var(--font-serif);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--vit-maroon);
+    }
+
+    .alternate-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    .alternate-table th {
+      background-color: var(--bg-card);
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 12px 24px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .alternate-table td {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-dark);
+      font-weight: 500;
+    }
+
+    .alternate-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .alternate-table tr:hover td {
+      background-color: rgba(128, 0, 0, 0.04);
+    }
+
+    /* Notice Banner */
+    .important-notice-banner {
+      background-color: #FFFBEB;
+      border: 1px solid #FDE68A;
+      border-left: 4px solid #D97706;
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 0.84rem;
+      color: #92400E;
+      margin-bottom: 32px;
+    }
+
+    .notice-title {
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    /* Bottom Fixed Action Footer */
+    .modify-footer-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-color);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div>
+        <div class="sidebar-header">
+          <img src="../assets/vit_logo.png" alt="VIT Logo" class="sidebar-logo">
+          <div>
+            <div class="sidebar-title">VIT-AP University</div>
+            <div class="sidebar-subtitle">Student Portal</div>
+          </div>
+        </div>
+
+        <div class="nav-group">
+          <a href="dashboard.html" class="nav-item">
+            <i class="fa-solid fa-house"></i> Dashboard
+          </a>
+          <a href="masterlist.html" class="nav-item">
+            <i class="fa-solid fa-list-check"></i> Masterlist
+          </a>
+          <a href="quick_register.html" class="nav-item quick-register-btn">
+            <i class="fa-regular fa-calendar-check"></i> Quick Register
+          </a>
+          <a href="course_basket.html" class="nav-item">
+            <i class="fa-solid fa-book-open"></i> Course Basket
+          </a>
+          <a href="timetable.html" class="nav-item">
+            <i class="fa-regular fa-clock"></i> Time Table
+          </a>
+          <a href="view_registered.html" class="nav-item">
+            <i class="fa-solid fa-graduation-cap"></i> View Registered
+          </a>
+          <a href="academic_profile.html" class="nav-item">
+            <i class="fa-regular fa-user"></i> Academic Profile
+          </a>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <a href="settings.html" class="nav-item">
+          <i class="fa-solid fa-gear"></i> Settings
+        </a>
+        <a href="login.html" class="nav-item" style="color: #EF4444;">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+      
+      <!-- Top Header Bar -->
+      <header class="top-header">
+        <div class="portal-brand-title">VIT-AP Academic Portal</div>
+        <div class="header-meta">
+          <div class="header-tabs">
+            <a href="dashboard.html" class="header-tab">Dashboard</a>
+            <a href="course_basket.html" class="header-tab">Courses</a>
+            <a href="view_registered.html" class="header-tab active">Registered</a>
+          </div>
+          <div class="header-user-actions">
+            <button class="icon-btn" title="Notifications" onclick="showNotification('No new notifications', 'info')"><i class="fa-regular fa-bell"></i></button>
+            <button class="icon-btn" title="Settings" onclick="window.location.href='settings.html'"><i class="fa-solid fa-gear"></i></button>
+            <a href="academic_profile.html" class="avatar-circle">JD</a>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Page Content -->
+      <main class="page-content animate-fade-in">
+
+        <!-- Top Registration 4 Navigation Tabs -->
+        <div class="reg-action-bar">
+          <a href="view_registered.html" class="reg-btn reg-btn-green"><i class="fa-solid fa-circle-check"></i> View Registered</a>
+          <a href="course_basket.html" class="reg-btn reg-btn-navy"><i class="fa-solid fa-layer-group"></i> Course Baskets</a>
+          <a href="modify_slots.html" class="reg-btn reg-btn-teal active"><i class="fa-solid fa-sliders"></i> Modify Slots</a>
+          <a href="delete_slots.html" class="reg-btn reg-btn-red"><i class="fa-solid fa-trash-can"></i> Delete Slots</a>
+        </div>
+
+        <h1 class="page-title">Modify Course Slots</h1>
+        <p class="page-subtitle">Select a course to view available alternate slots and update your registration. Modifications are subject to seat availability.</p>
+
+        <!-- Registered Courses Cards Section -->
+        <div class="section-label-heading">CURRENTLY REGISTERED COURSES</div>
+
+        <div class="registered-cards-row">
+          
+          <!-- Card 1 (Selected) -->
+          <div class="course-select-card selected" onclick="selectCourseCard(this, 'SWE3004 - Front End Design')">
+            <span class="selected-badge-pill">Selected ✓</span>
+            <div class="card-course-code">SWE3004</div>
+            <div class="card-course-title">Front End Design</div>
+            <div class="card-meta-item"><i class="fa-regular fa-clock"></i> Current: L1+L2 (Mon 10:00 - 11:50)</div>
+            <div class="card-meta-item"><i class="fa-regular fa-user"></i> Prof. Alan Turing</div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="course-select-card" onclick="selectCourseCard(this, 'CSE2001 - Computer Architecture')">
+            <div class="card-course-code">CSE2001</div>
+            <div class="card-course-title">Computer Architecture</div>
+            <div class="card-meta-item"><i class="fa-regular fa-clock"></i> Current: L5+L6 (Tue 14:00 - 15:50)</div>
+            <div class="card-meta-item"><i class="fa-regular fa-user"></i> Prof. Grace Hopper</div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="course-select-card" onclick="selectCourseCard(this, 'MAT1011 - Calculus for Engineers')">
+            <div class="card-course-code">MAT1011</div>
+            <div class="card-course-title">Calculus for Engineers</div>
+            <div class="card-meta-item"><i class="fa-regular fa-clock"></i> Current: L11+L12+L13 (Wed 08:00 - 10:50)</div>
+            <div class="card-meta-item"><i class="fa-regular fa-user"></i> Prof. John von Neumann</div>
+          </div>
+
+        </div>
+
+        <!-- Available Alternate Slots Section -->
+        <div class="alternate-slots-card">
+          <div class="alternate-slots-header">
+            <div>
+              <div class="alternate-title">Available Alternate Slots</div>
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;" id="selected-target-course">For SWE3004 - Front End Design</div>
+            </div>
+            <span class="badge" style="background-color: var(--badge-ue-bg); color: var(--badge-ue-text);">3 Options Available</span>
+          </div>
+
+          <table class="alternate-table">
+            <thead>
+              <tr>
+                <th style="width: 25%;">SLOT</th>
+                <th style="width: 15%;">VENUE</th>
+                <th style="width: 35%;">FACULTY NAME</th>
+                <th style="width: 15%;">AVAILABILITY</th>
+                <th style="width: 10%; text-align: center;">ACTION</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div style="font-weight: 700; color: var(--vit-maroon);">L3+L4</div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">Thu 10:00 - 11:50</div>
+                </td>
+                <td>AB1-204</td>
+                <td>Prof. Ada Lovelace</td>
+                <td><span class="badge badge-available-green">12 Seats</span></td>
+                <td style="text-align: center;">
+                  <input type="radio" name="alt_slot" class="radio-custom">
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div style="font-weight: 700; color: var(--vit-maroon);">L7+L8</div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">Fri 14:00 - 15:50</div>
+                </td>
+                <td>CB-401</td>
+                <td>Prof. Tim Berners-Lee</td>
+                <td><span class="badge badge-available-red">2 Seats</span></td>
+                <td style="text-align: center;">
+                  <input type="radio" name="alt_slot" class="radio-custom" checked>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div style="font-weight: 700; color: var(--vit-maroon);">L9+L10</div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">Mon 18:00 - 17:50</div>
+                </td>
+                <td>AB2-105</td>
+                <td>Prof. Hedy Lamarr</td>
+                <td><span class="badge badge-available-green">45 Seats</span></td>
+                <td style="text-align: center;">
+                  <input type="radio" name="alt_slot" class="radio-custom">
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Warning Notice Banner -->
+        <div class="important-notice-banner">
+          <i class="fa-solid fa-circle-info" style="font-size: 1.2rem; margin-top: 2px;"></i>
+          <div>
+            <div class="notice-title">Important Notice</div>
+            Modifying a slot will immediately release your current seat. This action cannot be undone if someone else claims your previous slot.
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="modify-footer-actions">
+          <button class="btn-outline" onclick="window.location.href='dashboard.html'">Cancel</button>
+          <button class="btn-primary" style="padding: 12px 28px;" onclick="handleConfirmModification()">Confirm Modification</button>
+        </div>
+
+      </main>
+
+    </div>
+  </div>
+
+  <script src="../js/app.js"></script>
+  <script>
+    function selectCourseCard(cardElem, courseName) {
+      document.querySelectorAll('.course-select-card').forEach(c => {
+        c.classList.remove('selected');
+        const badge = c.querySelector('.selected-badge-pill');
+        if (badge) badge.remove();
+      });
+
+      cardElem.classList.add('selected');
+      const badge = document.createElement('span');
+      badge.className = 'selected-badge-pill';
+      badge.textContent = 'Selected ✓';
+      cardElem.appendChild(badge);
+
+      document.getElementById('selected-target-course').textContent = 'For ' + courseName;
+      showNotification('Loaded alternate slots for ' + courseName, 'info');
+    }
+
+    function handleConfirmModification() {
+      showNotification('Course slot modified successfully!', 'success');
+      setTimeout(() => {
+        window.location.href = 'view_registered.html';
+      }, 1200);
+    }
+  </script>
+</body>
+</html>

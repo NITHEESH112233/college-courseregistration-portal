@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - VIT-AP Course Registration Portal</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    /* Admin Dashboard Custom Layout & Cards */
+    .admin-badge-header {
+      background-color: var(--accent-light-blue);
+      color: var(--primary-navy);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .admin-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+
+    @media (max-width: 1100px) {
+      .admin-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .admin-stat-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 22px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat-number {
+      font-family: var(--font-serif);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary-navy);
+      line-height: 1.1;
+      margin-top: 4px;
+    }
+
+    .stat-label-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .stat-icon-wrapper {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      background-color: var(--accent-light-blue);
+      color: var(--primary-navy);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+    }
+
+    /* Admin Management Tabs */
+    .admin-tabs-nav {
+      display: flex;
+      gap: 12px;
+      border-bottom: 2px solid var(--border-color);
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .admin-tab-btn {
+      padding: 12px 18px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: -2px;
+      transition: all 0.2s ease;
+    }
+
+    .admin-tab-btn:hover {
+      color: var(--primary-navy);
+    }
+
+    .admin-tab-btn.active {
+      color: var(--primary-navy);
+      font-weight: 700;
+      border-bottom-color: var(--primary-navy);
+    }
+
+    /* Table Component for Admin */
+    .admin-table-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      overflow-x: auto;
+      margin-bottom: 28px;
+    }
+
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    .admin-table th {
+      background-color: var(--bg-main);
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 14px 20px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .admin-table td {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-dark);
+      font-weight: 500;
+    }
+
+    .admin-table tr:hover td {
+      background-color: var(--bg-main);
+    }
+
+    .status-badge-active {
+      background-color: #DCFCE7;
+      color: #15803D;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    .status-badge-full {
+      background-color: #FEE2E2;
+      color: #B91C1C;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    .action-btn-sm {
+      padding: 6px 12px;
+      font-size: 0.78rem;
+      border-radius: 6px;
+    }
+
+    /* Modal Form for Creating Student Credentials */
+    .create-user-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 24px 28px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .form-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 900px) {
+      .form-grid-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-group-admin {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group-admin label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .form-group-admin input, .form-group-admin select {
+      padding: 10px 14px;
+      font-family: var(--font-sans);
+      font-size: 0.88rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      outline: none;
+      background-color: var(--bg-main);
+      color: var(--text-dark);
+    }
+
+    .form-group-admin input:focus, .form-group-admin select:focus {
+      border-color: var(--primary-navy);
+      background-color: var(--bg-card);
+    }
+
+    /* Banner */
+    .control-card-banner {
+      background: linear-gradient(135deg, var(--primary-navy) 0%, #002B49 100%);
+      color: #FFFFFF;
+      border-radius: var(--radius-md);
+      padding: 24px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Admin Sidebar Navigation -->
+    <aside class="sidebar">
+      <div>
+        <div class="sidebar-header">
+          <img src="../assets/vit_logo.png" alt="VIT Logo" class="sidebar-logo">
+          <div>
+            <div class="sidebar-title">VIT-AP Portal</div>
+            <div class="sidebar-subtitle">Administrator Portal</div>
+          </div>
+        </div>
+
+        <div class="nav-group">
+          <a href="dashboard.html" class="nav-item active">
+            <i class="fa-solid fa-gauge-high"></i> Admin Dashboard
+          </a>
+          <a href="#create-user" class="nav-item" onclick="switchAdminTab('create-user')">
+            <i class="fa-solid fa-user-plus"></i> Provision Credentials
+          </a>
+          <a href="#students" class="nav-item" onclick="switchAdminTab('students')">
+            <i class="fa-solid fa-users"></i> Student Roster
+          </a>
+          <a href="#courses" class="nav-item" onclick="switchAdminTab('courses')">
+            <i class="fa-solid fa-book-open"></i> Course Baskets
+          </a>
+          <a href="#slots" class="nav-item" onclick="switchAdminTab('slots')">
+            <i class="fa-regular fa-clock"></i> Slot & Faculty Setup
+          </a>
+          <a href="#fcfs" class="nav-item" onclick="switchAdminTab('fcfs')">
+            <i class="fa-solid fa-list-check"></i> FCFS Masterlist Logs
+          </a>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <a href="../student/settings.html" class="nav-item">
+          <i class="fa-solid fa-gear"></i> Settings
+        </a>
+        <a href="../student/login.html" class="nav-item" style="color: #EF4444;">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+      
+      <!-- Top Header -->
+      <header class="top-header">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div class="portal-brand-title">VIT-AP Academic System</div>
+          <span class="admin-badge-header"><i class="fa-solid fa-user-shield"></i> System Admin</span>
+        </div>
+
+        <div class="header-user-actions">
+          <div class="search-input-box" style="width: 260px;">
+            <i class="fa-solid fa-magnifying-glass" style="color: var(--text-muted);"></i>
+            <input type="text" placeholder="Search Reg No, Course Code...">
+          </div>
+          <button class="icon-btn" title="Notifications" onclick="showNotification('3 System alerts pending', 'info')"><i class="fa-regular fa-bell"></i></button>
+          <button class="icon-btn" title="Settings" onclick="window.location.href='../student/settings.html'"><i class="fa-solid fa-gear"></i></button>
+          <div class="avatar-circle" style="background-color: var(--primary-navy);">AD</div>
+        </div>
+      </header>
+
+      <!-- Main Page Content -->
+      <main class="page-content animate-fade-in">
+
+        <!-- Banner: Registration Slot Controls -->
+        <div style="background-color: #003366; color: #FFFFFF; border-radius: var(--radius); padding: 18px 22px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; border: 1px solid #002244;">
+          <div>
+            <div style="font-size: 0.72rem; font-weight: 700; color: #93C5FD; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 3px;">SYSTEM REGISTRATION CONTROLS</div>
+            <h2 style="font-size: 1.3rem; font-weight: 700; color: #FFFFFF; margin-bottom: 3px;">Winter 2024 Registration Slot: Active</h2>
+            <div style="font-size: 0.82rem; color: #BFDBFE;">Window 1 (B.Tech 2021 Batch) • Live FCFS Server Processing Queue</div>
+          </div>
+
+          <div style="display: flex; gap: 10px;">
+            <button class="btn-primary" style="background-color: #2563EB; border-color: #2563EB; color: #FFFFFF; font-weight: 600; padding: 8px 16px;" onclick="showNotification('Registration window extended by 1 hour (+60 mins)', 'success')">
+              <i class="fa-regular fa-clock"></i> Extend Window (+1 Hr)
+            </button>
+            <button class="btn-primary" style="background-color: #DC2626; border-color: #DC2626; color: #FFFFFF; font-weight: 600; padding: 8px 16px;" onclick="showNotification('Registration slot paused by Administrator', 'danger')">
+              <i class="fa-solid fa-pause"></i> Pause Slot
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Top Analytics Cards -->
+        <div class="admin-stats-grid">
+          <div class="admin-stat-card">
+            <div>
+              <div class="stat-label-title">TOTAL STUDENTS</div>
+              <div class="stat-number" id="stat-student-count">4,250</div>
+            </div>
+            <div class="stat-icon-wrapper"><i class="fa-solid fa-user-graduate"></i></div>
+          </div>
+
+          <div class="admin-stat-card">
+            <div>
+              <div class="stat-label-title">ACTIVE COURSES</div>
+              <div class="stat-number">128</div>
+            </div>
+            <div class="stat-icon-wrapper"><i class="fa-solid fa-book"></i></div>
+          </div>
+
+          <div class="admin-stat-card">
+            <div>
+              <div class="stat-label-title">SLOTS ALLOCATED</div>
+              <div class="stat-number">14,820</div>
+            </div>
+            <div class="stat-icon-wrapper"><i class="fa-regular fa-calendar-check"></i></div>
+          </div>
+
+          <div class="admin-stat-card">
+            <div>
+              <div class="stat-label-title">SEAT CAPACITY</div>
+              <div class="stat-number">84%</div>
+            </div>
+            <div class="stat-icon-wrapper"><i class="fa-solid fa-chart-pie"></i></div>
+          </div>
+        </div>
+
+        <!-- Admin Management Navigation Tabs -->
+        <div class="admin-tabs-nav">
+          <button class="admin-tab-btn active" id="tab-create-user" onclick="switchAdminTab('create-user')">
+            <i class="fa-solid fa-user-plus"></i> Create Student Credentials
+          </button>
+          <button class="admin-tab-btn" id="tab-students" onclick="switchAdminTab('students')">
+            <i class="fa-solid fa-users"></i> Student Roster & Credits
+          </button>
+          <button class="admin-tab-btn" id="tab-courses" onclick="switchAdminTab('courses')">
+            <i class="fa-solid fa-layer-group"></i> Course Baskets & Seats
+          </button>
+          <button class="admin-tab-btn" id="tab-slots" onclick="switchAdminTab('slots')">
+            <i class="fa-regular fa-clock"></i> Faculty & Venue Slots
+          </button>
+          <button class="admin-tab-btn" id="tab-fcfs" onclick="switchAdminTab('fcfs')">
+            <i class="fa-solid fa-list-check"></i> FCFS Masterlist Monitor
+          </button>
+        </div>
+
+        <!-- SECTION: Create Student Credentials Form & Database Management -->
+        <div id="section-create-user">
+          
+          <div class="create-user-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+              <div>
+                <h2 style="font-family: var(--font-serif); font-size: 1.35rem; color: var(--primary-navy);">Provision New Student Account</h2>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">Create username and password credentials saved to the system database for student portal access.</div>
+              </div>
+              <span class="badge" style="background-color: var(--accent-light-blue); color: var(--primary-navy);"><i class="fa-solid fa-database"></i> Database Sync Active</span>
+            </div>
+
+            <form id="create-student-form" onsubmit="handleCreateStudentCredentials(event)">
+              
+              <div class="form-grid-3">
+                <div class="form-group-admin">
+                  <label>STUDENT FULL NAME</label>
+                  <input type="text" id="new-student-name" placeholder="e.g. Ananya Sharma" required>
+                </div>
+                <div class="form-group-admin">
+                  <label>USERNAME / REGISTRATION NO</label>
+                  <input type="text" id="new-student-username" placeholder="e.g. 21BCE0100" required>
+                </div>
+                <div class="form-group-admin">
+                  <label>UNIVERSITY EMAIL</label>
+                  <input type="email" id="new-student-email" placeholder="e.g. ananya.sharma@vitap.ac.in" required>
+                </div>
+              </div>
+
+              <div class="form-grid-3">
+                <div class="form-group-admin">
+                  <label>PROGRAM & SEMESTER</label>
+                  <select id="new-student-program">
+                    <option value="B.Tech CSE (Sem 6)">B.Tech CSE (Semester 6)</option>
+                    <option value="B.Tech ECE (Sem 6)">B.Tech ECE (Semester 6)</option>
+                    <option value="B.Tech MECH (Sem 6)">B.Tech MECH (Semester 6)</option>
+                    <option value="B.Tech EEE (Sem 6)">B.Tech EEE (Semester 6)</option>
+                  </select>
+                </div>
+                <div class="form-group-admin">
+                  <label>PASSWORD</label>
+                  <input type="password" id="new-student-password" placeholder="Assign student password" required>
+                </div>
+                <div class="form-group-admin">
+                  <label>CONFIRM PASSWORD</label>
+                  <input type="password" id="new-student-confirm" placeholder="Confirm password" required>
+                </div>
+              </div>
+
+              <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
+                <button type="reset" class="btn-outline">Clear Form</button>
+                <button type="submit" class="btn-primary" style="padding: 12px 24px;">
+                  <i class="fa-solid fa-floppy-disk"></i> Save Student Credentials to Database
+                </button>
+              </div>
+
+            </form>
+          </div>
+
+          <!-- Provisioned Student Credentials Table -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h3 style="font-family: var(--font-serif); font-size: 1.2rem; color: var(--primary-navy);">Provisioned Student Credentials Database</h3>
+            <span style="font-size: 0.82rem; color: var(--text-muted);">These credentials allow students to log in on the Student Login Page</span>
+          </div>
+
+          <div class="admin-table-card">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th style="width: 16%;">USERNAME / REG NO</th>
+                  <th style="width: 22%;">STUDENT NAME</th>
+                  <th style="width: 24%;">EMAIL ADDRESS</th>
+                  <th style="width: 18%;">PROGRAM</th>
+                  <th style="width: 10%;">STATUS</th>
+                  <th style="width: 10%; text-align: center;">ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody id="student-credentials-tbody">
+                <!-- Default Student 1 -->
+                <tr>
+                  <td style="font-weight: 700; color: var(--primary-navy);">21BCE0000</td>
+                  <td style="font-weight: 600;">John Doe</td>
+                  <td>john.doe@vitap.ac.in</td>
+                  <td>B.Tech CSE (Sem 6)</td>
+                  <td><span class="status-badge-active">Active</span></td>
+                  <td style="text-align: center;">
+                    <button class="btn-outline action-btn-sm" onclick="showNotification('Credentials active for 21BCE0000', 'info')">Edit</button>
+                  </td>
+                </tr>
+                <!-- Default Student 2 -->
+                <tr>
+                  <td style="font-weight: 700; color: var(--primary-navy);">21BCE0100</td>
+                  <td style="font-weight: 600;">Ananya Sharma</td>
+                  <td>ananya.sharma@vitap.ac.in</td>
+                  <td>B.Tech CSE (Sem 6)</td>
+                  <td><span class="status-badge-active">Active</span></td>
+                  <td style="text-align: center;">
+                    <button class="btn-outline action-btn-sm" onclick="showNotification('Credentials active for 21BCE0100', 'info')">Edit</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+        <!-- SECTION: Student Roster & Credits Management Table -->
+        <div id="section-students" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h2 style="font-family: var(--font-serif); font-size: 1.3rem; color: var(--primary-navy);">Student Enrollment & Credit Status</h2>
+            <button class="btn-primary" onclick="showNotification('Exporting Student Roster CSV...', 'info')"><i class="fa-solid fa-download"></i> Export Roster</button>
+          </div>
+
+          <div class="admin-table-card">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th style="width: 14%;">REG NO</th>
+                  <th style="width: 22%;">STUDENT NAME</th>
+                  <th style="width: 16%;">PROGRAM & SEM</th>
+                  <th style="width: 12%;">CGPA</th>
+                  <th style="width: 14%;">CREDITS REGISTERED</th>
+                  <th style="width: 12%;">STATUS</th>
+                  <th style="width: 10%; text-align: center;">ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="font-weight: 700; color: var(--primary-navy);">21BCE0000</td>
+                  <td style="font-weight: 600;">John Doe</td>
+                  <td>B.Tech CSE (Sem 6)</td>
+                  <td><strong style="color: var(--primary-navy);">8.95</strong></td>
+                  <td><strong>15 / 27</strong></td>
+                  <td><span class="status-badge-active">Slot Active</span></td>
+                  <td style="text-align: center;">
+                    <button class="btn-outline action-btn-sm" onclick="window.location.href='academic_profile.html'">View Profile</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 700; color: var(--primary-navy);">21BCE0042</td>
+                  <td style="font-weight: 600;">Priya Sharma</td>
+                  <td>B.Tech CSE (Sem 6)</td>
+                  <td><strong style="color: var(--primary-navy);">9.12</strong></td>
+                  <td><strong>21 / 27</strong></td>
+                  <td><span class="status-badge-active">Slot Active</span></td>
+                  <td style="text-align: center;">
+                    <button class="btn-outline action-btn-sm" onclick="showNotification('Viewing profile for Priya Sharma', 'info')">View Profile</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SECTION: Course Baskets & Seats Management Table -->
+        <div id="section-courses" style="display: none;">
+          
+          <!-- Add New Course Card Banner -->
+          <div class="create-user-card" style="border-top: 4px solid var(--primary-navy);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+              <div>
+                <h2 style="font-family: var(--font-serif); font-size: 1.35rem; color: var(--primary-navy); display: flex; align-items: center; gap: 8px;">
+                  <i class="fa-solid fa-book-medical"></i> Add New Course Offering
+                </h2>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">Configure course code, title, credit distribution, target basket category, faculty assignment, slot timing, and maximum seat capacity.</div>
+              </div>
+              <span class="badge" style="background-color: var(--accent-light-blue); color: var(--primary-navy); font-size: 0.75rem;">
+                <i class="fa-solid fa-server"></i> Portal Catalog Sync
+              </span>
+            </div>
+
+            <!-- Form: Add New Course -->
+            <form id="admin-add-course-form" onsubmit="handleAdminAddCourse(event)">
+              
+              <!-- Row 1: Course Basic Info -->
+              <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 16px; margin-bottom: 16px;">
+                <div class="form-group-admin">
+                  <label>COURSE CODE *</label>
+                  <input type="text" id="admin-course-code" placeholder="e.g. CSE3005" required style="text-transform: uppercase;">
+                </div>
+                <div class="form-group-admin">
+                  <label>COURSE TITLE *</label>
+                  <input type="text" id="admin-course-title" placeholder="e.g. Artificial Intelligence & Expert Systems" required>
+                </div>
+              </div>
+
+              <!-- Row 2: Basket, Credits, Component Type -->
+              <div class="form-grid-3">
+                <div class="form-group-admin">
+                  <label>TARGET COURSE BASKET *</label>
+                  <select id="admin-course-basket" required>
+                    <option value="Program Core (PC)">Program Core (PC)</option>
+                    <option value="Program Elective (PE)">Program Elective (PE)</option>
+                    <option value="University Core (UC)">University Core (UC)</option>
+                    <option value="University Elective (UE)">University Elective (UE)</option>
+                  </select>
+                </div>
+                <div class="form-group-admin">
+                  <label>CREDITS (L-T-P-J-C) *</label>
+                  <select id="admin-course-credits" required>
+                    <option value="4">4.0 Credits (Theory + Lab / J-Comp)</option>
+                    <option value="3">3.0 Credits (Theory Only)</option>
+                    <option value="2">2.0 Credits (Specialized / Values)</option>
+                    <option value="1">1.0 Credit (Practical Lab Only)</option>
+                  </select>
+                </div>
+                <div class="form-group-admin">
+                  <label>COURSE COMPONENT TYPE</label>
+                  <select id="admin-course-type">
+                    <option value="Embedded Theory / Lab">Embedded Theory / Lab</option>
+                    <option value="Theory Only">Theory Only</option>
+                    <option value="Lab Only">Practical Lab Only</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Multi-Slot & Faculty Offerings Container -->
+              <div style="margin-top: 18px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                  <label style="font-size: 0.8rem; font-weight: 700; color: var(--primary-navy); text-transform: uppercase; letter-spacing: 0.05em;">
+                    <i class="fa-solid fa-users-rectangle"></i> Faculty & Slot Offerings (Add 1 or more)
+                  </label>
+                  <button type="button" class="btn-outline" style="padding: 5px 12px; font-size: 0.78rem; font-weight: 600;" onclick="addFacultySlotRow()">
+                    <i class="fa-solid fa-plus"></i> Add Another Slot & Faculty
+                  </button>
+                </div>
+
+                <div id="slot-offerings-container">
+                  <!-- Row 1: Primary Slot -->
+                  <div class="slot-offering-row" style="background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 10px; display: grid; grid-template-columns: 1.2fr 1.8fr 1fr 1fr 40px; gap: 12px; align-items: center;">
+                    <div>
+                      <label style="font-size: 0.68rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">SLOT CODE *</label>
+                      <input type="text" class="input-slot-code" placeholder="e.g. A1 + TA1" required value="A1 + TA1" style="width: 100%; padding: 8px 10px; font-size: 0.82rem; border: 1px solid var(--border-color); border-radius: 4px;">
+                    </div>
+                    <div>
+                      <label style="font-size: 0.68rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">FACULTY NAME *</label>
+                      <input type="text" class="input-faculty-name" placeholder="e.g. Dr. Raghavendra Rao" required style="width: 100%; padding: 8px 10px; font-size: 0.82rem; border: 1px solid var(--border-color); border-radius: 4px;">
+                    </div>
+                    <div>
+                      <label style="font-size: 0.68rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">VENUE *</label>
+                      <input type="text" class="input-venue" placeholder="e.g. CB-304" required value="CB-304" style="width: 100%; padding: 8px 10px; font-size: 0.82rem; border: 1px solid var(--border-color); border-radius: 4px;">
+                    </div>
+                    <div>
+                      <label style="font-size: 0.68rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">CAPACITY *</label>
+                      <input type="number" class="input-capacity" placeholder="60" min="1" max="250" required value="60" style="width: 100%; padding: 8px 10px; font-size: 0.82rem; border: 1px solid var(--border-color); border-radius: 4px;">
+                    </div>
+                    <div style="text-align: center; padding-top: 14px;">
+                      <span style="color: var(--text-muted); font-size: 0.75rem;" title="Primary Slot">Main</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
+                <button type="reset" class="btn-outline" onclick="resetSlotOfferings()">Reset</button>
+                <button type="submit" class="btn-primary" style="padding: 11px 24px;">
+                  <i class="fa-solid fa-plus"></i> Save Course & All Slot Offerings
+                </button>
+              </div>
+
+            </form>
+          </div>
+
+          <!-- Existing Active Courses Table -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+            <h3 style="font-family: var(--font-serif); font-size: 1.25rem; color: var(--primary-navy);">
+              Published Course Catalog & Seat Allocations
+            </h3>
+            <span style="font-size: 0.82rem; color: var(--text-muted);">
+              Total Courses in System: <strong id="admin-total-courses-count" style="color: var(--primary-navy);">8</strong>
+            </span>
+          </div>
+
+          <div class="admin-table-card">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th style="width: 12%;">COURSE CODE</th>
+                  <th style="width: 20%;">COURSE TITLE</th>
+                  <th style="width: 16%;">BASKET CATEGORY</th>
+                  <th style="width: 8%; text-align: center;">CREDITS</th>
+                  <th style="width: 18%;">FACULTY & VENUE</th>
+                  <th style="width: 12%;">SLOT</th>
+                  <th style="width: 14%;">SEAT CAPACITY</th>
+                </tr>
+              </thead>
+              <tbody id="admin-courses-table-body">
+                <!-- Courses loaded dynamically via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SECTION: Slot & Faculty Setup Table -->
+        <div id="section-slots" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <h2 style="font-family: var(--font-serif); font-size: 1.3rem; color: var(--primary-navy);">Faculty & Venue Slot Assignments</h2>
+              <div style="font-size: 0.82rem; color: var(--text-muted);">Manage real-time faculty allocations, lecture hall classrooms, and seat limits across slots.</div>
+            </div>
+            <button class="btn-primary" onclick="openAssignSlotModal()"><i class="fa-solid fa-calendar-plus"></i> Assign New Slot</button>
+          </div>
+
+          <div class="admin-table-card">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th style="width: 14%;">SLOT CODE</th>
+                  <th style="width: 14%;">VENUE</th>
+                  <th style="width: 24%;">FACULTY ASSIGNED</th>
+                  <th style="width: 22%;">COURSE ALLOCATED</th>
+                  <th style="width: 14%;">SEATS AVAILABLE</th>
+                  <th style="width: 12%; text-align: center;">ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody id="admin-slots-table-body">
+                <!-- Loaded dynamically via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SECTION: FCFS Masterlist Monitor -->
+        <div id="section-fcfs" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h2 style="font-family: var(--font-serif); font-size: 1.3rem; color: var(--primary-navy);">Live FCFS Masterlist Processing Queue</h2>
+            <button class="btn-primary" onclick="showNotification('Running FCFS Auto-Allocation Process...', 'success')"><i class="fa-solid fa-play"></i> Run Auto-Allocation</button>
+          </div>
+
+          <div class="admin-table-card">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th style="width: 12%;">STUDENT</th>
+                  <th style="width: 20%;">COURSE</th>
+                  <th style="width: 18%;">CHOICE 1</th>
+                  <th style="width: 18%;">CHOICE 2</th>
+                  <th style="width: 18%;">CHOICE 3</th>
+                  <th style="width: 14%; text-align: center;">SYSTEM RESOLUTION</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="font-weight: 700;">21BCE0000</td>
+                  <td>Machine Learning</td>
+                  <td>A1+TA1 <span class="seat-badge">45</span></td>
+                  <td>B1+TB1 <span class="seat-badge">99</span></td>
+                  <td>C1+TC1 <span class="seat-badge">5</span></td>
+                  <td style="text-align: center;"><span class="status-badge-active">Allocated Choice 1 ✓</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </main>
+
+      <!-- Footer -->
+      <footer class="portal-footer">
+        <div>© 2024 VIT-AP University. System Administrator Control Portal.</div>
+        <div class="footer-links">
+          <a href="#">Audit Logs</a>
+          <a href="#">Server Status</a>
+          <a href="#">IT Support</a>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <!-- ASSIGN NEW SLOT MODAL -->
+  <div id="assign-slot-modal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; padding: 16px;">
+    <div class="modal-card" style="background: #FFF; max-width: 520px; width: 100%; border-radius: var(--radius); padding: 24px; border: 1px solid var(--border-color); box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px;">
+        <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--primary-navy); display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-calendar-plus"></i> Assign New Slot to Faculty
+        </h3>
+        <button class="close-modal-btn" onclick="closeAssignSlotModal()" style="background: transparent; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+      </div>
+
+      <form id="assign-slot-form" onsubmit="handleAssignSlotSubmit(event)">
+        <div class="form-group-admin" style="margin-bottom: 14px;">
+          <label>SELECT COURSE *</label>
+          <select id="modal-assign-course" required onchange="onCourseSelectedForSlot(this.value)">
+            <option value="">-- Choose Course --</option>
+          </select>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+          <div class="form-group-admin">
+            <label>SLOT CODE *</label>
+            <input type="text" id="modal-assign-slot" placeholder="e.g. B2 + TB2" required>
+          </div>
+          <div class="form-group-admin">
+            <label>SEAT CAPACITY *</label>
+            <input type="number" id="modal-assign-capacity" placeholder="60" min="1" max="250" required value="60">
+          </div>
+        </div>
+
+        <div class="form-group-admin" style="margin-bottom: 14px;">
+          <label>FACULTY NAME *</label>
+          <input type="text" id="modal-assign-faculty" placeholder="e.g. Dr. K. Raman" required>
+        </div>
+
+        <div class="form-group-admin" style="margin-bottom: 18px;">
+          <label>VENUE / CLASSROOM *</label>
+          <input type="text" id="modal-assign-venue" placeholder="e.g. CB-208 / TT-301" required value="CB-208">
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" class="btn-outline" onclick="closeAssignSlotModal()">Cancel</button>
+          <button type="submit" class="btn-primary"><i class="fa-solid fa-check"></i> Save & Assign Slot</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- REASSIGN MODAL -->
+  <div id="reassign-slot-modal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; padding: 16px;">
+    <div class="modal-card" style="background: #FFF; max-width: 460px; width: 100%; border-radius: var(--radius); padding: 24px; border: 1px solid var(--border-color); box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px;">
+        <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--primary-navy);">
+          <i class="fa-solid fa-sliders"></i> Reassign Venue & Faculty
+        </h3>
+        <button class="close-modal-btn" onclick="closeReassignModal()" style="background: transparent; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+      </div>
+
+      <form id="reassign-slot-form" onsubmit="handleReassignSubmit(event)">
+        <input type="hidden" id="reassign-slot-index">
+        <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;" id="reassign-context-text">
+          Reassigning Slot
+        </div>
+
+        <div class="form-group-admin" style="margin-bottom: 14px;">
+          <label>FACULTY NAME *</label>
+          <input type="text" id="reassign-faculty-input" required>
+        </div>
+
+        <div class="form-group-admin" style="margin-bottom: 18px;">
+          <label>NEW VENUE / ROOM *</label>
+          <input type="text" id="reassign-venue-input" required>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" class="btn-outline" onclick="closeReassignModal()">Cancel</button>
+          <button type="submit" class="btn-primary"><i class="fa-solid fa-check"></i> Save Reassignment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../js/app.js"></script>
+  <script>
+    function switchAdminTab(tabName) {
+      const sections = ['create-user', 'students', 'courses', 'slots', 'fcfs'];
+      sections.forEach(sec => {
+        const elem = document.getElementById('section-' + sec);
+        const btn = document.getElementById('tab-' + sec);
+        if (sec === tabName) {
+          if (elem) elem.style.display = 'block';
+          if (btn) btn.classList.add('active');
+        } else {
+          if (elem) elem.style.display = 'none';
+          if (btn) btn.classList.remove('active');
+        }
+      });
+    }
+
+    // Load saved courses, slots, and student credentials on load
+    document.addEventListener('DOMContentLoaded', () => {
+      loadProvisionedCredentials();
+      loadAdminCourses();
+      loadAdminSlots();
+    });
+
+    const defaultAdminSlots = [
+      {
+        courseCode: "SWE3004",
+        courseName: "Front End Design & Testing (Theory)",
+        slot: "E2 + TE2",
+        faculty: "Dr. Priya S.",
+        venue: "CB-524",
+        capacity: 70,
+        available: 69
+      },
+      {
+        courseCode: "SWE3004",
+        courseName: "Front End Design & Testing (Theory)",
+        slot: "E1 + TE1",
+        faculty: "Prof. SCOPE Dig Crs Faculty-4",
+        venue: "CB-225",
+        capacity: 70,
+        available: 68
+      },
+      {
+        courseCode: "SWE3004",
+        courseName: "Front End Design & Testing (Lab)",
+        slot: "L11 + L12",
+        faculty: "Prof. SCOPE Dig Crs Faculty-20",
+        venue: "CB-121",
+        capacity: 70,
+        available: 65
+      },
+      {
+        courseCode: "CSE3002",
+        courseName: "Machine Learning (Theory)",
+        slot: "A1 + TA1",
+        faculty: "Dr. K. Raman",
+        venue: "CB-204",
+        capacity: 70,
+        available: 48
+      },
+      {
+        courseCode: "CSE2005",
+        courseName: "Database Management Systems (Theory)",
+        slot: "D1 + TD1",
+        faculty: "Dr. Sharma R.",
+        venue: "CB-101",
+        capacity: 65,
+        available: 54
+      },
+      {
+        courseCode: "MAT2002",
+        courseName: "Applied Statistics & Probability (Theory)",
+        slot: "F1 + TF1",
+        faculty: "Dr. S. Mukherjee",
+        venue: "CB-104",
+        capacity: 70,
+        available: 60
+      }
+    ];
+
+    function loadAdminSlots() {
+      const tbody = document.getElementById('admin-slots-table-body');
+      if (!tbody) return;
+
+      tbody.innerHTML = '';
+      const slots = JSON.parse(localStorage.getItem('vitap_admin_slots') || 'null') || defaultAdminSlots;
+
+      slots.forEach((s, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="font-weight: 700; color: var(--primary-navy);">${s.slot}</td>
+          <td>${s.venue}</td>
+          <td style="font-weight: 600;">${s.faculty}</td>
+          <td><strong style="color: var(--accent-blue);">${s.courseCode}</strong> - ${s.courseName}</td>
+          <td><span class="badge badge-available-green">${s.available || s.capacity} Available</span></td>
+          <td style="text-align: center;">
+            <button class="btn-outline action-btn-sm" onclick="openReassignModal(${idx})">Reassign</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function openAssignSlotModal() {
+      const modal = document.getElementById('assign-slot-modal');
+      const select = document.getElementById('modal-assign-course');
+      
+      // Populate course options
+      const savedCourses = JSON.parse(localStorage.getItem('vitap_admin_courses') || 'null') || defaultAdminCourses;
+      select.innerHTML = '<option value="">-- Choose Course --</option>';
+      savedCourses.forEach(c => {
+        select.innerHTML += `<option value="${c.code}|${c.title}">${c.code} - ${c.title}</option>`;
+      });
+
+      modal.style.display = 'flex';
+    }
+
+    function closeAssignSlotModal() {
+      document.getElementById('assign-slot-modal').style.display = 'none';
+      document.getElementById('assign-slot-form').reset();
+    }
+
+    function onCourseSelectedForSlot(val) {
+      if (!val) return;
+      const [code, title] = val.split('|');
+      document.getElementById('modal-assign-slot').value = 'B2 + TB2';
+    }
+
+    function handleAssignSlotSubmit(e) {
+      e.preventDefault();
+      const courseVal = document.getElementById('modal-assign-course').value;
+      if (!courseVal) {
+        showNotification('Please select a course to assign slot', 'danger');
+        return;
+      }
+
+      const [code, title] = courseVal.split('|');
+      const slot = document.getElementById('modal-assign-slot').value.trim();
+      const faculty = document.getElementById('modal-assign-faculty').value.trim();
+      const venue = document.getElementById('modal-assign-venue').value.trim();
+      const capacity = parseInt(document.getElementById('modal-assign-capacity').value) || 60;
+
+      const slots = JSON.parse(localStorage.getItem('vitap_admin_slots') || 'null') || [...defaultAdminSlots];
+
+      const newSlotItem = {
+        courseCode: code,
+        courseName: title,
+        slot,
+        faculty,
+        venue,
+        capacity,
+        available: capacity
+      };
+
+      slots.unshift(newSlotItem);
+      localStorage.setItem('vitap_admin_slots', JSON.stringify(slots));
+      loadAdminSlots();
+      closeAssignSlotModal();
+      showNotification(`Slot ${slot} assigned to ${faculty} for ${code}!`, 'success');
+    }
+
+    function openReassignModal(idx) {
+      const slots = JSON.parse(localStorage.getItem('vitap_admin_slots') || 'null') || [...defaultAdminSlots];
+      const target = slots[idx];
+      if (!target) return;
+
+      document.getElementById('reassign-slot-index').value = idx;
+      document.getElementById('reassign-context-text').innerHTML = `
+        Course: <strong>${target.courseCode} (${target.slot})</strong><br>
+        Current: ${target.faculty} in ${target.venue}
+      `;
+      document.getElementById('reassign-faculty-input').value = target.faculty;
+      document.getElementById('reassign-venue-input').value = target.venue;
+
+      document.getElementById('reassign-slot-modal').style.display = 'flex';
+    }
+
+    function closeReassignModal() {
+      document.getElementById('reassign-slot-modal').style.display = 'none';
+      document.getElementById('reassign-slot-form').reset();
+    }
+
+    function handleReassignSubmit(e) {
+      e.preventDefault();
+      const idx = parseInt(document.getElementById('reassign-slot-index').value);
+      const faculty = document.getElementById('reassign-faculty-input').value.trim();
+      const venue = document.getElementById('reassign-venue-input').value.trim();
+
+      const slots = JSON.parse(localStorage.getItem('vitap_admin_slots') || 'null') || [...defaultAdminSlots];
+      if (slots[idx]) {
+        slots[idx].faculty = faculty;
+        slots[idx].venue = venue;
+        localStorage.setItem('vitap_admin_slots', JSON.stringify(slots));
+        loadAdminSlots();
+        closeReassignModal();
+        showNotification(`Reassigned ${slots[idx].courseCode} (${slots[idx].slot}) to ${faculty} in ${venue}!`, 'success');
+      }
+    }
+
+    const defaultAdminCourses = [
+      {
+        code: "CSE3002",
+        title: "Machine Learning",
+        basket: "Program Core (PC)",
+        credits: "4.0",
+        faculty: "Dr. K. Raman",
+        venue: "CB-204",
+        slot: "A1 + TA1",
+        capacity: 70,
+        enrolled: 48
+      },
+      {
+        code: "CSE2005",
+        title: "Database Management Systems",
+        basket: "Program Core (PC)",
+        credits: "4.0",
+        faculty: "Dr. Sharma R.",
+        venue: "CB-101",
+        slot: "D1 + TD1",
+        capacity: 65,
+        enrolled: 54
+      },
+      {
+        code: "CSE3003",
+        title: "Computer Networks",
+        basket: "Program Core (PC)",
+        credits: "3.0",
+        faculty: "Prof. Iyer",
+        venue: "CB-401",
+        slot: "E1 + TE1",
+        capacity: 60,
+        enrolled: 30
+      },
+      {
+        code: "SWE3004",
+        title: "Front End Design & Testing",
+        basket: "Program Elective (PE)",
+        credits: "4.0",
+        faculty: "Dr. Priya S.",
+        venue: "CB-524",
+        slot: "E2 + TE2",
+        capacity: 75,
+        enrolled: 69
+      },
+      {
+        code: "MAT2002",
+        title: "Applied Statistics & Probability",
+        basket: "University Core (UC)",
+        credits: "3.0",
+        faculty: "Dr. S. Mukherjee",
+        venue: "CB-104",
+        slot: "F1 + TF1",
+        capacity: 70,
+        enrolled: 60
+      },
+      {
+        code: "MGT1022",
+        title: "Lean Start-up Management",
+        basket: "University Elective (UE)",
+        credits: "3.0",
+        faculty: "Dr. Vikram Seth",
+        venue: "AB-405",
+        slot: "D1 + TD1",
+        capacity: 60,
+        enrolled: 50
+      }
+    ];
+
+    function getBasketBadgeClass(basket) {
+      if (basket.includes('PC') || basket.includes('Program Core')) return 'badge-pc';
+      if (basket.includes('PE') || basket.includes('Program Elective')) return 'badge-pe';
+      if (basket.includes('UC') || basket.includes('University Core')) return 'badge-uc';
+      if (basket.includes('UE') || basket.includes('University Elective')) return 'badge-ue';
+      return 'badge-pc';
+    }
+
+    function addFacultySlotRow() {
+      const container = document.getElementById('slot-offerings-container');
+      const rowCount = container.querySelectorAll('.slot-offering-row').length + 1;
+      const div = document.createElement('div');
+      div.className = 'slot-offering-row';
+      div.style = 'background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 10px; display: grid; grid-template-columns: 1.2fr 1.8fr 1fr 1fr 40px; gap: 12px; align-items: center;';
+      div.innerHTML = `
+        <div>
+          <label style="font-size: 0.68rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">SLOT CODE *</label>
+          <input type="text" class="input-slot-code" placeholder="e.g. B1 + TB1" required style="width: 100%; padding: 8px 10px; font-size: 0.82rem; border: 1px solid var(--border-color); border-radius: 4px;">
+        </div>
+        <div>
+          <label style="font-size: 0.68rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">FACULTY NAME *</label>
+          <input type="text" class="input-faculty-name" placeholder="e.g. Dr. Priya Sharma" required style="width: 100%; padding: 8px 10px; font-size: 0.82rem; border: 1px solid var(--border-color); border-radius: 4px;">
+        </div>
+        <div>
+          <label style="font-size: 0.68rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">VENUE *</label>
+          <input type="text" class="input-venue" placeholder="e.g. CB-202" required value="CB-202" style="width: 100%; padding: 8px 10px; font-size: 0.82rem; border: 1px solid var(--border-color); border-radius: 4px;">
+        </div>
+        <div>
+          <label style="font-size: 0.68rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">CAPACITY *</label>
+          <input type="number" class="input-capacity" placeholder="60" min="1" max="250" required value="60" style="width: 100%; padding: 8px 10px; font-size: 0.82rem; border: 1px solid var(--border-color); border-radius: 4px;">
+        </div>
+        <div style="text-align: center; padding-top: 14px;">
+          <button type="button" class="action-icon-btn" onclick="removeFacultySlotRow(this)" title="Delete Offering" style="color: #DC2626; background: transparent; border: none; cursor: pointer; font-size: 0.95rem;">
+            <i class="fa-regular fa-trash-can"></i>
+          </button>
+        </div>
+      `;
+      container.appendChild(div);
+    }
+
+    function removeFacultySlotRow(btn) {
+      const container = document.getElementById('slot-offerings-container');
+      if (container.querySelectorAll('.slot-offering-row').length <= 1) {
+        showNotification('A course must have at least one faculty & slot offering.', 'warning');
+        return;
+      }
+      btn.closest('.slot-offering-row').remove();
+    }
+
+    function resetSlotOfferings() {
+      const container = document.getElementById('slot-offerings-container');
+      container.innerHTML = `
+        <div class="slot-offering-row" style="background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 10px; display: grid; grid-template-columns: 1.2fr 1.8fr 1fr 1fr 40px; gap: 12px; align-items: center;">
+          <div>
+            <label style="font-size: 0.68rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">SLOT CODE *</label>
+            <input type="text" class="input-slot-code" placeholder="e.g. A1 + TA1" required value="A1 + TA1" style="width: 100%; padding: 8px 10px; font-size: 0.82rem; border: 1px solid var(--border-color); border-radius: 4px;">
+          </div>
+          <div>
+            <label style="font-size: 0.68rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">FACULTY NAME *</label>
+            <input type="text" class="input-faculty-name" placeholder="e.g. Dr. Raghavendra Rao" required style="width: 100%; padding: 8px 10px; font-size: 0.82rem; border: 1px solid var(--border-color); border-radius: 4px;">
+          </div>
+          <div>
+            <label style="font-size: 0.68rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">VENUE *</label>
+            <input type="text" class="input-venue" placeholder="e.g. CB-304" required value="CB-304" style="width: 100%; padding: 8px 10px; font-size: 0.82rem; border: 1px solid var(--border-color); border-radius: 4px;">
+          </div>
+          <div>
+            <label style="font-size: 0.68rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">CAPACITY *</label>
+            <input type="number" class="input-capacity" placeholder="60" min="1" max="250" required value="60" style="width: 100%; padding: 8px 10px; font-size: 0.82rem; border: 1px solid var(--border-color); border-radius: 4px;">
+          </div>
+          <div style="text-align: center; padding-top: 14px;">
+            <span style="color: var(--text-muted); font-size: 0.75rem;" title="Primary Slot">Main</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function loadAdminCourses() {
+      const tbody = document.getElementById('admin-courses-table-body');
+      if (!tbody) return;
+
+      tbody.innerHTML = '';
+      const savedCourses = JSON.parse(localStorage.getItem('vitap_admin_courses') || 'null') || defaultAdminCourses;
+      
+      savedCourses.forEach((c, idx) => {
+        const badgeCls = getBasketBadgeClass(c.basket);
+        const tr = document.createElement('tr');
+
+        // Multi-slot display HTML
+        let offeringsHtml = '';
+        if (c.offerings && c.offerings.length > 0) {
+          offeringsHtml = c.offerings.map(o => `
+            <div style="margin-bottom: 6px; padding-bottom: 4px; border-bottom: 1px dashed var(--border-color);">
+              <span style="font-weight: 700; color: var(--accent-blue);">${o.slot}</span> • 
+              <strong>${o.faculty}</strong> <span style="font-size: 0.72rem; color: var(--text-muted);">(${o.venue})</span>
+              <span class="badge badge-available-green" style="font-size: 0.65rem; margin-left: 6px;">${o.enrolled || 0}/${o.capacity} Seats</span>
+            </div>
+          `).join('');
+        } else {
+          offeringsHtml = `
+            <div>
+              <span style="font-weight: 700; color: var(--accent-blue);">${c.slot || 'A1+TA1'}</span> • 
+              <strong>${c.faculty}</strong> <span style="font-size: 0.72rem; color: var(--text-muted);">(${c.venue || 'CB-201'})</span>
+              <span class="badge badge-available-green" style="font-size: 0.65rem; margin-left: 6px;">${c.enrolled || 0}/${c.capacity} Seats</span>
+            </div>
+          `;
+        }
+
+        const totalCapacity = c.offerings ? c.offerings.reduce((sum, o) => sum + Number(o.capacity || 0), 0) : c.capacity;
+        const totalEnrolled = c.offerings ? c.offerings.reduce((sum, o) => sum + Number(o.enrolled || 0), 0) : (c.enrolled || 0);
+
+        tr.innerHTML = `
+          <td style="font-weight: 700; color: var(--primary-navy); vertical-align: top;">${c.code}</td>
+          <td style="font-weight: 600; vertical-align: top;">${c.title}</td>
+          <td style="vertical-align: top;"><span class="badge ${badgeCls}">${c.basket}</span></td>
+          <td style="text-align: center; font-weight: 700; vertical-align: top;">${c.credits}</td>
+          <td colspan="2" style="vertical-align: top;">
+            ${offeringsHtml}
+          </td>
+          <td style="vertical-align: top;">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <span style="font-weight: 700; color: #15803D;">${totalEnrolled} / ${totalCapacity} Total</span>
+              <button class="btn-outline action-btn-sm" style="padding: 2px 8px; font-size: 0.7rem;" onclick="expandCapacity(${idx})">+ Cap</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      const countElem = document.getElementById('admin-total-courses-count');
+      if (countElem) countElem.textContent = savedCourses.length;
+    }
+
+    function handleAdminAddCourse(e) {
+      e.preventDefault();
+      const code = document.getElementById('admin-course-code').value.trim().toUpperCase();
+      const title = document.getElementById('admin-course-title').value.trim();
+      const basket = document.getElementById('admin-course-basket').value;
+      const credits = document.getElementById('admin-course-credits').value + '.0';
+      const type = document.getElementById('admin-course-type').value;
+
+      const slotRows = document.querySelectorAll('#slot-offerings-container .slot-offering-row');
+      const offerings = [];
+
+      slotRows.forEach(row => {
+        const sCode = row.querySelector('.input-slot-code').value.trim();
+        const sFaculty = row.querySelector('.input-faculty-name').value.trim();
+        const sVenue = row.querySelector('.input-venue').value.trim();
+        const sCap = parseInt(row.querySelector('.input-capacity').value) || 60;
+
+        if (sCode && sFaculty) {
+          offerings.push({
+            slot: sCode,
+            faculty: sFaculty,
+            venue: sVenue,
+            capacity: sCap,
+            enrolled: 0
+          });
+        }
+      });
+
+      if (offerings.length === 0) {
+        showNotification('Please add at least one slot and faculty offering.', 'danger');
+        return;
+      }
+
+      const savedCourses = JSON.parse(localStorage.getItem('vitap_admin_courses') || 'null') || [...defaultAdminCourses];
+
+      if (savedCourses.some(c => c.code === code)) {
+        showNotification(`Course ${code} is already registered in the database.`, 'danger');
+        return;
+      }
+
+      const newCourse = {
+        code,
+        title,
+        basket,
+        credits,
+        type,
+        offerings,
+        slot: offerings[0].slot,
+        faculty: offerings[0].faculty,
+        venue: offerings[0].venue,
+        capacity: offerings.reduce((sum, o) => sum + o.capacity, 0),
+        enrolled: 0
+      };
+
+      savedCourses.unshift(newCourse);
+      localStorage.setItem('vitap_admin_courses', JSON.stringify(savedCourses));
+      loadAdminCourses();
+
+      document.getElementById('admin-add-course-form').reset();
+      resetSlotOfferings();
+      showNotification(`Successfully added ${code} - ${title} with ${offerings.length} faculty/slot offering(s) to ${basket}!`, 'success');
+    }
+
+    function expandCapacity(idx) {
+      const savedCourses = JSON.parse(localStorage.getItem('vitap_admin_courses') || 'null') || [...defaultAdminCourses];
+      if (savedCourses[idx]) {
+        if (savedCourses[idx].offerings && savedCourses[idx].offerings.length > 0) {
+          savedCourses[idx].offerings.forEach(o => o.capacity += 5);
+        } else {
+          savedCourses[idx].capacity += 10;
+        }
+        localStorage.setItem('vitap_admin_courses', JSON.stringify(savedCourses));
+        loadAdminCourses();
+        showNotification(`Expanded seat capacity for ${savedCourses[idx].code}!`, 'success');
+      }
+    }
+
+    function loadProvisionedCredentials() {
+      const tbody = document.getElementById('student-credentials-tbody');
+      if (!tbody) return;
+
+      const storedUsers = JSON.parse(localStorage.getItem('vitap_student_credentials') || '[]');
+      storedUsers.forEach(user => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="font-weight: 700; color: var(--primary-navy);">${user.username}</td>
+          <td style="font-weight: 600;">${user.name}</td>
+          <td>${user.email}</td>
+          <td>${user.program}</td>
+          <td><span class="status-badge-active">Active</span></td>
+          <td style="text-align: center;">
+            <button class="btn-outline action-btn-sm" onclick="showNotification('Credentials active for ${user.username}', 'info')">Edit</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function handleCreateStudentCredentials(e) {
+      e.preventDefault();
+      const name = document.getElementById('new-student-name').value.trim();
+      const username = document.getElementById('new-student-username').value.trim();
+      const email = document.getElementById('new-student-email').value.trim();
+      const program = document.getElementById('new-student-program').value;
+      const pass = document.getElementById('new-student-password').value;
+      const confirmPass = document.getElementById('new-student-confirm').value;
+
+      if (pass !== confirmPass) {
+        showNotification('Passwords do not match. Please re-enter.', 'danger');
+        return;
+      }
+
+      const storedUsers = JSON.parse(localStorage.getItem('vitap_student_credentials') || '[]');
+      
+      // Check if username already exists
+      if (storedUsers.some(u => u.username.toLowerCase() === username.toLowerCase()) || username === '21BCE0000') {
+        showNotification(`Username / Reg No ${username} already exists in database.`, 'danger');
+        return;
+      }
+
+      const newUser = { name, username, email, program, password: pass };
+      storedUsers.push(newUser);
+      localStorage.setItem('vitap_student_credentials', JSON.stringify(storedUsers));
+
+      // Append row to table
+      const tbody = document.getElementById('student-credentials-tbody');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="font-weight: 700; color: var(--primary-navy);">${username}</td>
+        <td style="font-weight: 600;">${name}</td>
+        <td>${email}</td>
+        <td>${program}</td>
+        <td><span class="status-badge-active">Active</span></td>
+        <td style="text-align: center;">
+          <button class="btn-outline action-btn-sm" onclick="showNotification('Credentials active for ${username}', 'info')">Edit</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+
+      document.getElementById('create-student-form').reset();
+      showNotification(`Student account ${username} saved! Credentials can now log in.`, 'success');
+    }
+  </script>
+</body>
+</html>

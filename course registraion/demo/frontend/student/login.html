@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - VIT-AP University Course Registration Portal</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-main);
+      background: url('../assets/vitap_campus.jpg') no-repeat center center/cover;
+      position: relative;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 420px;
+      padding: 20px;
+      z-index: 10;
+    }
+
+    /* Clean Blue Academic Login Box */
+    .login-card {
+      background: #FFFFFF;
+      border-radius: var(--radius);
+      border: 1px solid #BFDBFE;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+    }
+
+    /* University Blue Header Box */
+    .login-card-header {
+      background-color: #003366;
+      color: #FFFFFF;
+      padding: 24px 20px;
+      text-align: center;
+      border-bottom: 3px solid #2563EB;
+    }
+
+    .login-logo-container {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 10px auto;
+      background-color: #FFFFFF;
+      border-radius: var(--radius);
+      padding: 4px;
+      border: 1px solid #BFDBFE;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-logo {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .login-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 2px;
+    }
+
+    .login-subtitle {
+      font-size: 0.78rem;
+      color: #BFDBFE;
+    }
+
+    /* Role Toggle Tabs in Blue */
+    .role-toggle-bar {
+      display: flex;
+      background-color: #EFF6FF;
+      border-bottom: 1px solid #BFDBFE;
+      padding: 6px;
+      gap: 6px;
+    }
+
+    .role-tab-btn {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      background: transparent;
+      color: #1E40AF;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .role-tab-btn.active {
+      background-color: #003366;
+      color: #FFFFFF;
+      border-color: #003366;
+    }
+
+    .login-card-body {
+      padding: 24px 28px;
+    }
+
+    .form-group {
+      text-align: left;
+      margin-bottom: 16px;
+    }
+
+    .form-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .form-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-dark);
+    }
+
+    .forgot-link {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #003366;
+      text-decoration: none;
+    }
+
+    .forgot-link:hover {
+      text-decoration: underline;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrapper i.input-icon {
+      position: absolute;
+      left: 12px;
+      color: #6B7280;
+      font-size: 0.9rem;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 9px 12px 9px 36px;
+      font-size: 13px;
+      border: 1px solid #D1D5DB;
+      border-radius: var(--radius);
+      background-color: #FFFFFF;
+      color: var(--text-dark);
+      outline: none;
+    }
+
+    .form-input:focus {
+      border-color: #003366;
+      background-color: #F8FAFC;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      color: #6B7280;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .toggle-password:hover {
+      color: #003366;
+    }
+
+    /* Distinct University Blue Login Button */
+    .btn-login {
+      width: 100%;
+      background-color: #003366;
+      color: #FFFFFF;
+      font-size: 13.5px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      padding: 10px;
+      border: 1px solid #003366;
+      border-radius: var(--radius);
+      cursor: pointer;
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background-color 0.15s ease;
+    }
+
+    .btn-login:hover {
+      background-color: #002244;
+      border-color: #002244;
+    }
+
+    .login-footer {
+      margin-top: 20px;
+      font-size: 0.78rem;
+      color: rgba(255, 255, 255, 0.9);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    
+    <div class="login-card">
+      
+      <!-- Blue Header with Logo & Title -->
+      <div class="login-card-header">
+        <div class="login-logo-container">
+          <img src="../assets/vit_logo.png" alt="VIT Logo" class="login-logo">
+        </div>
+        <h1 class="login-title">Course Registration Portal</h1>
+        <div class="login-subtitle">VIT-AP University Academic System</div>
+      </div>
+
+      <!-- Blue Role Switcher (Student / Admin) -->
+      <div class="role-toggle-bar">
+        <button type="button" class="role-tab-btn active" id="btn-role-student" onclick="switchRole('student')">
+          <i class="fa-solid fa-user-graduate"></i> Student Login
+        </button>
+        <button type="button" class="role-tab-btn" id="btn-role-admin" onclick="switchRole('admin')">
+          <i class="fa-solid fa-user-shield"></i> Administrator
+        </button>
+      </div>
+
+      <!-- Login Form Body -->
+      <div class="login-card-body">
+        <form id="login-form" onsubmit="handleLogin(event)">
+          
+          <div class="form-group">
+            <label class="form-label" for="username-input" id="lbl-username">STUDENT USERNAME / REG NO</label>
+            <div class="input-wrapper">
+              <i class="fa-regular fa-user input-icon"></i>
+              <input type="text" id="username-input" class="form-input" placeholder="e.g. 21BCE0000" value="21BCE0000" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-label-row">
+              <label class="form-label" for="password-input">PASSWORD</label>
+              <a href="#" class="forgot-link" onclick="showNotification('Password reset instructions sent to registered email.', 'info')">Forgot?</a>
+            </div>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-lock input-icon"></i>
+              <input type="password" id="password-input" class="form-input" placeholder="Enter password" value="123456" required>
+              <i class="fa-regular fa-eye-slash toggle-password" id="toggle-password-btn" onclick="togglePasswordVisibility()"></i>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-login" id="btn-submit-login">
+            <i class="fa-solid fa-right-to-bracket"></i> SIGN IN TO PORTAL
+          </button>
+        </form>
+      </div>
+
+    </div>
+
+    <div class="login-footer">
+      © 2024 VIT-AP University. All Rights Reserved.
+    </div>
+
+  </div>
+
+  <script src="../js/app.js"></script>
+  <script>
+    let selectedRole = 'student';
+
+    function switchRole(role) {
+      selectedRole = role;
+      const studentBtn = document.getElementById('btn-role-student');
+      const adminBtn = document.getElementById('btn-role-admin');
+      const usernameInput = document.getElementById('username-input');
+      const usernameLabel = document.getElementById('lbl-username');
+
+      if (role === 'admin') {
+        studentBtn.classList.remove('active');
+        adminBtn.classList.add('active');
+        usernameLabel.textContent = 'ADMINISTRATOR USERNAME';
+        usernameInput.value = 'admin';
+        usernameInput.placeholder = 'e.g. admin';
+      } else {
+        adminBtn.classList.remove('active');
+        studentBtn.classList.add('active');
+        usernameLabel.textContent = 'STUDENT USERNAME / REG NO';
+        usernameInput.value = '21BCE0000';
+        usernameInput.placeholder = 'e.g. 21BCE0000';
+      }
+    }
+
+    function togglePasswordVisibility() {
+      const pwdInput = document.getElementById('password-input');
+      const icon = document.getElementById('toggle-password-btn');
+      if (pwdInput.type === 'password') {
+        pwdInput.type = 'text';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      } else {
+        pwdInput.type = 'password';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      }
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const user = document.getElementById('username-input').value.trim();
+      
+      if (selectedRole === 'admin' || user.toLowerCase() === 'admin') {
+        showNotification('Authenticated as Administrator. Redirecting...', 'success');
+        setTimeout(() => {
+          window.location.href = '../admin/dashboard.html';
+        }, 700);
+      } else {
+        showNotification(`Welcome back, ${user}! Redirecting to dashboard...`, 'success');
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 700);
+      }
+    }
+  </script>
+</body>
+</html>

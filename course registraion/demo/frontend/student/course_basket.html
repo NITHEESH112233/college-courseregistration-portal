@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Select Course Basket - VIT-AP Course Registration</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .breadcrumb-trail {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .breadcrumb-trail a {
+      color: var(--text-muted);
+    }
+
+    .breadcrumb-trail a:hover {
+      color: var(--vit-maroon);
+      text-decoration: underline;
+    }
+
+    .basket-page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 28px;
+    }
+
+    .basket-title {
+      font-family: var(--font-serif);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--vit-maroon);
+      margin-bottom: 4px;
+    }
+
+    .basket-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .user-greeting-badge {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 8px 18px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* 2x2 Basket Cards Grid */
+    .basket-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 900px) {
+      .basket-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .basket-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .basket-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--vit-maroon);
+    }
+
+    .basket-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .basket-icon-box {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      background-color: var(--vit-maroon);
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+    }
+
+    .basket-tag {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      padding: 4px 10px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .tag-mandatory {
+      background-color: #F1F5F9;
+      color: #334155;
+    }
+
+    .tag-open {
+      background-color: #FEF3C7;
+      color: #92400E;
+    }
+
+    .tag-specialized {
+      background-color: #E0E7FF;
+      color: #3730A3;
+    }
+
+    .basket-card-title {
+      font-family: var(--font-serif);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--vit-maroon);
+      margin-bottom: 8px;
+    }
+
+    .basket-card-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      line-height: 1.45;
+      min-height: 38px;
+    }
+
+    .basket-progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .basket-select-link {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--vit-maroon);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 16px;
+      transition: gap 0.2s ease;
+    }
+
+    .basket-card:hover .basket-select-link {
+      gap: 10px;
+      color: var(--vit-maroon-dark);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div>
+        <div class="sidebar-header">
+          <img src="../assets/vit_logo.png" alt="VIT Logo" class="sidebar-logo">
+          <div>
+            <div class="sidebar-title">VIT-AP University</div>
+            <div class="sidebar-subtitle">Student Portal</div>
+          </div>
+        </div>
+
+        <div class="nav-group">
+          <a href="dashboard.html" class="nav-item">
+            <i class="fa-solid fa-house"></i> Dashboard
+          </a>
+          <a href="masterlist.html" class="nav-item">
+            <i class="fa-solid fa-list-check"></i> Masterlist
+          </a>
+          <a href="quick_register.html" class="nav-item quick-register-btn">
+            <i class="fa-regular fa-calendar-check"></i> Quick Register
+          </a>
+          <a href="course_basket.html" class="nav-item active">
+            <i class="fa-solid fa-book-open"></i> Course Basket
+          </a>
+          <a href="timetable.html" class="nav-item">
+            <i class="fa-regular fa-clock"></i> Time Table
+          </a>
+          <a href="view_registered.html" class="nav-item">
+            <i class="fa-solid fa-graduation-cap"></i> View Registered
+          </a>
+          <a href="academic_profile.html" class="nav-item">
+            <i class="fa-regular fa-user"></i> Academic Profile
+          </a>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <a href="settings.html" class="nav-item">
+          <i class="fa-solid fa-gear"></i> Settings
+        </a>
+        <a href="login.html" class="nav-item" style="color: #EF4444;">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+      
+      <!-- Top Header -->
+      <header class="top-header">
+        <div class="portal-brand-title">Course Registration Portal</div>
+        <div class="header-meta">
+          <div class="header-tabs">
+            <a href="dashboard.html" class="header-tab">Dashboard</a>
+            <a href="course_basket.html" class="header-tab active">Courses</a>
+            <a href="view_registered.html" class="header-tab">Registered</a>
+          </div>
+          <div class="header-user-actions">
+            <button class="icon-btn" title="Notifications" onclick="showNotification('No new notifications', 'info')"><i class="fa-regular fa-bell"></i></button>
+            <button class="icon-btn" title="Settings" onclick="window.location.href='settings.html'"><i class="fa-solid fa-gear"></i></button>
+            <a href="academic_profile.html" class="avatar-circle">JD</a>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Page Content -->
+      <main class="page-content animate-fade-in">
+
+        <!-- Top Registration 4 Navigation Tabs -->
+        <div class="reg-action-bar">
+          <a href="view_registered.html" class="reg-btn reg-btn-navy"><i class="fa-regular fa-eye"></i> View Registered</a>
+          <a href="course_basket.html" class="reg-btn reg-btn-blue active"><i class="fa-solid fa-layer-group"></i> Re-register / Baskets</a>
+          <a href="modify_slots.html" class="reg-btn reg-btn-navy"><i class="fa-solid fa-sliders"></i> Modify Slots</a>
+          <a href="delete_slots.html" class="reg-btn reg-btn-red"><i class="fa-solid fa-trash-can"></i> Delete Slots</a>
+        </div>
+
+        <!-- Breadcrumb & Page Header -->
+        <div class="basket-page-header">
+          <div>
+            <div class="breadcrumb-trail"><a href="dashboard.html">Dashboard</a> &rsaquo; <span>Course Registration</span></div>
+            <h1 class="basket-title">Select Course Basket</h1>
+            <div class="basket-desc">Choose a category to view available courses and distribute your credits.</div>
+          </div>
+
+          <div class="user-greeting-badge">
+            <i class="fa-solid fa-hand-wave" style="color: #F59E0B;"></i> Good Morning, John
+          </div>
+        </div>
+
+        <!-- 2x2 Basket Grid -->
+        <div class="basket-grid">
+          
+          <!-- Basket 1: University Core (Cyan / Teal) -->
+          <a href="course_listing.html?basket=uc" class="basket-card" style="border-top: 4px solid var(--badge-uc-text);">
+            <div>
+              <div class="basket-card-top">
+                <div class="basket-icon-box" style="background-color: var(--badge-uc-text);"><i class="fa-solid fa-globe"></i></div>
+                <span class="badge badge-uc">UNIVERSITY CORE</span>
+              </div>
+              <h2 class="basket-card-title">University Core (UC)</h2>
+              <p class="basket-card-desc">General education, ethics, and languages required for all university students.</p>
+            </div>
+            <div>
+              <div class="basket-progress-meta">
+                <span>Credits Completed</span>
+                <span style="color: var(--badge-uc-text); font-weight: 700;">12 / 24</span>
+              </div>
+              <div class="progress-bar-track" style="background: #E0F2FE; height: 6px; border-radius: 3px; overflow: hidden; margin: 8px 0 12px 0;">
+                <div class="progress-bar-fill" style="width: 50%; height: 100%; background-color: var(--badge-uc-text);"></div>
+              </div>
+              <div class="basket-select-link" style="color: var(--badge-uc-text); font-weight: 600;">Select Basket <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+          </a>
+
+          <!-- Basket 2: University Elective (Amber) -->
+          <a href="course_listing.html?basket=ue" class="basket-card" style="border-top: 4px solid var(--badge-ue-text);">
+            <div>
+              <div class="basket-card-top">
+                <div class="basket-icon-box" style="background-color: var(--badge-ue-text);"><i class="fa-regular fa-compass"></i></div>
+                <span class="badge badge-ue">OPEN ELECTIVE</span>
+              </div>
+              <h2 class="basket-card-title">University Elective (UE)</h2>
+              <p class="basket-card-desc">Open electives from other departments to broaden your academic horizon.</p>
+            </div>
+            <div>
+              <div class="basket-progress-meta">
+                <span>Credits Completed</span>
+                <span style="color: var(--badge-ue-text); font-weight: 700;">3 / 12</span>
+              </div>
+              <div class="progress-bar-track" style="background: #FEF3C7; height: 6px; border-radius: 3px; overflow: hidden; margin: 8px 0 12px 0;">
+                <div class="progress-bar-fill" style="width: 25%; height: 100%; background-color: var(--badge-ue-text);"></div>
+              </div>
+              <div class="basket-select-link" style="color: var(--badge-ue-text); font-weight: 600;">Select Basket <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+          </a>
+
+          <!-- Basket 3: Program Core (Royal Navy) -->
+          <a href="course_listing.html?basket=pc" class="basket-card" style="border-top: 4px solid var(--badge-pc-text);">
+            <div>
+              <div class="basket-card-top">
+                <div class="basket-icon-box" style="background-color: var(--badge-pc-text);"><i class="fa-solid fa-drafting-compass"></i></div>
+                <span class="badge badge-pc">PROGRAM CORE</span>
+              </div>
+              <h2 class="basket-card-title">Program Core (PC)</h2>
+              <p class="basket-card-desc">Essential major-specific courses foundational to your degree.</p>
+            </div>
+            <div>
+              <div class="basket-progress-meta">
+                <span>Credits Completed</span>
+                <span style="color: var(--badge-pc-text); font-weight: 700;">48 / 60</span>
+              </div>
+              <div class="progress-bar-track" style="background: #DBEAFE; height: 6px; border-radius: 3px; overflow: hidden; margin: 8px 0 12px 0;">
+                <div class="progress-bar-fill" style="width: 80%; height: 100%; background-color: var(--badge-pc-text);"></div>
+              </div>
+              <div class="basket-select-link" style="color: var(--badge-pc-text); font-weight: 600;">Select Basket <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+          </a>
+
+          <!-- Basket 4: Program Elective (Purple) -->
+          <a href="course_listing.html?basket=pe" class="basket-card" style="border-top: 4px solid var(--badge-pe-text);">
+            <div>
+              <div class="basket-card-top">
+                <div class="basket-icon-box" style="background-color: var(--badge-pe-text);"><i class="fa-solid fa-brain"></i></div>
+                <span class="badge badge-pe">SPECIALIZED ELECTIVE</span>
+              </div>
+              <h2 class="basket-card-title">Program Elective (PE)</h2>
+              <p class="basket-card-desc">Advanced elective subjects to deepen knowledge in specializations.</p>
+            </div>
+            <div>
+              <div class="basket-progress-meta">
+                <span>Credits Completed</span>
+                <span style="color: var(--badge-pe-text); font-weight: 700;">15 / 24</span>
+              </div>
+              <div class="progress-bar-track" style="background: #EDE9FE; height: 6px; border-radius: 3px; overflow: hidden; margin: 8px 0 12px 0;">
+                <div class="progress-bar-fill" style="width: 62%; height: 100%; background-color: var(--badge-pe-text);"></div>
+              </div>
+              <div class="basket-select-link" style="color: var(--badge-pe-text); font-weight: 600;">Select Basket <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+          </a>
+
+        </div>
+
+      </main>
+
+      <!-- Footer -->
+      <footer class="portal-footer">
+        <div>© 2024 VIT-AP University. All Rights Reserved.</div>
+        <div class="footer-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Contact Support</a>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <script src="../js/app.js"></script>
+</body>
+</html>
