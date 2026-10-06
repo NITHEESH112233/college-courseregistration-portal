@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Delete Registered Courses - VIT-AP Course Registration</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    /* Danger Alert Banner */
+    .danger-alert-banner {
+      background-color: #FEE2E2;
+      border: 1px solid #FCA5A5;
+      border-left: 4px solid #DC2626;
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.85rem;
+      color: #991B1B;
+      margin-bottom: 20px;
+    }
+
+    /* Deletion Table */
+    .delete-table-card {
+      background-color: var(--bg-white);
+      border: 1px solid var(--border-color);
+      border-top: 3px solid #DC2626;
+      border-radius: var(--radius);
+      overflow-x: auto;
+      margin-bottom: 20px;
+    }
+
+    .delete-courses-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    .delete-courses-table th {
+      background-color: var(--bg-table-header);
+      color: var(--text-dark);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 10px 14px;
+      text-align: left;
+      border: 1px solid var(--border-color);
+    }
+
+    .delete-courses-table td {
+      padding: 12px 14px;
+      border: 1px solid var(--border-color);
+      color: var(--text-dark);
+    }
+
+    .delete-courses-table tr:hover td {
+      background-color: #FEF2F2;
+    }
+
+    .slot-pill-tag {
+      background-color: #EFF6FF;
+      color: var(--primary-navy);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 3px;
+      border: 1px solid #BFDBFE;
+    }
+
+    .select-checkbox {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      accent-color: #DC2626;
+    }
+
+    .action-btn-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div>
+        <div class="sidebar-header">
+          <img src="../assets/vit_logo.png" alt="VIT Logo" class="sidebar-logo">
+          <div>
+            <div class="sidebar-title">VIT-AP Academic</div>
+            <div class="sidebar-subtitle">Student Portal</div>
+          </div>
+        </div>
+
+        <div class="nav-group">
+          <a href="dashboard.html" class="nav-item">
+            <i class="fa-solid fa-house"></i> Dashboard
+          </a>
+          <a href="masterlist.html" class="nav-item">
+            <i class="fa-solid fa-list-check"></i> Masterlist
+          </a>
+          <a href="quick_register.html" class="nav-item">
+            <i class="fa-regular fa-calendar-check"></i> Quick Register
+          </a>
+          <a href="course_basket.html" class="nav-item">
+            <i class="fa-solid fa-book-open"></i> Course Basket
+          </a>
+          <a href="timetable.html" class="nav-item">
+            <i class="fa-regular fa-clock"></i> Time Table
+          </a>
+          <a href="view_registered.html" class="nav-item">
+            <i class="fa-solid fa-graduation-cap"></i> View Registered
+          </a>
+          <a href="academic_profile.html" class="nav-item">
+            <i class="fa-regular fa-user"></i> Academic Profile
+          </a>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <a href="settings.html" class="nav-item">
+          <i class="fa-solid fa-gear"></i> Settings
+        </a>
+        <a href="login.html" class="nav-item" style="color: #DC2626;">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+      
+      <!-- Top Navigation Header -->
+      <header class="top-header">
+        <div class="portal-brand-title">Course Registration Portal</div>
+
+        <div class="header-meta">
+          <div class="header-tabs">
+            <a href="dashboard.html" class="header-tab">Dashboard</a>
+            <a href="course_basket.html" class="header-tab">Courses</a>
+            <a href="masterlist.html" class="header-tab">Masterlist</a>
+            <a href="view_registered.html" class="header-tab active">Registered</a>
+          </div>
+
+          <div class="header-user-actions">
+            <button class="icon-btn" title="Notifications" onclick="window.location.href='notifications.html'"><i class="fa-regular fa-bell"></i></button>
+            <button class="icon-btn" title="Settings" onclick="window.location.href='settings.html'"><i class="fa-solid fa-gear"></i></button>
+            <a href="academic_profile.html" class="avatar-circle">JD</a>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <main class="page-content">
+
+        <!-- Distinct 4-Feature Action Bar -->
+        <div class="reg-action-bar">
+          <a href="view_registered.html" class="reg-btn reg-btn-green"><i class="fa-solid fa-circle-check"></i> View Registered</a>
+          <a href="course_basket.html" class="reg-btn reg-btn-navy"><i class="fa-solid fa-layer-group"></i> Course Baskets</a>
+          <a href="modify_slots.html" class="reg-btn reg-btn-teal"><i class="fa-solid fa-sliders"></i> Modify Slots</a>
+          <a href="delete_slots.html" class="reg-btn reg-btn-red active"><i class="fa-solid fa-trash-can"></i> Delete Slots</a>
+        </div>
+
+        <h1 class="page-title">Delete Registered Courses</h1>
+        <p class="page-subtitle">Select registered courses you wish to drop from your current semester schedule.</p>
+
+        <!-- Red Alert Warning -->
+        <div class="danger-alert-banner">
+          <i class="fa-solid fa-triangle-exclamation" style="font-size: 1.2rem;"></i>
+          <div><strong>Important Warning:</strong> Dropping a course will instantly release your reserved seat to other students on the waitlist. Ensure you meet your minimum credit threshold (16 credits).</div>
+        </div>
+
+        <!-- Deletion Form & Table -->
+        <form onsubmit="handleConfirmDeletion(event)">
+          
+          <div class="delete-table-card">
+            <table class="delete-courses-table">
+              <thead>
+                <tr>
+                  <th style="width: 50px; text-align: center;">SELECT</th>
+                  <th style="width: 120px;">COURSE CODE</th>
+                  <th style="width: 260px;">COURSE TITLE</th>
+                  <th style="width: 140px;">ALLOCATED SLOT</th>
+                  <th style="width: 200px;">FACULTY & VENUE</th>
+                  <th style="width: 80px; text-align: right;">CREDITS</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="text-align: center;">
+                    <input type="checkbox" class="select-checkbox" name="delete_course" value="SWE3004">
+                  </td>
+                  <td style="font-weight: 700; color: var(--primary-navy);">SWE3004</td>
+                  <td style="font-weight: 600;">Front End Design and Testing</td>
+                  <td><span class="slot-pill-tag">C1 + TC1</span></td>
+                  <td>Dr. S. K. Singh • CB-305</td>
+                  <td style="text-align: right; font-weight: 700;">3</td>
+                </tr>
+                <tr>
+                  <td style="text-align: center;">
+                    <input type="checkbox" class="select-checkbox" name="delete_course" value="CSE2004">
+                  </td>
+                  <td style="font-weight: 700; color: var(--primary-navy);">CSE2004</td>
+                  <td style="font-weight: 600;">Software Engineering</td>
+                  <td><span class="slot-pill-tag">G1 + TG1</span></td>
+                  <td>Dr. Gupta • CB-502</td>
+                  <td style="text-align: right; font-weight: 700;">3</td>
+                </tr>
+                <tr>
+                  <td style="text-align: center;">
+                    <input type="checkbox" class="select-checkbox" name="delete_course" value="MGT1022">
+                  </td>
+                  <td style="font-weight: 700; color: var(--primary-navy);">MGT1022</td>
+                  <td style="font-weight: 600;">Lean Start-up Management</td>
+                  <td><span class="slot-pill-tag">D2 + TD2</span></td>
+                  <td>Prof. Verma • AB-308</td>
+                  <td style="text-align: right; font-weight: 700;">3</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Actions Footer -->
+          <div class="action-btn-row">
+            <button type="button" class="btn-outline" onclick="window.location.href='view_registered.html'">
+              Cancel / Return
+            </button>
+            <button type="submit" class="btn-primary" style="background-color: #DC2626; border-color: #DC2626;">
+              <i class="fa-solid fa-trash-can"></i> Confirm & Delete Selected Courses
+            </button>
+          </div>
+
+        </form>
+
+      </main>
+
+      <!-- Footer -->
+      <footer class="portal-footer">
+        <div>© 2024 VIT-AP University. All Rights Reserved.</div>
+        <div class="footer-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Contact Support</a>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <script src="../js/app.js"></script>
+  <script>
+    function handleConfirmDeletion(e) {
+      e.preventDefault();
+      const checkedBoxes = document.querySelectorAll('input[name="delete_course"]:checked');
+      if (checkedBoxes.length === 0) {
+        showNotification('Please select at least one course to delete.', 'danger');
+        return;
+      }
+
+      const codes = Array.from(checkedBoxes).map(cb => cb.value).join(', ');
+      if (confirm(`Are you sure you want to drop selected courses: ${codes}?`)) {
+        showNotification(`Successfully dropped ${checkedBoxes.length} course(s). Seats released.`, 'success');
+        setTimeout(() => {
+          window.location.href = 'view_registered.html';
+        }, 800);
+      }
+    }
+  </script>
+</body>
+</html>
