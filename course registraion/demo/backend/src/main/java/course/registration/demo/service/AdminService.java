@@ -186,6 +186,37 @@ public class AdminService {
         return courseSlotRepository.save(slot);
     }
 
+    @Transactional
+    public CourseSlot reassignSlot(AssignSlotRequest req) {
+        CourseSlot slot;
+        if (req.getSlotId() != null) {
+            slot = courseSlotRepository.findById(req.getSlotId())
+                    .orElseThrow(() -> new RuntimeException("Slot not found with ID: " + req.getSlotId()));
+        } else if (req.getCourseCode() != null && req.getSlotCode() != null) {
+            List<CourseSlot> slots = courseSlotRepository.findByCourseCode(req.getCourseCode().trim().toUpperCase());
+            slot = slots.stream()
+                    .filter(s -> s.getSlotCode().equalsIgnoreCase(req.getSlotCode().trim()))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Slot not found for course " + req.getCourseCode()));
+        } else {
+            throw new RuntimeException("Slot ID or Course Code + Slot Code required for reassignment.");
+        }
+
+        if (req.getFacultyName() != null && !req.getFacultyName().isBlank()) {
+            slot.setFacultyName(req.getFacultyName().trim());
+        }
+        if (req.getVenue() != null && !req.getVenue().isBlank()) {
+            slot.setVenue(req.getVenue().trim());
+        }
+        if (req.getCapacity() != null && req.getCapacity() > 0) {
+            int diff = req.getCapacity() - slot.getTotalSeats();
+            slot.setTotalSeats(req.getCapacity());
+            slot.setAvailableSeats(Math.max(0, slot.getAvailableSeats() + diff));
+        }
+
+        return courseSlotRepository.save(slot);
+    }
+
     public List<CourseSlot> getAllSlots() {
         return courseSlotRepository.findAll();
     }

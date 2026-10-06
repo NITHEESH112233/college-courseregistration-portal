@@ -41,7 +41,7 @@ public class AdminController {
         }
     }
 
-    @PostMapping("/students")
+    @PostMapping({"/students", "/students/provision"})
     public ResponseEntity<ApiResponse<User>> createStudent(@RequestBody CreateStudentRequest request) {
         try {
             User u = adminService.createStudent(request);
@@ -71,7 +71,7 @@ public class AdminController {
         }
     }
 
-    @PostMapping("/courses")
+    @PostMapping({"/courses", "/courses/add"})
     public ResponseEntity<ApiResponse<Course>> createCourse(@RequestBody CreateCourseRequest request) {
         try {
             Course c = adminService.createCourse(request);
@@ -111,11 +111,21 @@ public class AdminController {
         }
     }
 
-    @PostMapping("/slots")
+    @PostMapping({"/slots", "/slots/assign"})
     public ResponseEntity<ApiResponse<CourseSlot>> assignSlot(@RequestBody AssignSlotRequest request) {
         try {
             CourseSlot s = adminService.assignSlot(request);
             return ResponseEntity.ok(ApiResponse.ok("Slot assigned to course successfully!", s));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(ApiResponse.error(e.getMessage()));
+        }
+    }
+
+    @RequestMapping(value = {"/slots/reassign", "/slots/modify"}, method = {RequestMethod.POST, RequestMethod.PUT})
+    public ResponseEntity<ApiResponse<CourseSlot>> reassignSlot(@RequestBody AssignSlotRequest request) {
+        try {
+            CourseSlot s = adminService.reassignSlot(request);
+            return ResponseEntity.ok(ApiResponse.ok("Slot reassigned successfully!", s));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(ApiResponse.error(e.getMessage()));
         }
