@@ -7,6 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class AssignSlotRequest {
+    private Long slotId;
     private String courseCode;
     private String slotCode;
     private String slotType; // "THEORY" or "LAB"
