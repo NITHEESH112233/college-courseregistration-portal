@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My FCFS Masterlist - VIT-AP Course Registration</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .masterlist-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .masterlist-title-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .draft-status-tag {
+      background-color: #FEF08A;
+      color: #854D0E;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* 4 Stat Boxes Bar */
+    .stat-cards-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 900px) {
+      .stat-cards-bar {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .small-stat-card {
+      background-color: var(--bg-white);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+    }
+
+    .small-stat-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .small-stat-val {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--primary-navy);
+    }
+
+    /* FCFS Masterlist Table */
+    .masterlist-table-card {
+      background-color: var(--bg-white);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      overflow-x: auto;
+      margin-bottom: 20px;
+    }
+
+    .fcfs-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+    }
+
+    .fcfs-table th {
+      background-color: var(--bg-table-header);
+      color: var(--text-dark);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 10px 12px;
+      text-align: left;
+      border: 1px solid var(--border-color);
+    }
+
+    .fcfs-table td {
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+      vertical-align: middle;
+    }
+
+    .choice-card-box {
+      background-color: #F8FAFC;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 6px 8px;
+      font-size: 0.78rem;
+    }
+
+    .choice-card-box.primary {
+      background-color: #EFF6FF;
+      border-color: #BFDBFE;
+    }
+
+    .choice-slot-title {
+      font-weight: 700;
+      color: var(--primary-navy);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .seat-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      background-color: #E2E8F0;
+      color: #334155;
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+
+    .seat-badge.high {
+      background-color: #DCFCE7;
+      color: #15803D;
+    }
+
+    .choice-faculty {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .status-icon-circle {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+    }
+
+    .status-ok { background-color: #DCFCE7; color: #15803D; }
+    .status-warn { background-color: #FEF08A; color: #854D0E; }
+    .status-clash { background-color: #FEE2E2; color: #B91C1C; }
+
+    .action-icon-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.85rem;
+      padding: 4px 6px;
+    }
+
+    .action-icon-btn:hover {
+      color: #B91C1C;
+    }
+
+    /* Modal Overlay */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
+
+    .modal-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 580px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 24px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+
+    .modal-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--primary-navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .close-modal-btn {
+      background: transparent;
+      border: none;
+      font-size: 1.1rem;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    .form-group-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .choice-config-section {
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 12px;
+      margin-bottom: 12px;
+      background: #F8FAFC;
+    }
+
+    .choice-config-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--primary-navy);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div>
+        <div class="sidebar-header">
+          <img src="../assets/vit_logo.png" alt="VIT Logo" class="sidebar-logo">
+          <div>
+            <div class="sidebar-title">VIT-AP Academic</div>
+            <div class="sidebar-subtitle">Student Portal</div>
+          </div>
+        </div>
+
+        <div class="nav-group">
+          <a href="dashboard.html" class="nav-item">
+            <i class="fa-solid fa-house"></i> Dashboard
+          </a>
+          <a href="masterlist.html" class="nav-item">
+            <i class="fa-solid fa-list-check"></i> Masterlist
+          </a>
+          <a href="quick_register.html" class="nav-item active">
+            <i class="fa-regular fa-calendar-check"></i> Quick Register
+          </a>
+          <a href="course_basket.html" class="nav-item">
+            <i class="fa-solid fa-book-open"></i> Course Basket
+          </a>
+          <a href="timetable.html" class="nav-item">
+            <i class="fa-regular fa-clock"></i> Time Table
+          </a>
+          <a href="view_registered.html" class="nav-item">
+            <i class="fa-solid fa-graduation-cap"></i> View Registered
+          </a>
+          <a href="academic_profile.html" class="nav-item">
+            <i class="fa-regular fa-user"></i> Academic Profile
+          </a>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <a href="settings.html" class="nav-item">
+          <i class="fa-solid fa-gear"></i> Settings
+        </a>
+        <a href="login.html" class="nav-item" style="color: #DC2626;">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+      
+      <!-- Top Navigation Header -->
+      <header class="top-header">
+        <div class="portal-brand-title">VIT-AP Academic Portal</div>
+        <div class="header-meta">
+          <div class="header-tabs">
+            <a href="dashboard.html" class="header-tab">Dashboard</a>
+            <a href="course_basket.html" class="header-tab">Courses</a>
+            <a href="masterlist.html" class="header-tab">Masterlist</a>
+            <a href="view_registered.html" class="header-tab">Registered</a>
+          </div>
+          <div class="header-user-actions">
+            <button class="icon-btn" title="Notifications" onclick="window.location.href='notifications.html'"><i class="fa-regular fa-bell"></i></button>
+            <button class="icon-btn" title="Settings" onclick="window.location.href='settings.html'"><i class="fa-solid fa-gear"></i></button>
+            <a href="academic_profile.html" class="avatar-circle">JD</a>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <main class="page-content">
+
+        <!-- Header Row -->
+        <div class="masterlist-header-row">
+          <div class="masterlist-title-box">
+            <h1 class="page-title">My FCFS Masterlist</h1>
+            <span class="draft-status-tag"><i class="fa-solid fa-circle" style="font-size: 0.45rem;"></i> Registration Draft</span>
+          </div>
+
+          <div style="display: flex; gap: 10px;">
+            <a href="masterlist.html" class="btn-outline" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+              <i class="fa-solid fa-list-check"></i> View Saved Masterlist
+            </a>
+            <button class="btn-primary" onclick="openAddCourseModal()">
+              <i class="fa-solid fa-plus"></i> Add Course
+            </button>
+          </div>
+        </div>
+
+        <p class="page-subtitle">Configure your prioritized slot choices for each course. The system will automatically attempt choices sequentially during FCFS registration.</p>
+
+        <!-- Blue Info Callout -->
+        <div class="info-callout-box">
+          <strong><i class="fa-solid fa-circle-info"></i> Fast FCFS Preparation:</strong>
+          Add your target courses and configure up to 3 preferred slots per course. When the registration window opens, Choice 1 is attempted first with instant fallback to Choice 2 & 3.
+        </div>
+
+        <!-- Stat Cards Row -->
+        <div class="stat-cards-bar">
+          <div class="small-stat-card">
+            <div class="small-stat-label">TOTAL COURSES</div>
+            <div class="small-stat-val" id="stat-courses-count">5</div>
+          </div>
+          <div class="small-stat-card">
+            <div class="small-stat-label">COMPLETED CHOICES</div>
+            <div class="small-stat-val" style="color: #15803D;" id="stat-complete-count">5/5</div>
+          </div>
+          <div class="small-stat-card">
+            <div class="small-stat-label">CLASH STATUS</div>
+            <div class="small-stat-val" style="color: #15803D;" id="stat-clash-count">0 Clashes</div>
+          </div>
+          <div class="small-stat-card">
+            <div class="small-stat-label">TOTAL CREDITS</div>
+            <div class="small-stat-val" id="stat-credits-count">18</div>
+          </div>
+        </div>
+
+        <!-- FCFS Preference Table -->
+        <div class="masterlist-table-card">
+          <table class="fcfs-table">
+            <thead>
+              <tr>
+                <th style="width: 40px;">#</th>
+                <th style="width: 220px;">COURSE DETAILS</th>
+                <th style="width: 200px;">CHOICE 1 (PRIMARY)</th>
+                <th style="width: 180px;">CHOICE 2 (FALLBACK)</th>
+                <th style="width: 180px;">CHOICE 3 (TERTIARY)</th>
+                <th style="width: 70px; text-align: center;">STATUS</th>
+                <th style="width: 80px; text-align: center;">ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody id="quick-register-tbody">
+              <!-- Dynamically populated via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Save Masterlist Button -->
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 20px;">
+          <button class="btn-outline" onclick="openAddCourseModal()">
+            <i class="fa-solid fa-plus"></i> Add Another Course
+          </button>
+          <button class="btn-primary" style="padding: 9px 22px;" onclick="saveAndOpenMasterlist()">
+            <i class="fa-regular fa-floppy-disk"></i> Save Masterlist & View
+          </button>
+        </div>
+
+      </main>
+
+      <!-- Footer -->
+      <footer class="portal-footer">
+        <div>© 2024 VIT-AP University. All Rights Reserved.</div>
+        <div class="footer-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Contact Support</a>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <!-- ADD COURSE MODAL -->
+  <div id="add-course-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-solid fa-book-medical"></i> Add Course from Registration Catalog</h3>
+        <button class="close-modal-btn" onclick="closeAddCourseModal()">&times;</button>
+      </div>
+
+      <form id="add-course-form" onsubmit="handleCourseSubmit(event)">
+        
+        <!-- Course Selection from Official Catalog -->
+        <div style="margin-bottom: 16px;">
+          <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-dark); display: block; margin-bottom: 6px;">
+            Select Available Course *
+          </label>
+          <select id="modal-course-select" required onchange="onCatalogCourseSelected(this.value)" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); font-size: 0.85rem;">
+            <option value="">-- Select Available Course from Registration --</option>
+            <option value="CSE3002">CSE3002 - Machine Learning (4 Credits, Program Core)</option>
+            <option value="CSE2005">CSE2005 - Database Management Systems (4 Credits, Program Core)</option>
+            <option value="CSE3003">CSE3003 - Computer Networks (3 Credits, Program Core)</option>
+            <option value="CSE2505">CSE2505 - Operating Systems (4 Credits, Program Core)</option>
+            <option value="CSE2004">CSE2004 - Software Engineering (3 Credits, Program Elective)</option>
+            <option value="SWE3004">SWE3004 - Front End Design & Testing (4 Credits, Program Elective)</option>
+            <option value="CSE1001">CSE1001 - Data Structures & Algorithms (4 Credits, Program Core)</option>
+            <option value="CSE2001">CSE2001 - Computer Architecture and Organization (4 Credits, Program Core)</option>
+            <option value="MAT2002">MAT2002 - Applied Statistics & Probability (3 Credits, University Core)</option>
+            <option value="HUM1021">HUM1021 - Ethics and Values (2 Credits, University Core)</option>
+            <option value="MGT1022">MGT1022 - Lean Start-up Management (3 Credits, University Elective)</option>
+          </select>
+        </div>
+
+        <!-- Choice 1 Configuration (Dropdown populated based on selected course) -->
+        <div class="choice-config-section">
+          <div class="choice-config-title">
+            <i class="fa-solid fa-star" style="color: #F59E0B;"></i> Choice 1 (Primary Slot Preference) *
+          </div>
+          <div>
+            <label style="font-size: 0.72rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Available Slot & Faculty Combination *</label>
+            <select id="modal-c1-select" required style="width: 100%; padding: 8px 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); font-size: 0.82rem;">
+              <option value="">-- Select Course First --</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Choice 2 Configuration -->
+        <div class="choice-config-section">
+          <div class="choice-config-title">
+            <i class="fa-regular fa-circle-check" style="color: #2563EB;"></i> Choice 2 (Secondary Fallback Slot)
+          </div>
+          <div>
+            <label style="font-size: 0.72rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Available Slot & Faculty Combination</label>
+            <select id="modal-c2-select" style="width: 100%; padding: 8px 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); font-size: 0.82rem;">
+              <option value="">-- Optional Secondary Slot --</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Choice 3 Configuration -->
+        <div class="choice-config-section">
+          <div class="choice-config-title">
+            <i class="fa-regular fa-circle-check" style="color: #64748B;"></i> Choice 3 (Tertiary Fallback Slot)
+          </div>
+          <div>
+            <label style="font-size: 0.72rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Available Slot & Faculty Combination</label>
+            <select id="modal-c3-select" style="width: 100%; padding: 8px 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); font-size: 0.82rem;">
+              <option value="">-- Optional Tertiary Slot --</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px;">
+          <button type="button" class="btn-outline" onclick="closeAddCourseModal()">Cancel</button>
+          <button type="submit" class="btn-primary"><i class="fa-solid fa-plus"></i> Add Course to Masterlist</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <script src="../js/app.js"></script>
+  <script>
+    // Official Available Courses & Slot Offerings in Registration Portal
+    const registrationCatalog = {
+      "CSE3002": {
+        code: "CSE3002",
+        title: "Machine Learning",
+        category: "Program Core (PC)",
+        credits: 4,
+        slots: [
+          { slot: "A1 + TA1", faculty: "Dr. K. Raman", venue: "CB-204", seats: 48 },
+          { slot: "B1 + TB1", faculty: "Dr. M. Roy", venue: "CB-302", seats: 22 },
+          { slot: "C1 + TC1", faculty: "Prof. S. Rao", venue: "AB-105", seats: 15 }
+        ]
+      },
+      "CSE2005": {
+        code: "CSE2005",
+        title: "Database Management Systems",
+        category: "Program Core (PC)",
+        credits: 4,
+        slots: [
+          { slot: "D1 + TD1", faculty: "Dr. Sharma R.", venue: "CB-101", seats: 54 },
+          { slot: "E1 + TE1", faculty: "Prof. K. Verma", venue: "CB-203", seats: 30 },
+          { slot: "F1 + TF1", faculty: "Dr. P. Nair", venue: "AB-201", seats: 8 }
+        ]
+      },
+      "CSE3003": {
+        code: "CSE3003",
+        title: "Computer Networks",
+        category: "Program Core (PC)",
+        credits: 3,
+        slots: [
+          { slot: "E1 + TE1", faculty: "Prof. Iyer", venue: "CB-401", seats: 30 },
+          { slot: "F1 + TF1", faculty: "Dr. Singh", venue: "AB-304", seats: 12 },
+          { slot: "G1 + TG1", faculty: "Dr. Sen", venue: "CB-105", seats: 20 }
+        ]
+      },
+      "CSE2505": {
+        code: "CSE2505",
+        title: "Operating Systems",
+        category: "Program Core (PC)",
+        credits: 4,
+        slots: [
+          { slot: "B2 + TB2", faculty: "Prof. Das", venue: "CB-305", seats: 40 },
+          { slot: "C2 + TC2", faculty: "Dr. Ali", venue: "AB-108", seats: 19 },
+          { slot: "D2 + TD2", faculty: "Dr. Roy", venue: "CB-209", seats: 11 }
+        ]
+      },
+      "CSE2004": {
+        code: "CSE2004",
+        title: "Software Engineering",
+        category: "Program Elective (PE)",
+        credits: 3,
+        slots: [
+          { slot: "G1 + TG1", faculty: "Dr. Gupta", venue: "CB-502", seats: 55 },
+          { slot: "H1 + TH1", faculty: "Prof. Nanda", venue: "AB-402", seats: 25 },
+          { slot: "J1 + TJ1", faculty: "Dr. Sen", venue: "CB-310", seats: 10 }
+        ]
+      },
+      "SWE3004": {
+        code: "SWE3004",
+        title: "Front End Design & Testing",
+        category: "Program Elective (PE)",
+        credits: 4,
+        slots: [
+          { slot: "E2 + TE2", faculty: "Dr. Priya S.", venue: "CB-524", seats: 69 },
+          { slot: "E1 + TE1", faculty: "Prof. SCOPE Dig Crs Faculty-4", venue: "CB-225", seats: 68 },
+          { slot: "L11 + L12", faculty: "Prof. SCOPE Dig Crs Faculty-20", venue: "CB-121", seats: 65 }
+        ]
+      },
+      "CSE1001": {
+        code: "CSE1001",
+        title: "Data Structures & Algorithms",
+        category: "Program Core (PC)",
+        credits: 4,
+        slots: [
+          { slot: "A2 + TA2", faculty: "Dr. Rajesh K.", venue: "CB-112", seats: 45 },
+          { slot: "B2 + TB2", faculty: "Prof. Anita Sen", venue: "AB-204", seats: 32 },
+          { slot: "C2 + TC2", faculty: "Dr. V. Prasad", venue: "CB-315", seats: 18 }
+        ]
+      },
+      "CSE2001": {
+        code: "CSE2001",
+        title: "Computer Architecture and Organization",
+        category: "Program Core (PC)",
+        credits: 4,
+        slots: [
+          { slot: "B2 + TB2", faculty: "Prof. Rajiv Menon", venue: "AB1-311", seats: 42 },
+          { slot: "C2 + TC2", faculty: "Dr. K. Srinivas", venue: "CB-208", seats: 26 },
+          { slot: "D2 + TD2", faculty: "Dr. Meera Patel", venue: "CB-401", seats: 15 }
+        ]
+      },
+      "MAT2002": {
+        code: "MAT2002",
+        title: "Applied Statistics & Probability",
+        category: "University Core (UC)",
+        credits: 3,
+        slots: [
+          { slot: "F1 + TF1", faculty: "Dr. S. Mukherjee", venue: "CB-104", seats: 60 },
+          { slot: "G1 + TG1", faculty: "Prof. R. Banerjee", venue: "AB-110", seats: 35 },
+          { slot: "H1 + TH1", faculty: "Dr. T. Sharma", venue: "CB-210", seats: 20 }
+        ]
+      },
+      "HUM1021": {
+        code: "HUM1021",
+        title: "Ethics and Values",
+        category: "University Core (UC)",
+        credits: 2,
+        slots: [
+          { slot: "A1", faculty: "Dr. Charles David", venue: "CB-501", seats: 75 },
+          { slot: "B1", faculty: "Prof. Geetha Nair", venue: "AB-302", seats: 50 },
+          { slot: "C1", faculty: "Dr. Anupama V.", venue: "CB-308", seats: 30 }
+        ]
+      },
+      "MGT1022": {
+        code: "MGT1022",
+        title: "Lean Start-up Management",
+        category: "University Elective (UE)",
+        credits: 3,
+        slots: [
+          { slot: "D1 + TD1", faculty: "Dr. Vikram Seth", venue: "AB-405", seats: 50 },
+          { slot: "E1 + TE1", faculty: "Prof. Sneha Paul", venue: "CB-408", seats: 28 },
+          { slot: "F1 + TF1", faculty: "Dr. R. Kapoor", venue: "CB-102", seats: 14 }
+        ]
+      }
+    };
+
+    const defaultMasterlist = [
+      {
+        rank: 1,
+        code: "CSE3002",
+        title: "Machine Learning",
+        category: "Program Core (PC)",
+        credits: 4,
+        choice1: { slot: "A1 + TA1", faculty: "Dr. K. Raman", venue: "CB-204", seats: 48 },
+        choice2: { slot: "B1 + TB1", faculty: "Dr. M. Roy", venue: "CB-302", seats: 22 },
+        choice3: { slot: "C1 + TC1", faculty: "Prof. S. Rao", venue: "AB-105", seats: 15 },
+        status: "Ready"
+      },
+      {
+        rank: 2,
+        code: "CSE2005",
+        title: "Database Management Systems",
+        category: "Program Core (PC)",
+        credits: 4,
+        choice1: { slot: "D1 + TD1", faculty: "Dr. Sharma R.", venue: "CB-101", seats: 54 },
+        choice2: { slot: "E1 + TE1", faculty: "Prof. K. Verma", venue: "CB-203", seats: 30 },
+        choice3: { slot: "F1 + TF1", faculty: "Dr. P. Nair", venue: "AB-201", seats: 8 },
+        status: "Ready"
+      },
+      {
+        rank: 3,
+        code: "CSE3003",
+        title: "Computer Networks",
+        category: "Program Core (PC)",
+        credits: 3,
+        choice1: { slot: "E1 + TE1", faculty: "Prof. Iyer", venue: "CB-401", seats: 30 },
+        choice2: { slot: "F1 + TF1", faculty: "Dr. Singh", venue: "AB-304", seats: 12 },
+        choice3: { slot: "G1 + TG1", faculty: "Dr. Sen", venue: "CB-105", seats: 20 },
+        status: "Ready"
+      },
+      {
+        rank: 4,
+        code: "CSE2505",
+        title: "Operating Systems",
+        category: "Program Core (PC)",
+        credits: 4,
+        choice1: { slot: "B2 + TB2", faculty: "Prof. Das", venue: "CB-305", seats: 40 },
+        choice2: { slot: "C2 + TC2", faculty: "Dr. Ali", venue: "AB-108", seats: 19 },
+        choice3: { slot: "D2 + TD2", faculty: "Dr. Roy", venue: "CB-209", seats: 11 },
+        status: "Ready"
+      },
+      {
+        rank: 5,
+        code: "CSE2004",
+        title: "Software Engineering",
+        category: "Program Elective (PE)",
+        credits: 3,
+        choice1: { slot: "G1 + TG1", faculty: "Dr. Gupta", venue: "CB-502", seats: 55 },
+        choice2: { slot: "H1 + TH1", faculty: "Prof. Nanda", venue: "AB-402", seats: 25 },
+        choice3: { slot: "J1 + TJ1", faculty: "Dr. Sen", venue: "CB-310", seats: 10 },
+        status: "Ready"
+      }
+    ];
+
+    let currentList = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadMasterlist();
+    });
+
+    function loadMasterlist() {
+      const saved = localStorage.getItem('vitap_saved_masterlist');
+      if (saved) {
+        try {
+          currentList = JSON.parse(saved);
+        } catch(e) {
+          currentList = defaultMasterlist;
+        }
+      } else {
+        currentList = defaultMasterlist;
+        localStorage.setItem('vitap_saved_masterlist', JSON.stringify(defaultMasterlist));
+      }
+      renderTable();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('quick-register-tbody');
+      tbody.innerHTML = '';
+
+      let totalCredits = 0;
+
+      currentList.forEach((c, idx) => {
+        totalCredits += Number(c.credits) || 0;
+        const tr = document.createElement('tr');
+
+        tr.innerHTML = `
+          <td style="font-weight: 700; text-align: center;">${idx + 1}</td>
+          <td>
+            <div style="font-weight: 700; color: var(--primary-navy);">${c.title}</div>
+            <div style="font-size: 0.72rem; color: var(--text-muted);">
+              <strong>${c.code}</strong> • ${c.credits} Credits • <span>${c.category}</span>
+            </div>
+          </td>
+          <td>
+            <div class="choice-card-box primary">
+              <div class="choice-slot-title">
+                <span><i class="fa-solid fa-star" style="color: #F59E0B; font-size: 0.65rem;"></i> ${c.choice1.slot}</span>
+                <span class="seat-badge ${c.choice1.seats > 20 ? 'high' : ''}">${c.choice1.seats} seats</span>
+              </div>
+              <div class="choice-faculty">${c.choice1.faculty} (${c.choice1.venue || 'CB-201'})</div>
+            </div>
+          </td>
+          <td>
+            ${c.choice2 && c.choice2.slot ? `
+              <div class="choice-card-box">
+                <div class="choice-slot-title">
+                  <span>${c.choice2.slot}</span>
+                  <span class="seat-badge">${c.choice2.seats} seats</span>
+                </div>
+                <div class="choice-faculty">${c.choice2.faculty} (${c.choice2.venue || 'CB-301'})</div>
+              </div>
+            ` : '<span style="color: #9CA3AF; font-size: 0.75rem;">None</span>'}
+          </td>
+          <td>
+            ${c.choice3 && c.choice3.slot ? `
+              <div class="choice-card-box">
+                <div class="choice-slot-title">
+                  <span>${c.choice3.slot}</span>
+                  <span class="seat-badge">${c.choice3.seats} seats</span>
+                </div>
+                <div class="choice-faculty">${c.choice3.faculty} (${c.choice3.venue || 'AB-102'})</div>
+              </div>
+            ` : '<span style="color: #9CA3AF; font-size: 0.75rem;">None</span>'}
+          </td>
+          <td style="text-align: center;">
+            <div class="status-icon-circle status-ok"><i class="fa-solid fa-check"></i></div>
+          </td>
+          <td style="text-align: center;">
+            <button class="action-icon-btn" title="Delete Course" onclick="deleteCourse(${idx})">
+              <i class="fa-regular fa-trash-can"></i>
+            </button>
+          </td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('stat-courses-count').textContent = currentList.length;
+      document.getElementById('stat-complete-count').textContent = `${currentList.length}/${currentList.length}`;
+      document.getElementById('stat-credits-count').textContent = totalCredits;
+    }
+
+    function openAddCourseModal() {
+      document.getElementById('add-course-modal').style.display = 'flex';
+      document.getElementById('modal-course-select').value = '';
+      resetSlotDropdowns();
+    }
+
+    function closeAddCourseModal() {
+      document.getElementById('add-course-modal').style.display = 'none';
+      document.getElementById('add-course-form').reset();
+      resetSlotDropdowns();
+    }
+
+    function resetSlotDropdowns() {
+      document.getElementById('modal-c1-select').innerHTML = '<option value="">-- Select Course First --</option>';
+      document.getElementById('modal-c2-select').innerHTML = '<option value="">-- Optional Secondary Slot --</option>';
+      document.getElementById('modal-c3-select').innerHTML = '<option value="">-- Optional Tertiary Slot --</option>';
+    }
+
+    function onCatalogCourseSelected(courseCode) {
+      if (!courseCode || !registrationCatalog[courseCode]) {
+        resetSlotDropdowns();
+        return;
+      }
+
+      const course = registrationCatalog[courseCode];
+      const slots = course.slots;
+
+      // Populate Choice 1 dropdown
+      let c1Html = '<option value="">-- Select Choice 1 (Primary) Slot --</option>';
+      slots.forEach((s, idx) => {
+        c1Html += `<option value="${idx}" ${idx === 0 ? 'selected' : ''}>${s.slot} | ${s.faculty} (${s.venue}) - ${s.seats} Seats</option>`;
+      });
+      document.getElementById('modal-c1-select').innerHTML = c1Html;
+
+      // Populate Choice 2 dropdown
+      let c2Html = '<option value="">-- None (No Fallback) --</option>';
+      slots.forEach((s, idx) => {
+        c2Html += `<option value="${idx}" ${idx === 1 ? 'selected' : ''}>${s.slot} | ${s.faculty} (${s.venue}) - ${s.seats} Seats</option>`;
+      });
+      document.getElementById('modal-c2-select').innerHTML = c2Html;
+
+      // Populate Choice 3 dropdown
+      let c3Html = '<option value="">-- None (No Fallback) --</option>';
+      slots.forEach((s, idx) => {
+        c3Html += `<option value="${idx}" ${idx === 2 ? 'selected' : ''}>${s.slot} | ${s.faculty} (${s.venue}) - ${s.seats} Seats</option>`;
+      });
+      document.getElementById('modal-c3-select').innerHTML = c3Html;
+    }
+
+    function handleCourseSubmit(e) {
+      e.preventDefault();
+      const courseCode = document.getElementById('modal-course-select').value;
+      if (!courseCode || !registrationCatalog[courseCode]) {
+        showNotification('Please select a valid course from catalog', 'danger');
+        return;
+      }
+
+      const courseData = registrationCatalog[courseCode];
+
+      // Check if already in masterlist
+      if (currentList.some(c => c.code === courseCode)) {
+        showNotification(`${courseCode} is already present in your masterlist!`, 'danger');
+        return;
+      }
+
+      const c1Idx = document.getElementById('modal-c1-select').value;
+      if (c1Idx === '') {
+        showNotification('Please choose Choice 1 slot for this course', 'danger');
+        return;
+      }
+
+      const c1Slot = courseData.slots[parseInt(c1Idx)];
+      const c2Idx = document.getElementById('modal-c2-select').value;
+      const c2Slot = c2Idx !== '' ? courseData.slots[parseInt(c2Idx)] : null;
+      const c3Idx = document.getElementById('modal-c3-select').value;
+      const c3Slot = c3Idx !== '' ? courseData.slots[parseInt(c3Idx)] : null;
+
+      const newCourse = {
+        rank: currentList.length + 1,
+        code: courseData.code,
+        title: courseData.title,
+        category: courseData.category,
+        credits: courseData.credits,
+        choice1: c1Slot,
+        choice2: c2Slot,
+        choice3: c3Slot,
+        status: "Ready"
+      };
+
+      currentList.push(newCourse);
+      localStorage.setItem('vitap_saved_masterlist', JSON.stringify(currentList));
+      renderTable();
+      closeAddCourseModal();
+      showNotification(`Added ${courseData.code} - ${courseData.title} to Masterlist!`, 'success');
+    }
+
+    function deleteCourse(index) {
+      const course = currentList[index];
+      if (confirm(`Remove ${course.code} - ${course.title} from masterlist?`)) {
+        currentList.splice(index, 1);
+        localStorage.setItem('vitap_saved_masterlist', JSON.stringify(currentList));
+        renderTable();
+        showNotification(`Removed ${course.code} from masterlist`, 'info');
+      }
+    }
+
+    function saveAndOpenMasterlist() {
+      localStorage.setItem('vitap_saved_masterlist', JSON.stringify(currentList));
+      localStorage.setItem('vitap_masterlist_saved_at', new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+      showNotification('Masterlist saved successfully! Redirecting...', 'success');
+      setTimeout(() => {
+        window.location.href = 'masterlist.html';
+      }, 600);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Registered Courses - VIT-AP Course Registration</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .page-title {
+      font-family: var(--font-serif);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--vit-maroon);
+      margin-bottom: 6px;
+    }
+
+    .page-subtitle {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    /* Credit Summary Banner Box */
+    .credits-summary-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px 28px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      width: fit-content;
+      min-width: 320px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .credits-icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background-color: var(--accent-light-blue);
+      color: var(--vit-maroon);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+    }
+
+    .credits-card-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+      text-transform: uppercase;
+    }
+
+    .credits-card-val {
+      font-family: var(--font-serif);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--vit-maroon);
+    }
+
+    /* Registered Courses Table */
+    .table-container-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 28px;
+    }
+
+    .registered-courses-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    .registered-courses-table th {
+      background-color: var(--bg-main);
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 14px 24px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .registered-courses-table td {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-dark);
+      font-weight: 500;
+    }
+
+    .component-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 12px;
+      display: inline-block;
+    }
+
+    .comp-theory {
+      background-color: #FEF08A;
+      color: #854D0E;
+    }
+
+    .comp-lab {
+      background-color: #DBEAFE;
+      color: #1E40AF;
+    }
+
+    .table-footer-row {
+      background-color: var(--bg-main);
+      font-weight: 700;
+      color: var(--vit-maroon);
+    }
+
+    .table-footer-row td {
+      border-bottom: none;
+      padding: 16px 24px;
+    }
+
+    .delete-slot-btn {
+      color: #DC2626;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 4px;
+      transition: background 0.2s ease;
+    }
+
+    .delete-slot-btn:hover {
+      background-color: #FEE2E2;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div>
+        <div class="sidebar-header">
+          <img src="../assets/vit_logo.png" alt="VIT Logo" class="sidebar-logo">
+          <div>
+            <div class="sidebar-title">VIT-AP University</div>
+            <div class="sidebar-subtitle">Student Portal</div>
+          </div>
+        </div>
+
+        <div class="nav-group">
+          <a href="dashboard.html" class="nav-item">
+            <i class="fa-solid fa-house"></i> Dashboard
+          </a>
+          <a href="masterlist.html" class="nav-item">
+            <i class="fa-solid fa-list-check"></i> Masterlist
+          </a>
+          <a href="quick_register.html" class="nav-item quick-register-btn">
+            <i class="fa-regular fa-calendar-check"></i> Quick Register
+          </a>
+          <a href="course_basket.html" class="nav-item">
+            <i class="fa-solid fa-book-open"></i> Course Basket
+          </a>
+          <a href="timetable.html" class="nav-item">
+            <i class="fa-regular fa-clock"></i> Time Table
+          </a>
+          <a href="view_registered.html" class="nav-item active">
+            <i class="fa-solid fa-graduation-cap"></i> View Registered
+          </a>
+          <a href="academic_profile.html" class="nav-item">
+            <i class="fa-regular fa-user"></i> Academic Profile
+          </a>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <a href="settings.html" class="nav-item">
+          <i class="fa-solid fa-gear"></i> Settings
+        </a>
+        <a href="login.html" class="nav-item" style="color: #EF4444;">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+      
+      <!-- Top Navigation Header -->
+      <header class="top-header">
+        <div class="portal-brand-title">Course Registration Portal</div>
+        <div class="header-meta">
+          <div class="header-tabs">
+            <a href="dashboard.html" class="header-tab">Dashboard</a>
+            <a href="course_basket.html" class="header-tab">Courses</a>
+            <a href="masterlist.html" class="header-tab">Masterlist</a>
+            <a href="view_registered.html" class="header-tab active">Registered</a>
+          </div>
+          <div class="header-user-actions">
+            <button class="icon-btn" title="Notifications" onclick="showNotification('No new notifications', 'info')"><i class="fa-regular fa-bell"></i></button>
+            <button class="icon-btn" title="Settings" onclick="window.location.href='settings.html'"><i class="fa-solid fa-gear"></i></button>
+            <a href="academic_profile.html" class="avatar-circle">JD</a>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Page Content -->
+      <main class="page-content animate-fade-in">
+
+        <!-- Top Registration 4 Navigation Tabs -->
+        <div class="reg-action-bar">
+          <a href="view_registered.html" class="reg-btn reg-btn-green active"><i class="fa-solid fa-circle-check"></i> View Registered</a>
+          <a href="course_basket.html" class="reg-btn reg-btn-navy"><i class="fa-solid fa-layer-group"></i> Course Baskets</a>
+          <a href="modify_slots.html" class="reg-btn reg-btn-teal"><i class="fa-solid fa-sliders"></i> Modify Slots</a>
+          <a href="delete_slots.html" class="reg-btn reg-btn-red"><i class="fa-solid fa-trash-can"></i> Delete Slots</a>
+        </div>
+
+        <h1 class="page-title">Registered Courses</h1>
+        <p class="page-subtitle">Review your current academic enrollment for the Winter Semester.</p>
+
+        <!-- Credit Summary Card -->
+        <div class="credits-summary-card">
+          <div class="credits-icon-box"><i class="fa-solid fa-graduation-cap"></i></div>
+          <div>
+            <div class="credits-card-label">TOTAL CREDITS REGISTERED</div>
+            <div class="credits-card-val"><span id="total-registered-val">15</span> <span style="font-size: 1.1rem; color: var(--text-muted); font-weight: 500;">/ 27 Limit</span></div>
+          </div>
+        </div>
+
+        <!-- Registered Courses Table -->
+        <div class="table-container-card">
+          <table class="registered-courses-table" id="registered-table">
+            <thead>
+              <tr>
+                <th style="width: 14%;">COURSE CODE</th>
+                <th style="width: 24%;">COURSE TITLE</th>
+                <th style="width: 10%;">TYPE</th>
+                <th style="width: 12%;">SLOT</th>
+                <th style="width: 20%;">FACULTY NAME</th>
+                <th style="width: 10%;">VENUE</th>
+                <th style="width: 8%; text-align: right;">CREDITS</th>
+                <th style="width: 6%; text-align: center;">ACTION</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Row 1 -->
+              <tr>
+                <td style="font-weight: 700; color: var(--vit-maroon);">SWE3004</td>
+                <td style="font-weight: 600;">Front End Design</td>
+                <td><span class="component-badge comp-theory">Theory</span></td>
+                <td style="font-weight: 700; color: var(--vit-maroon);">A1+TA1</td>
+                <td>Dr. Ananya Sharma</td>
+                <td>CB-204</td>
+                <td style="text-align: right; font-weight: 700;" class="row-credits">3</td>
+                <td style="text-align: center;">
+                  <button class="delete-slot-btn" title="Delete Slot" onclick="deleteCourseRow(this, 'SWE3004')"><i class="fa-regular fa-trash-can"></i></button>
+                </td>
+              </tr>
+
+              <!-- Row 2 -->
+              <tr>
+                <td style="font-weight: 700; color: var(--vit-maroon);">CSE2001</td>
+                <td style="font-weight: 600;">Computer Architecture</td>
+                <td><span class="component-badge comp-theory">Theory</span></td>
+                <td style="font-weight: 700; color: var(--vit-maroon);">B2+TB2</td>
+                <td>Prof. Rajiv Menon</td>
+                <td>AB1-311</td>
+                <td style="text-align: right; font-weight: 700;" class="row-credits">4</td>
+                <td style="text-align: center;">
+                  <button class="delete-slot-btn" title="Delete Slot" onclick="deleteCourseRow(this, 'CSE2001 Theory')"><i class="fa-regular fa-trash-can"></i></button>
+                </td>
+              </tr>
+
+              <!-- Row 3 -->
+              <tr>
+                <td style="font-weight: 700; color: var(--vit-maroon);">CSE2001</td>
+                <td style="font-weight: 600;">Computer Architecture Lab</td>
+                <td><span class="component-badge comp-lab">Lab</span></td>
+                <td style="font-weight: 700; color: var(--vit-maroon);">L11+L12</td>
+                <td>Prof. Rajiv Menon</td>
+                <td>LAB-4</td>
+                <td style="text-align: right; font-weight: 700;" class="row-credits">1</td>
+                <td style="text-align: center;">
+                  <button class="delete-slot-btn" title="Delete Slot" onclick="deleteCourseRow(this, 'CSE2001 Lab')"><i class="fa-regular fa-trash-can"></i></button>
+                </td>
+              </tr>
+
+              <!-- Row 4 -->
+              <tr>
+                <td style="font-weight: 700; color: var(--vit-maroon);">MAT1011</td>
+                <td style="font-weight: 600;">Calculus for Engineers</td>
+                <td><span class="component-badge comp-theory">Theory</span></td>
+                <td style="font-weight: 700; color: var(--vit-maroon);">C1+TC1</td>
+                <td>Dr. K. Srinivasan</td>
+                <td>CB-102</td>
+                <td style="text-align: right; font-weight: 700;" class="row-credits">4</td>
+                <td style="text-align: center;">
+                  <button class="delete-slot-btn" title="Delete Slot" onclick="deleteCourseRow(this, 'MAT1011')"><i class="fa-regular fa-trash-can"></i></button>
+                </td>
+              </tr>
+
+              <!-- Row 5 -->
+              <tr>
+                <td style="font-weight: 700; color: var(--vit-maroon);">PHY1001</td>
+                <td style="font-weight: 600;">Engineering Physics</td>
+                <td><span class="component-badge comp-theory">Theory</span></td>
+                <td style="font-weight: 700; color: var(--vit-maroon);">D2+TD2</td>
+                <td>Dr. Meera Patel</td>
+                <td>CB-401</td>
+                <td style="text-align: right; font-weight: 700;" class="row-credits">3</td>
+                <td style="text-align: center;">
+                  <button class="delete-slot-btn" title="Delete Slot" onclick="deleteCourseRow(this, 'PHY1001')"><i class="fa-regular fa-trash-can"></i></button>
+                </td>
+              </tr>
+            </tbody>
+
+            <tfoot>
+              <tr class="table-footer-row">
+                <td colspan="6" style="text-align: right;">TOTAL CREDITS</td>
+                <td style="text-align: right; font-size: 1.05rem;" id="footer-total-credits">15</td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+      </main>
+
+      <!-- Footer -->
+      <footer class="portal-footer">
+        <div>© 2024 VIT-AP University. All Rights Reserved.</div>
+        <div class="footer-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Contact Support</a>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <script src="../js/app.js"></script>
+  <script>
+    function deleteCourseRow(btnElem, courseName) {
+      if (confirm('Are you sure you want to delete slot for ' + courseName + '?')) {
+        const row = btnElem.closest('tr');
+        row.style.opacity = '0';
+        row.style.transform = 'scale(0.95)';
+        row.style.transition = 'all 0.3s ease';
+        setTimeout(() => {
+          row.remove();
+          recalculateTotalCredits();
+          showNotification('Deleted slot for ' + courseName, 'info');
+        }, 300);
+      }
+    }
+
+    function recalculateTotalCredits() {
+      let total = 0;
+      document.querySelectorAll('.row-credits').forEach(td => {
+        total += parseInt(td.textContent) || 0;
+      });
+      document.getElementById('total-registered-val').textContent = total;
+      document.getElementById('footer-total-credits').textContent = total;
+    }
+  </script>
+</body>
+</html>

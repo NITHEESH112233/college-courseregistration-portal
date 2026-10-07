@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saved Masterlist - VIT-AP Course Registration</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .masterlist-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 6px;
+    }
+
+    .masterlist-title-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .page-title {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .status-live-tag {
+      background-color: #DCFCE7;
+      color: #15803D;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid #BBF7D0;
+    }
+
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      background-color: #16A34A;
+      border-radius: 50%;
+    }
+
+    .page-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    /* Masterlist Action Bar */
+    .masterlist-actions-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #003366;
+      border: 1px solid #002244;
+      color: #FFFFFF;
+      padding: 18px 22px;
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 14px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .masterlist-actions-info h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 2px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #FFFFFF;
+    }
+
+    .masterlist-actions-info p {
+      font-size: 0.82rem;
+      color: #BFDBFE;
+      margin: 0;
+    }
+
+    .masterlist-btn-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-fcfs-execute {
+      background-color: #2563EB;
+      color: #FFFFFF;
+      border: 1px solid #1D4ED8;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background-color 0.15s ease;
+    }
+
+    .btn-fcfs-execute:hover {
+      background-color: #1D4ED8;
+    }
+
+    .btn-edit-masterlist {
+      background-color: rgba(255, 255, 255, 0.12);
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background-color 0.15s ease;
+      text-decoration: none;
+    }
+
+    .btn-edit-masterlist:hover {
+      background-color: rgba(255, 255, 255, 0.22);
+    }
+
+    /* 4 Stat Boxes Bar */
+    .stat-cards-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 900px) {
+      .stat-cards-bar {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .small-stat-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .small-stat-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .small-stat-val {
+      font-family: var(--font-serif);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--vit-maroon);
+    }
+
+    /* Saved Masterlist Table Card */
+    .masterlist-table-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 24px;
+    }
+
+    .masterlist-table-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .masterlist-table-header h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .fcfs-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+    }
+
+    .fcfs-table th {
+      background-color: var(--bg-main);
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 14px 18px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .fcfs-table td {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--border-color);
+      vertical-align: middle;
+    }
+
+    .priority-badge {
+      width: 28px;
+      height: 28px;
+      background: #EFF6FF;
+      color: var(--vit-maroon);
+      border: 1px solid #BFDBFE;
+      font-weight: 700;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+    }
+
+    .choice-card-box {
+      background-color: var(--bg-main);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 0.78rem;
+      position: relative;
+    }
+
+    .choice-card-box.primary-choice {
+      border-color: #93C5FD;
+      background-color: #EFF6FF;
+    }
+
+    .choice-slot-title {
+      font-weight: 700;
+      color: var(--vit-maroon);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .seat-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      background-color: #E2E8F0;
+      color: #334155;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    .seat-badge.seat-high {
+      background-color: #DCFCE7;
+      color: #15803D;
+    }
+
+    .seat-badge.seat-low {
+      background-color: #FEF08A;
+      color: #854D0E;
+    }
+
+    .choice-faculty {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .choice-venue {
+      font-size: 0.68rem;
+      color: #64748B;
+      margin-top: 2px;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    .status-ready {
+      background-color: #DCFCE7;
+      color: #15803D;
+    }
+
+    .status-warning {
+      background-color: #FEF08A;
+      color: #854D0E;
+    }
+
+    /* Modal Styling */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(10, 37, 64, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-box {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      width: 90%;
+      max-width: 520px;
+      padding: 28px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 8px;
+      background-color: #EFF6FF;
+      border: 1px solid #BFDBFE;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 18px 0;
+    }
+
+    .progress-bar-fill {
+      width: 0%;
+      height: 100%;
+      background-color: #2563EB;
+      transition: width 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div>
+        <div class="sidebar-header">
+          <img src="../assets/vit_logo.png" alt="VIT Logo" class="sidebar-logo">
+          <div>
+            <div class="sidebar-title">VIT-AP Academic</div>
+            <div class="sidebar-subtitle">Student Portal</div>
+          </div>
+        </div>
+
+        <div class="nav-group">
+          <a href="dashboard.html" class="nav-item">
+            <i class="fa-solid fa-house"></i> Dashboard
+          </a>
+          <a href="masterlist.html" class="nav-item active">
+            <i class="fa-solid fa-list-check"></i> Masterlist
+          </a>
+          <a href="quick_register.html" class="nav-item">
+            <i class="fa-regular fa-calendar-check"></i> Quick Register
+          </a>
+          <a href="course_basket.html" class="nav-item">
+            <i class="fa-solid fa-book-open"></i> Course Basket
+          </a>
+          <a href="timetable.html" class="nav-item">
+            <i class="fa-regular fa-clock"></i> Time Table
+          </a>
+          <a href="view_registered.html" class="nav-item">
+            <i class="fa-solid fa-graduation-cap"></i> View Registered
+          </a>
+          <a href="academic_profile.html" class="nav-item">
+            <i class="fa-regular fa-user"></i> Academic Profile
+          </a>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <a href="settings.html" class="nav-item">
+          <i class="fa-solid fa-gear"></i> Settings
+        </a>
+        <a href="login.html" class="nav-item" style="color: #EF4444;">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+      
+      <!-- Top Navigation Header -->
+      <header class="top-header">
+        <div class="portal-brand-title">VIT-AP Academic Portal</div>
+        <div class="header-meta">
+          <div class="header-tabs">
+            <a href="dashboard.html" class="header-tab">Dashboard</a>
+            <a href="course_basket.html" class="header-tab">Courses</a>
+            <a href="masterlist.html" class="header-tab active">Masterlist</a>
+            <a href="view_registered.html" class="header-tab">Registered</a>
+          </div>
+          <div class="header-user-actions">
+            <button class="icon-btn" title="Notifications" onclick="showNotification('Registration window opens at 10:00 AM!', 'info')"><i class="fa-regular fa-bell"></i></button>
+            <button class="icon-btn" title="Settings" onclick="window.location.href='settings.html'"><i class="fa-solid fa-gear"></i></button>
+            <a href="academic_profile.html" class="avatar-circle">JD</a>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Body Area -->
+      <main class="page-body">
+        
+        <!-- Header Row -->
+        <div class="masterlist-header-row">
+          <div class="masterlist-title-box">
+            <h1 class="page-title">Saved FCFS Masterlist</h1>
+            <span class="status-live-tag">
+              <span class="pulse-dot"></span> Ready for Registration
+            </span>
+          </div>
+          <div style="font-size: 0.8rem; color: var(--text-muted);" id="last-saved-time">
+            <i class="fa-regular fa-clock"></i> Last Saved: Just Now
+          </div>
+        </div>
+        
+        <p class="page-subtitle">This is your pre-configured preference list for high-speed FCFS Course Registration. All Choice 1 priorities are verified and ready for 1-click execution.</p>
+
+        <!-- Power Actions Bar -->
+        <div class="masterlist-actions-bar">
+          <div class="masterlist-actions-info">
+            <h3><i class="fa-solid fa-bolt" style="color: #FBBF24;"></i> Instant 1-Click FCFS Execution</h3>
+            <p>Automatically attempts registration for all Choice 1 slots simultaneously when slot opens.</p>
+          </div>
+          <div class="masterlist-btn-group">
+            <a href="quick_register.html" class="btn-edit-masterlist">
+              <i class="fa-regular fa-pen-to-square"></i> Edit / Reorder List
+            </a>
+            <button class="btn-fcfs-execute" onclick="executeQuickRegister()">
+              <i class="fa-solid fa-rocket"></i> Register All Choice 1
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Stat Summary Cards -->
+        <div class="stat-cards-bar">
+          <div class="small-stat-card">
+            <div class="small-stat-label">Saved Courses</div>
+            <div class="small-stat-val" id="stat-total-courses">5</div>
+          </div>
+          <div class="small-stat-card">
+            <div class="small-stat-label">Planned Credits</div>
+            <div class="small-stat-val" id="stat-total-credits">18</div>
+          </div>
+          <div class="small-stat-card">
+            <div class="small-stat-label">Choice 1 Clashes</div>
+            <div class="small-stat-val" style="color: #16A34A;" id="stat-clashes">0 Clashes</div>
+          </div>
+          <div class="small-stat-card">
+            <div class="small-stat-label">FCFS Readiness</div>
+            <div class="small-stat-val" style="color: var(--accent-blue);">100% Ready</div>
+          </div>
+        </div>
+
+        <!-- Masterlist Table Card -->
+        <div class="masterlist-table-card">
+          <div class="masterlist-table-header">
+            <h3><i class="fa-solid fa-table-list" style="color: var(--vit-maroon);"></i> Prioritized Course & Faculty Selections</h3>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn-outline" style="padding: 6px 12px; font-size: 0.78rem;" onclick="window.print()">
+                <i class="fa-solid fa-print"></i> Print Masterlist
+              </button>
+              <button class="btn-outline" style="padding: 6px 12px; font-size: 0.78rem; color: #DC2626;" onclick="clearMasterlist()">
+                <i class="fa-regular fa-trash-can"></i> Reset
+              </button>
+            </div>
+          </div>
+
+          <table class="fcfs-table">
+            <thead>
+              <tr>
+                <th style="width: 50px;">Rank</th>
+                <th style="width: 220px;">Course Details</th>
+                <th style="width: 210px;">Choice 1 (Primary)</th>
+                <th style="width: 190px;">Choice 2 (Fallback)</th>
+                <th style="width: 190px;">Choice 3 (Tertiary)</th>
+                <th style="width: 110px; text-align: center;">Status</th>
+                <th style="width: 90px; text-align: center;">Quick Action</th>
+              </tr>
+            </thead>
+            <tbody id="masterlist-table-body">
+              <!-- Dynamically Populated via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+
+      </main>
+
+      <!-- Footer -->
+      <footer class="portal-footer">
+        <div>© 2024 VIT-AP University. All Rights Reserved.</div>
+        <div class="footer-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Contact Support</a>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <!-- Registration Execution Modal -->
+  <div id="execution-modal" class="modal-overlay">
+    <div class="modal-box">
+      <div style="font-size: 2.2rem; color: #2563EB; margin-bottom: 12px;">
+        <i class="fa-solid fa-cloud-arrow-up"></i>
+      </div>
+      <h3 style="font-size: 1.25rem; font-weight: 700; color: #003366; margin-bottom: 6px;" id="modal-title">
+        Executing 1-Click FCFS Registration
+      </h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted);" id="modal-desc">
+        Locking priority Choice 1 slots in parallel...
+      </p>
+
+      <div class="progress-bar-container">
+        <div id="modal-progress" class="progress-bar-fill"></div>
+      </div>
+
+      <div id="modal-status-log" style="font-size: 0.8rem; color: #1E293B; text-align: left; background: #F8FAFC; padding: 12px 14px; border-radius: 6px; border: 1px solid #E2E8F0; max-height: 130px; overflow-y: auto; font-family: monospace; line-height: 1.6;">
+        > Initializing high-speed registration session...
+      </div>
+
+      <div style="margin-top: 20px; display: none;" id="modal-action-btns">
+        <button class="btn-primary" onclick="window.location.href='view_registered.html'" style="padding: 10px 24px; background-color: #003366; border-color: #002244; font-weight: 700;">
+          <i class="fa-solid fa-check-double"></i> View Registered Courses
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/app.js"></script>
+  <script>
+    // Default masterlist data if none saved yet in localStorage
+    const defaultMasterlist = [
+      {
+        rank: 1,
+        code: "CSE3002",
+        title: "Machine Learning",
+        category: "Program Core (PC)",
+        credits: 4,
+        choice1: { slot: "A1 + TA1", faculty: "Dr. K. Raman", venue: "CB-204", seats: 48, maxSeats: 60 },
+        choice2: { slot: "B1 + TB1", faculty: "Dr. M. Roy", venue: "CB-302", seats: 22, maxSeats: 60 },
+        choice3: { slot: "C1 + TC1", faculty: "Prof. S. Rao", venue: "AB-105", seats: 15, maxSeats: 60 },
+        status: "Ready",
+        clash: false
+      },
+      {
+        rank: 2,
+        code: "CSE2005",
+        title: "Database Management Systems",
+        category: "Program Core (PC)",
+        credits: 4,
+        choice1: { slot: "D1 + TD1", faculty: "Dr. Sharma R.", venue: "CB-101", seats: 54, maxSeats: 60 },
+        choice2: { slot: "E1 + TE1", faculty: "Prof. K. Verma", venue: "CB-203", seats: 30, maxSeats: 60 },
+        choice3: { slot: "F1 + TF1", faculty: "Dr. P. Nair", venue: "AB-201", seats: 8, maxSeats: 60 },
+        status: "Ready",
+        clash: false
+      },
+      {
+        rank: 3,
+        code: "CSE3003",
+        title: "Computer Networks",
+        category: "Program Core (PC)",
+        credits: 3,
+        choice1: { slot: "E1 + TE1", faculty: "Prof. Iyer", venue: "CB-401", seats: 30, maxSeats: 60 },
+        choice2: { slot: "F1 + TF1", faculty: "Dr. Singh", venue: "AB-304", seats: 12, maxSeats: 60 },
+        choice3: { slot: "G1 + TG1", faculty: "Dr. Sen", venue: "CB-105", seats: 20, maxSeats: 60 },
+        status: "Ready",
+        clash: false
+      },
+      {
+        rank: 4,
+        code: "CSE2505",
+        title: "Operating Systems",
+        category: "Program Core (PC)",
+        credits: 4,
+        choice1: { slot: "B2 + TB2", faculty: "Prof. Das", venue: "CB-305", seats: 40, maxSeats: 60 },
+        choice2: { slot: "C2 + TC2", faculty: "Dr. Ali", venue: "AB-108", seats: 19, maxSeats: 60 },
+        choice3: { slot: "D2 + TD2", faculty: "Dr. Roy", venue: "CB-209", seats: 11, maxSeats: 60 },
+        status: "Ready",
+        clash: false
+      },
+      {
+        rank: 5,
+        code: "CSE2004",
+        title: "Software Engineering",
+        category: "Program Elective (PE)",
+        credits: 3,
+        choice1: { slot: "G1 + TG1", faculty: "Dr. Gupta", venue: "CB-502", seats: 55, maxSeats: 60 },
+        choice2: { slot: "H1 + TH1", faculty: "Prof. Nanda", venue: "AB-402", seats: 25, maxSeats: 60 },
+        choice3: { slot: "J1 + TJ1", faculty: "Dr. Sen", venue: "CB-310", seats: 10, maxSeats: 60 },
+        status: "Ready",
+        clash: false
+      }
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderMasterlist();
+    });
+
+    function getSavedMasterlist() {
+      const saved = localStorage.getItem('vitap_saved_masterlist');
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {
+          return defaultMasterlist;
+        }
+      }
+      // Initialize with default
+      localStorage.setItem('vitap_saved_masterlist', JSON.stringify(defaultMasterlist));
+      return defaultMasterlist;
+    }
+
+    function renderMasterlist() {
+      const list = getSavedMasterlist();
+      const tbody = document.getElementById('masterlist-table-body');
+      tbody.innerHTML = '';
+
+      let totalCredits = 0;
+
+      list.forEach((item, index) => {
+        totalCredits += item.credits;
+        const tr = document.createElement('tr');
+
+        tr.innerHTML = `
+          <td>
+            <div class="priority-badge">${item.rank || (index + 1)}</div>
+          </td>
+          <td>
+            <div style="font-weight: 700; color: var(--vit-maroon); font-size: 0.9rem;">${item.title}</div>
+            <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 2px;">
+              <span style="font-weight: 600; color: var(--accent-blue);">${item.code}</span> • ${item.credits} Credits • <span style="color: #64748B;">${item.category}</span>
+            </div>
+          </td>
+          <td>
+            <div class="choice-card-box primary-choice">
+              <div class="choice-slot-title">
+                <span><i class="fa-solid fa-star" style="color: #F59E0B; font-size: 0.7rem;"></i> ${item.choice1.slot}</span>
+                <span class="seat-badge ${item.choice1.seats > 20 ? 'seat-high' : 'seat-low'}">${item.choice1.seats} seats</span>
+              </div>
+              <div class="choice-faculty"><i class="fa-solid fa-user-tie" style="font-size: 0.68rem;"></i> ${item.choice1.faculty}</div>
+              <div class="choice-venue"><i class="fa-solid fa-location-dot" style="font-size: 0.65rem;"></i> Venue: ${item.choice1.venue || 'CB-201'}</div>
+            </div>
+          </td>
+          <td>
+            <div class="choice-card-box">
+              <div class="choice-slot-title">
+                <span>${item.choice2 ? item.choice2.slot : 'None'}</span>
+                ${item.choice2 ? `<span class="seat-badge">${item.choice2.seats} seats</span>` : ''}
+              </div>
+              <div class="choice-faculty">${item.choice2 ? item.choice2.faculty : '-'}</div>
+              ${item.choice2 && item.choice2.venue ? `<div class="choice-venue"><i class="fa-solid fa-location-dot" style="font-size: 0.65rem;"></i> Venue: ${item.choice2.venue}</div>` : ''}
+            </div>
+          </td>
+          <td>
+            <div class="choice-card-box">
+              <div class="choice-slot-title">
+                <span>${item.choice3 ? item.choice3.slot : 'None'}</span>
+                ${item.choice3 ? `<span class="seat-badge">${item.choice3.seats} seats</span>` : ''}
+              </div>
+              <div class="choice-faculty">${item.choice3 ? item.choice3.faculty : '-'}</div>
+              ${item.choice3 && item.choice3.venue ? `<div class="choice-venue"><i class="fa-solid fa-location-dot" style="font-size: 0.65rem;"></i> Venue: ${item.choice3.venue}</div>` : ''}
+            </div>
+          </td>
+          <td style="text-align: center;">
+            <span class="status-badge status-ready">
+              <i class="fa-solid fa-circle-check"></i> ${item.status || 'Ready'}
+            </span>
+          </td>
+          <td style="text-align: center;">
+            <button class="btn-primary" style="padding: 6px 12px; font-size: 0.74rem;" onclick="registerSingleCourse('${item.code}', '${item.title}', '${item.choice1.slot}')">
+              <i class="fa-solid fa-plus"></i> Register
+            </button>
+          </td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('stat-total-courses').textContent = list.length;
+      document.getElementById('stat-total-credits').textContent = totalCredits;
+      
+      const lastSaved = localStorage.getItem('vitap_masterlist_saved_at');
+      if (lastSaved) {
+        document.getElementById('last-saved-time').innerHTML = `<i class="fa-regular fa-clock"></i> Saved: ${lastSaved}`;
+      }
+    }
+
+    function registerSingleCourse(code, title, slot) {
+      showNotification(`Registered for ${code} - ${title} in slot ${slot}!`, 'success');
+    }
+
+    function clearMasterlist() {
+      if (confirm('Are you sure you want to reset your saved masterlist?')) {
+        localStorage.removeItem('vitap_saved_masterlist');
+        renderMasterlist();
+        showNotification('Masterlist reset to default.', 'info');
+      }
+    }
+
+    function executeQuickRegister() {
+      const modal = document.getElementById('execution-modal');
+      const progress = document.getElementById('modal-progress');
+      const log = document.getElementById('modal-status-log');
+      const actionBtns = document.getElementById('modal-action-btns');
+      const modalTitle = document.getElementById('modal-title');
+      const modalDesc = document.getElementById('modal-desc');
+
+      modal.style.display = 'flex';
+      progress.style.width = '10%';
+      actionBtns.style.display = 'none';
+      log.innerHTML = '> Opening connection to VIT-AP Registration Server...<br>';
+
+      const steps = [
+        { pct: 30, text: '> Verifying prerequisites and eligibility for 5 courses...' },
+        { pct: 55, text: '> Allocating Choice 1 slots: A1+TA1, D1+TD1, E1+TE1, B2+TB2, G1+TG1...' },
+        { pct: 80, text: '> Locking seats and generating official timetable matrix...' },
+        { pct: 100, text: '> [SUCCESS] All 5 courses (18 credits) registered without clashes!' }
+      ];
+
+      let i = 0;
+      const interval = setInterval(() => {
+        if (i < steps.length) {
+          progress.style.width = steps[i].pct + '%';
+          log.innerHTML += steps[i].text + '<br>';
+          log.scrollTop = log.scrollHeight;
+          i++;
+        } else {
+          clearInterval(interval);
+          modalTitle.textContent = 'Registration Complete!';
+          modalDesc.textContent = 'All Choice 1 courses were successfully registered in 0.84 seconds.';
+          actionBtns.style.display = 'block';
+          showNotification('1-Click Quick Registration Completed Successfully!', 'success');
+        }
+      }, 700);
+    }
+  </script>
+</body>
+</html>
