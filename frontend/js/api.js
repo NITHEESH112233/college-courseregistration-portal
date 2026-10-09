@@ -68,8 +68,10 @@ function logoutUser() {
 
 // Auth API
 const authApi = {
-  login: async (credentials) => {
-    return await apiRequest('/auth/login', 'POST', credentials);
+  login: async (credentials) => await apiRequest('/auth/login', 'POST', credentials),
+
+  getProfile: async (regNo) => {
+    return await apiRequest(`/auth/profile/${regNo}`);
   }
 };
 

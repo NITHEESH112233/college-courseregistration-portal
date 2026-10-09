@@ -352,7 +352,7 @@
 
       // Fetch fresh profile from MySQL backend
       try {
-        const res = await studentApi.getProfile(user.username);
+        const res = await authApi.getProfile(user.username);
         if (res && res.success && res.data) {
           const data = res.data;
           if (nameElem) nameElem.textContent = data.fullName;
