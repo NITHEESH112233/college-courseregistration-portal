@@ -359,10 +359,16 @@
       if (confirm('Are you sure you want to drop / delete slot for ' + courseName + '?')) {
         try {
           if (regId && !isNaN(regId)) {
-            await registrationApi.deleteRegistration(regId);
+            const res = await registrationApi.deleteRegistration(regId);
+            if (res && res.success === false) {
+              showNotification(res.message || 'Failed to drop slot: outside allotted registration window.', 'danger');
+              return;
+            }
           }
         } catch (e) {
           console.warn(e);
+          showNotification(e.message || 'Error occurred while dropping slot.', 'danger');
+          return;
         }
 
         const row = btnElem.closest('tr');

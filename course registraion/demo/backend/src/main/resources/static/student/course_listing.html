@@ -310,6 +310,20 @@
         <h1 class="page-header-title" id="basket-title-heading">Program Core Courses</h1>
         <p class="page-header-desc">These foundational courses are critical to your major. They are designed to provide the essential theoretical and practical knowledge required for advanced studies in your discipline.</p>
 
+        <!-- Live Registration Schedule / Slot Status Banner -->
+        <div id="listing-schedule-banner" class="hero-registration-card" style="margin-bottom: 24px; padding: 16px 22px; border-left: 4px solid var(--primary-navy); background: #EFF6FF; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+          <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <div style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted);">REGISTRATION TIME SLOT STATUS</div>
+              <div style="font-size: 1.05rem; font-weight: 700; color: var(--primary-navy); margin: 2px 0;" id="listing-schedule-title"><i class="fa-solid fa-spinner fa-spin"></i> Checking slot status...</div>
+              <div style="font-size: 0.8rem; color: #475569;" id="listing-schedule-desc">Verifying your allotted registration time window.</div>
+            </div>
+            <div>
+              <span class="badge" id="listing-status-pill" style="font-size: 0.8rem; padding: 5px 12px; background: #DBEAFE; color: #1D4ED8;">Checking Slot</span>
+            </div>
+          </div>
+        </div>
+
         <!-- Search & Filter Bar -->
         <div class="filter-bar">
           <div class="search-input-box">
@@ -463,6 +477,9 @@
       document.getElementById('basket-title-heading').textContent = names[basket] + ' Courses';
     }
 
+    let isScheduleActive = false;
+    let scheduleStatusText = 'Slot Inactive';
+
     document.addEventListener('DOMContentLoaded', async () => {
       const user = getCurrentUser();
       if (user && user.fullName) {
@@ -470,8 +487,88 @@
         if (avatar) avatar.textContent = user.fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'JD';
       }
 
+      await checkListingSchedule();
       await loadCourses(user ? user.username : '');
     });
+
+    async function checkListingSchedule() {
+      const banner = document.getElementById('listing-schedule-banner');
+      const title = document.getElementById('listing-schedule-title');
+      const desc = document.getElementById('listing-schedule-desc');
+      const pill = document.getElementById('listing-status-pill');
+
+      try {
+        const res = await configApi.get();
+        if (res && res.success && res.data) {
+          const cfg = res.data;
+          const user = getCurrentUser();
+          const isUserSlotActive = user && user.slotActive !== false;
+
+          if (!isUserSlotActive) {
+            isScheduleActive = false;
+            scheduleStatusText = 'Account Slot Disabled';
+            banner.style.background = '#FEF2F2';
+            banner.style.borderLeftColor = '#DC2626';
+            title.textContent = 'Student Registration Slot Inactive';
+            title.style.color = '#991B1B';
+            desc.textContent = 'Your registration slot is currently inactive. Registration is restricted to your allotted time slot.';
+            pill.textContent = 'SLOT INACTIVE';
+            pill.style.background = '#FEE2E2';
+            pill.style.color = '#991B1B';
+            return;
+          }
+
+          if (cfg.status === 'ACTIVE') {
+            isScheduleActive = true;
+            scheduleStatusText = 'Active';
+            banner.style.background = '#F0FDF4';
+            banner.style.borderLeftColor = '#16A34A';
+            title.innerHTML = `<i class="fa-solid fa-circle-check" style="color: #16A34A;"></i> Allotted Slot Active (${cfg.remainingHours}h ${cfg.remainingMinutes}m remaining)`;
+            title.style.color = '#15803D';
+            desc.textContent = cfg.statusMessage || 'Registration is currently open. You may select and register course slots.';
+            pill.textContent = 'SLOT ACTIVE ✓';
+            pill.style.background = '#DCFCE7';
+            pill.style.color = '#15803D';
+          } else if (cfg.status === 'UPCOMING') {
+            isScheduleActive = false;
+            scheduleStatusText = 'Upcoming';
+            banner.style.background = '#FEF3C7';
+            banner.style.borderLeftColor = '#D97706';
+            title.innerHTML = `<i class="fa-solid fa-clock" style="color: #D97706;"></i> Registration Slot Not Open Yet`;
+            title.style.color = '#92400E';
+            desc.textContent = `Your allotted registration time slot opens on ${cfg.formattedStartDate}. Course registration is locked until then.`;
+            pill.textContent = 'OPENS SOON';
+            pill.style.background = '#FDE68A';
+            pill.style.color = '#92400E';
+          } else if (cfg.status === 'PAUSED') {
+            isScheduleActive = false;
+            scheduleStatusText = 'Paused';
+            banner.style.background = '#FEF3C7';
+            banner.style.borderLeftColor = '#D97706';
+            title.innerHTML = `<i class="fa-solid fa-pause" style="color: #D97706;"></i> Registration Paused`;
+            title.style.color = '#92400E';
+            desc.textContent = 'The registration window has been temporarily paused by the Administrator. Slot booking is locked.';
+            pill.textContent = 'PAUSED';
+            pill.style.background = '#FDE68A';
+            pill.style.color = '#92400E';
+          } else {
+            // CLOSED
+            isScheduleActive = false;
+            scheduleStatusText = 'Closed';
+            banner.style.background = '#FEF2F2';
+            banner.style.borderLeftColor = '#DC2626';
+            title.innerHTML = `<i class="fa-solid fa-lock" style="color: #DC2626;"></i> Registration Slot Closed`;
+            title.style.color = '#991B1B';
+            desc.textContent = `The registration window concluded on ${cfg.formattedEndDate}. You can only register in your allotted slot.`;
+            pill.textContent = 'WINDOW CLOSED';
+            pill.style.background = '#FEE2E2';
+            pill.style.color = '#991B1B';
+          }
+        }
+      } catch (e) {
+        console.warn('Listing schedule check error:', e);
+      }
+    }
 
     async function loadCourses(username) {
       const grid = document.querySelector('.courses-grid');
@@ -527,6 +624,9 @@
         if (c.registered || c.isRegistered) {
           statusBadge = '<span class="course-status-label" style="color: #166534;"><i class="fa-solid fa-circle-check"></i> Enrolled</span>';
           actionBtn = `<button class="btn-outline" style="padding: 8px 16px; font-size: 0.82rem;" onclick="window.location.href='slot_selection.html?code=${c.code}'">View Slots</button>`;
+        } else if (!isScheduleActive) {
+          statusBadge = `<span class="course-status-label" style="color: #92400E;"><i class="fa-solid fa-lock"></i> Locked (${scheduleStatusText})</span>`;
+          actionBtn = `<button class="btn-outline" style="padding: 8px 16px; font-size: 0.82rem; opacity: 0.6; cursor: not-allowed;" onclick="showNotification('Course registration can only be done during your allotted time slot.', 'danger')"><i class="fa-solid fa-lock"></i> Slot Inactive</button>`;
         } else {
           statusBadge = '<span class="course-status-label">Available for Registration</span>';
           actionBtn = `<button class="btn-primary" style="padding: 8px 16px; font-size: 0.82rem;" onclick="window.location.href='slot_selection.html?code=${c.code}'">Register</button>`;
@@ -548,6 +648,37 @@
         `;
         grid.appendChild(card);
       });
+
+      // Update basket summary widget
+      const basketTargets = { uc: 24, ue: 12, pc: 60, pe: 24 };
+      const basketCompleted = { uc: 12, ue: 3, pc: 48, pe: 15 };
+      const totalReq = basketTargets[basket.toLowerCase()] || 60;
+      const compVal = basketCompleted[basket.toLowerCase()] || 0;
+      const enrolledCredits = courses.filter(c => c.registered || c.isRegistered).reduce((sum, c) => sum + (c.credits || 0), 0);
+      const remain = Math.max(0, totalReq - compVal - enrolledCredits);
+
+      const sumTotal = document.querySelector('.summary-row span:last-child');
+      if (sumTotal) sumTotal.textContent = totalReq;
+      const sumComp = document.querySelectorAll('.summary-row span:last-child')[1];
+      if (sumComp) sumComp.textContent = compVal;
+      const sumSel = document.querySelectorAll('.summary-row span:last-child')[2];
+      if (sumSel) sumSel.textContent = enrolledCredits;
+      const remainElem = document.querySelector('.remaining-val');
+      if (remainElem) remainElem.textContent = remain;
+
+      // Attach search listener
+      const searchInput = document.getElementById('course-search-input');
+      if (searchInput && !searchInput.__searchBound) {
+        searchInput.__searchBound = true;
+        searchInput.addEventListener('input', () => {
+          const term = searchInput.value.trim().toLowerCase();
+          const cards = document.querySelectorAll('.courses-grid .course-card');
+          cards.forEach(card => {
+            const text = card.textContent.toLowerCase();
+            card.style.display = text.includes(term) ? '' : 'none';
+          });
+        });
+      }
     }
   </script>
 </body>

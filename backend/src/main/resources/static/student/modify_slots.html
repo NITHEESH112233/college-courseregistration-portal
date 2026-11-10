@@ -337,6 +337,9 @@
   <script>
     let selectedCourseCode = '';
     let selectedCourseTitle = '';
+    let selectedOldSlotId = null;
+    let selectedComponentType = '';
+    let isModifyScheduleActive = false;
 
     document.addEventListener('DOMContentLoaded', async () => {
       const user = getCurrentUser();
@@ -345,8 +348,97 @@
         if (avatar) avatar.textContent = user.fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'JD';
       }
 
+      await checkModifySchedule();
       await loadRegisteredCards();
     });
+
+    async function checkModifySchedule() {
+      const confirmBtn = document.getElementById('confirm-mod-btn');
+      try {
+        const res = await configApi.get();
+        if (res && res.success && res.data) {
+          const cfg = res.data;
+          const user = getCurrentUser();
+          const isUserSlotActive = user && user.slotActive !== false;
+
+          if (!isUserSlotActive || cfg.status !== 'ACTIVE') {
+            isModifyScheduleActive = false;
+            if (confirmBtn) {
+              confirmBtn.disabled = true;
+              confirmBtn.style.opacity = '0.6';
+              confirmBtn.style.cursor = 'not-allowed';
+              confirmBtn.textContent = `Modification Locked (${cfg.status || 'Slot Inactive'})`;
+            }
+          } else {
+            isModifyScheduleActive = true;
+            if (confirmBtn) {
+              confirmBtn.disabled = false;
+              confirmBtn.style.opacity = '1';
+              confirmBtn.style.cursor = 'pointer';
+              confirmBtn.textContent = 'Confirm Modification';
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Modify schedule check error:', e);
+      }
+    }
+
+    async function handleConfirmModification() {
+      if (!isModifyScheduleActive) {
+        showNotification('Slot modification is restricted to your active allotted registration slot.', 'danger');
+        return;
+      }
+
+      const user = getCurrentUser();
+      const username = user ? user.username : '21BCE0000';
+      const selected = document.querySelector('input[name="alt_slot"]:checked');
+
+      if (!selected) {
+        showNotification('Please select an alternate slot.', 'danger');
+        return;
+      }
+
+      const confirmBtn = document.getElementById('confirm-mod-btn');
+      const originalText = confirmBtn ? confirmBtn.textContent : 'Confirm Modification';
+      if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Modifying...';
+      }
+
+      try {
+        const payload = {
+          username: username,
+          courseCode: selectedCourseCode,
+          newSlotId: parseInt(selected.value),
+          newSlotCode: selected.getAttribute('data-slot-code')
+        };
+        if (selectedOldSlotId) {
+          payload.oldSlotId = selectedOldSlotId;
+        }
+
+        const res = await registrationApi.modifySlot(payload);
+
+        if (res && res.success) {
+          showNotification('Course slot modified successfully!', 'success');
+          setTimeout(() => {
+            window.location.href = 'view_registered.html';
+          }, 800);
+        } else {
+          showNotification(res.message || 'Slot modification failed: Outside allotted time slot.', 'danger');
+          if (confirmBtn) {
+            confirmBtn.disabled = false;
+            confirmBtn.textContent = originalText;
+          }
+        }
+      } catch (err) {
+        showNotification(err.message || 'Slot modification failed.', 'danger');
+        if (confirmBtn) {
+          confirmBtn.disabled = false;
+          confirmBtn.textContent = originalText;
+        }
+      }
+    }
 
     async function loadRegisteredCards() {
       const user = getCurrentUser();
@@ -362,11 +454,11 @@
           res.data.forEach((r, idx) => {
             const card = document.createElement('div');
             card.className = `course-select-card ${idx === 0 ? 'selected' : ''}`;
-            card.onclick = () => selectCourseCard(card, r.courseCode, r.courseTitle);
+            card.onclick = () => selectCourseCard(card, r.courseCode, r.courseTitle, r.slotId || null, r.componentType || 'Theory', r.slotCode);
 
             card.innerHTML = `
               ${idx === 0 ? '<span class="selected-badge-pill">Selected ✓</span>' : ''}
-              <div class="card-course-code">${r.courseCode}</div>
+              <div class="card-course-code">${r.courseCode} <span style="font-size: 0.7rem; color: var(--vit-maroon); font-weight: 600;">(${r.componentType || 'Theory'})</span></div>
               <div class="card-course-title">${r.courseTitle}</div>
               <div class="card-meta-item"><i class="fa-regular fa-clock"></i> Current: ${r.slotCode}</div>
               <div class="card-meta-item"><i class="fa-regular fa-user"></i> ${r.facultyName}</div>
@@ -376,8 +468,10 @@
           if (res.data[0]) {
             selectedCourseCode = res.data[0].courseCode;
             selectedCourseTitle = res.data[0].courseTitle;
-            document.getElementById('selected-target-course').textContent = `For ${selectedCourseCode} - ${selectedCourseTitle}`;
-            await loadAlternateSlots(selectedCourseCode);
+            selectedComponentType = res.data[0].componentType || 'Theory';
+            selectedOldSlotId = res.data[0].slotId || null;
+            document.getElementById('selected-target-course').textContent = `For ${selectedCourseCode} - ${selectedCourseTitle} (${selectedComponentType} - ${res.data[0].slotCode})`;
+            await loadAlternateSlots(selectedCourseCode, selectedComponentType, res.data[0].slotCode);
           }
         } else {
           container.innerHTML = `
@@ -395,7 +489,7 @@
       }
     }
 
-    async function selectCourseCard(cardElem, code, title) {
+    async function selectCourseCard(cardElem, code, title, slotId, compType, slotCode) {
       document.querySelectorAll('.course-select-card').forEach(c => {
         c.classList.remove('selected');
         const badge = c.querySelector('.selected-badge-pill');
@@ -410,12 +504,14 @@
 
       selectedCourseCode = code;
       selectedCourseTitle = title;
-      document.getElementById('selected-target-course').textContent = 'For ' + code + ' - ' + title;
-      await loadAlternateSlots(code);
-      showNotification('Loaded alternate slots for ' + code, 'info');
+      selectedComponentType = compType;
+      selectedOldSlotId = slotId;
+      document.getElementById('selected-target-course').textContent = `For ${code} - ${title} (${compType} - ${slotCode})`;
+      await loadAlternateSlots(code, compType, slotCode);
+      showNotification(`Loaded alternate ${compType} slots for ${code}`, 'info');
     }
 
-    async function loadAlternateSlots(code) {
+    async function loadAlternateSlots(code, compType = 'Theory', currentSlotCode = '') {
       const tbody = document.getElementById('alternate-slots-tbody');
       const badge = document.getElementById('slots-count-badge');
       if (!tbody) return;
@@ -423,22 +519,36 @@
       try {
         const res = await courseApi.getByCode(code);
         if (res && res.success && res.data) {
-          const slots = [...(res.data.theorySlots || []), ...(res.data.labSlots || [])];
+          let slots = [];
+          if (compType && compType.toLowerCase() === 'lab') {
+            slots = (res.data.labSlots && res.data.labSlots.length > 0) ? res.data.labSlots : (res.data.theorySlots || []);
+          } else {
+            slots = (res.data.theorySlots && res.data.theorySlots.length > 0) ? res.data.theorySlots : (res.data.labSlots || []);
+          }
+
+          // Filter out current slot if possible, or mark it
           if (badge) badge.textContent = `${slots.length} Option${slots.length === 1 ? '' : 's'} Available`;
           if (slots.length > 0) {
             tbody.innerHTML = '';
-            slots.forEach((s, idx) => {
+            let hasChecked = false;
+            slots.forEach((s) => {
+              const isCurrent = (currentSlotCode && s.slotCode) ? (s.slotCode.trim().toLowerCase() === currentSlotCode.trim().toLowerCase()) : false;
+              let checkedAttr = '';
+              if (!isCurrent && !hasChecked) {
+                checkedAttr = 'checked';
+                hasChecked = true;
+              }
               const tr = document.createElement('tr');
               tr.innerHTML = `
                 <td>
-                  <div style="font-weight: 700; color: var(--vit-maroon);">${s.slotCode}</div>
+                  <div style="font-weight: 700; color: var(--vit-maroon);">${s.slotCode} ${isCurrent ? '<span class="badge" style="background:#E0E7FF;color:#3730A3;font-size:0.65rem;margin-left:4px;">Current</span>' : ''}</div>
                   <div style="font-size: 0.75rem; color: var(--text-muted);">${s.dayTiming || 'Standard Regular Slot'}</div>
                 </td>
                 <td>${s.venue}</td>
                 <td>${s.facultyName}</td>
                 <td><span class="badge ${s.availableSeats > 5 ? 'badge-available-green' : 'badge-available-red'}">${s.availableSeats} Seats</span></td>
                 <td style="text-align: center;">
-                  <input type="radio" name="alt_slot" value="${s.id}" data-slot-code="${s.slotCode}" class="radio-custom" ${idx === 0 ? 'checked' : ''}>
+                  <input type="radio" name="alt_slot" value="${s.id}" data-slot-code="${s.slotCode}" class="radio-custom" ${checkedAttr} ${isCurrent ? 'disabled' : ''}>
                 </td>
               `;
               tbody.appendChild(tr);
@@ -452,42 +562,6 @@
       }
     }
 
-    async function handleConfirmModification() {
-      const user = getCurrentUser();
-      const username = user ? user.username : '21BCE0000';
-      const selected = document.querySelector('input[name="alt_slot"]:checked');
-
-      if (!selected) {
-        showNotification('Please select an alternate slot.', 'danger');
-        return;
-      }
-
-      try {
-        const res = await registrationApi.modifySlot({
-          username: username,
-          courseCode: selectedCourseCode,
-          newSlotId: parseInt(selected.value),
-          newSlotCode: selected.getAttribute('data-slot-code')
-        });
-
-        if (res && res.success) {
-          showNotification('Course slot modified successfully!', 'success');
-          setTimeout(() => {
-            window.location.href = 'view_registered.html';
-          }, 800);
-        } else {
-          showNotification(res.message || 'Slot modification completed.', 'success');
-          setTimeout(() => {
-            window.location.href = 'view_registered.html';
-          }, 800);
-        }
-      } catch (err) {
-        showNotification('Course slot modified successfully!', 'success');
-        setTimeout(() => {
-          window.location.href = 'view_registered.html';
-        }, 800);
-      }
-    }
   </script>
 </body>
 </html>

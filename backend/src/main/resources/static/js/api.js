@@ -190,6 +190,9 @@ const adminApi = {
   assignSlot: async (data) => {
     return await apiRequest('/admin/slots', 'POST', data);
   },
+  assignSlotsBatch: async (data) => {
+    return await apiRequest('/admin/slots/batch', 'POST', data);
+  },
   deleteSlot: async (id) => {
     return await apiRequest(`/admin/slots/${id}`, 'DELETE');
   },

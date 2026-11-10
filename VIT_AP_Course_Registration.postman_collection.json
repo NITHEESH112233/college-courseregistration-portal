@@ -1,0 +1,402 @@
+{
+  "info": {
+    "_postman_id": "vitap-course-registration-api",
+    "name": "VIT-AP Academic Course Registration Portal API",
+    "description": "Comprehensive Postman test collection for VIT-AP Course Registration System backend APIs.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "studentUsername",
+      "value": "23MIC7129",
+      "type": "string"
+    },
+    {
+      "key": "adminUsername",
+      "value": "admin",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication",
+      "item": [
+        {
+          "name": "Admin Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Authenticates the system administrator. Role check is optional and automatically recognized."
+          }
+        },
+        {
+          "name": "Student Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"23MIC7129\",\n  \"password\": \"mypassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Authenticates a provisioned student account."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Student APIs",
+      "item": [
+        {
+          "name": "Get Student Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/students/{{studentUsername}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "students", "{{studentUsername}}"]
+            },
+            "description": "Returns student profile details, CGPA, total registered credits, and basket credit distributions."
+          }
+        },
+        {
+          "name": "Update Student Password / Settings",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"newPassword\": \"mypassword123\",\n  \"fullName\": \"Nitheesh K. Reddy\",\n  \"email\": \"nitheesh.reddy2023@vitap.ac.in\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/students/{{studentUsername}}/settings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "students", "{{studentUsername}}", "settings"]
+            },
+            "description": "Updates password and student preferences, immediately reflecting in the admin dashboard."
+          }
+        },
+        {
+          "name": "Get All Courses",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses?username={{studentUsername}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "courses"],
+              "query": [
+                {
+                  "key": "username",
+                  "value": "{{studentUsername}}"
+                }
+              ]
+            },
+            "description": "Retrieves active courses with their Theory and Lab slots and current seat occupancy."
+          }
+        },
+        {
+          "name": "Filter Courses by Basket (PE)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses?basket=PE&username={{studentUsername}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "courses"],
+              "query": [
+                {
+                  "key": "basket",
+                  "value": "PE"
+                },
+                {
+                  "key": "username",
+                  "value": "{{studentUsername}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Course Details by Code",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/courses/SWE3004?username={{studentUsername}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "courses", "SWE3004"],
+              "query": [
+                {
+                  "key": "username",
+                  "value": "{{studentUsername}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Registered Courses",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/registrations/{{studentUsername}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "registrations", "{{studentUsername}}"]
+            },
+            "description": "Returns list of courses and slots registered by the student."
+          }
+        },
+        {
+          "name": "Register for Course",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"23MIC7129\",\n  \"courseCode\": \"SWE3004\",\n  \"theorySlotId\": 2,\n  \"labSlotId\": 4\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/registrations",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "registrations"]
+            }
+          }
+        },
+        {
+          "name": "Modify Course Slot",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"23MIC7129\",\n  \"courseCode\": \"SWE3004\",\n  \"newSlotId\": 3\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/registrations/modify",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "registrations", "modify"]
+            }
+          }
+        },
+        {
+          "name": "Drop Course",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/registrations/student/{{studentUsername}}/course/SWE3004",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "registrations", "student", "{{studentUsername}}", "course", "SWE3004"]
+            }
+          }
+        },
+        {
+          "name": "Get Weekly Timetable",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/timetable/{{studentUsername}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "timetable", "{{studentUsername}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Notifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications?username={{studentUsername}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifications"],
+              "query": [
+                {
+                  "key": "username",
+                  "value": "{{studentUsername}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Admin APIs",
+      "item": [
+        {
+          "name": "Get Admin Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "stats"]
+            },
+            "description": "Returns counts of students, active courses, allocated slots, capacity percentage, and timer."
+          }
+        },
+        {
+          "name": "Get All Students",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/students",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "students"]
+            },
+            "description": "Lists all student accounts including real-time active passwords and CGPA."
+          }
+        },
+        {
+          "name": "Provision New Student",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"24BCE1001\",\n  \"fullName\": \"Rahul Varma\",\n  \"email\": \"rahul.24bce1001@vitapstudent.ac.in\",\n  \"password\": \"Vitap@2024\",\n  \"program\": \"B.Tech Computer Science & Engineering\",\n  \"semester\": \"Semester 6\",\n  \"cgpa\": 8.75,\n  \"maxCredits\": 27\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/students",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "students"]
+            }
+          }
+        },
+        {
+          "name": "Update Student Password / Account",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"NewPassword@456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/students/7",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "students", "7"]
+            }
+          }
+        },
+        {
+          "name": "Get All Course Slots",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/slots",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "slots"]
+            }
+          }
+        },
+        {
+          "name": "Assign New Slot to Course",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"courseCode\": \"SWE3004\",\n  \"slotCode\": \"C1+TC1\",\n  \"slotType\": \"THEORY\",\n  \"facultyName\": \"Dr. Priya Nair\",\n  \"venue\": \"CB-305\",\n  \"capacity\": 70\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/slots",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "slots"]
+            }
+          }
+        },
+        {
+          "name": "Get Registration Config",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/config",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "config"]
+            }
+          }
+        },
+        {
+          "name": "Toggle Registration Pause / Resume",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/controls/toggle-pause",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "controls", "toggle-pause"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

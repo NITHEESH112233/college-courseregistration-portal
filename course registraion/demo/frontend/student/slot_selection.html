@@ -240,9 +240,21 @@
               </tr>
             </tbody>
           </table>
+        <!-- Live Registration Schedule / Slot Status Banner -->
+        <div id="slot-schedule-banner" class="hero-registration-card" style="margin-bottom: 24px; padding: 18px 24px; border-left: 4px solid var(--primary-navy); background: #EFF6FF; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+          <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; flex-wrap: wrap; gap: 14px;">
+            <div>
+              <div style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted);" id="slot-schedule-label">REGISTRATION TIME SLOT STATUS</div>
+              <div style="font-size: 1.15rem; font-weight: 700; color: var(--primary-navy); margin: 3px 0;" id="slot-schedule-status"><i class="fa-solid fa-spinner fa-spin"></i> Checking slot status...</div>
+              <div style="font-size: 0.82rem; color: #475569;" id="slot-schedule-desc">Verifying your allotted registration time window.</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span class="badge" id="slot-status-pill" style="font-size: 0.82rem; padding: 6px 14px; background: #DBEAFE; color: #1D4ED8;">Checking Slot</span>
+            </div>
+          </div>
         </div>
 
-        <form onsubmit="handleSlotRegistration(event)">
+        <form id="slot-selection-form" onsubmit="handleSlotRegistration(event)">
 
           <!-- Section 1: Embedded Theory Slots -->
           <div class="slot-section-title-bar">
@@ -372,7 +384,7 @@
 
           <!-- Bottom Action -->
           <div class="register-action-bar">
-            <button type="submit" class="btn-primary" style="padding: 14px 28px; font-size: 0.95rem;">
+            <button type="submit" id="btn-register-slots" class="btn-primary" style="padding: 14px 28px; font-size: 0.95rem;">
               Register Selected Slots
             </button>
           </div>
@@ -400,6 +412,8 @@
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code') || 'SWE3004';
     let currentCourse = null;
+    let isScheduleActive = false;
+    let scheduleConfig = null;
 
     document.addEventListener('DOMContentLoaded', async () => {
       const user = getCurrentUser();
@@ -409,8 +423,107 @@
       }
 
       document.getElementById('slot-course-code-crumb').textContent = code;
+      await checkRegistrationSchedule();
       await loadCourseSlots(code);
     });
+
+    async function checkRegistrationSchedule() {
+      const banner = document.getElementById('slot-schedule-banner');
+      const statusTitle = document.getElementById('slot-schedule-status');
+      const statusDesc = document.getElementById('slot-schedule-desc');
+      const statusPill = document.getElementById('slot-status-pill');
+      const submitBtn = document.getElementById('btn-register-slots');
+
+      try {
+        const res = await configApi.get();
+        if (res && res.success && res.data) {
+          scheduleConfig = res.data;
+          const user = getCurrentUser();
+          const isSlotActive = user && user.slotActive !== false;
+
+          if (!isSlotActive) {
+            isScheduleActive = false;
+            banner.style.background = '#FEF2F2';
+            banner.style.borderLeftColor = '#DC2626';
+            statusTitle.textContent = 'Student Registration Slot Inactive';
+            statusTitle.style.color = '#991B1B';
+            statusDesc.textContent = 'Your student registration slot is currently disabled or not allotted. You can only register during your allotted slot.';
+            statusPill.textContent = 'SLOT INACTIVE';
+            statusPill.style.background = '#FEE2E2';
+            statusPill.style.color = '#991B1B';
+            disableRegistrationControls(submitBtn, 'Slot Inactive (Contact Admin)');
+            return;
+          }
+
+          if (scheduleConfig.status === 'ACTIVE') {
+            isScheduleActive = true;
+            banner.style.background = '#F0FDF4';
+            banner.style.borderLeftColor = '#16A34A';
+            statusTitle.innerHTML = `<i class="fa-solid fa-circle-check" style="color: #16A34A;"></i> Allotted Slot Active (${scheduleConfig.remainingHours}h ${scheduleConfig.remainingMinutes}m remaining)`;
+            statusTitle.style.color = '#15803D';
+            statusDesc.textContent = scheduleConfig.statusMessage || 'Your registration window is currently open. Select your preferred slots below.';
+            statusPill.textContent = 'SLOT ACTIVE ✓';
+            statusPill.style.background = '#DCFCE7';
+            statusPill.style.color = '#15803D';
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.style.opacity = '1';
+              submitBtn.style.cursor = 'pointer';
+              submitBtn.textContent = 'Register Selected Slots';
+            }
+          } else if (scheduleConfig.status === 'UPCOMING') {
+            isScheduleActive = false;
+            banner.style.background = '#FEF3C7';
+            banner.style.borderLeftColor = '#D97706';
+            statusTitle.innerHTML = `<i class="fa-solid fa-clock" style="color: #D97706;"></i> Allotted Slot Not Open Yet`;
+            statusTitle.style.color = '#92400E';
+            statusDesc.textContent = `Your allotted registration time slot opens on ${scheduleConfig.formattedStartDate}. Course registration is locked until then.`;
+            statusPill.textContent = 'UPCOMING SLOT';
+            statusPill.style.background = '#FDE68A';
+            statusPill.style.color = '#92400E';
+            disableRegistrationControls(submitBtn, `Slot Opens ${scheduleConfig.formattedStartDate}`);
+          } else if (scheduleConfig.status === 'PAUSED') {
+            isScheduleActive = false;
+            banner.style.background = '#FEF3C7';
+            banner.style.borderLeftColor = '#D97706';
+            statusTitle.innerHTML = `<i class="fa-solid fa-pause" style="color: #D97706;"></i> Registration Paused`;
+            statusTitle.style.color = '#92400E';
+            statusDesc.textContent = 'The registration window has been temporarily paused by the Administrator. Registration is currently locked.';
+            statusPill.textContent = 'PAUSED';
+            statusPill.style.background = '#FDE68A';
+            statusPill.style.color = '#92400E';
+            disableRegistrationControls(submitBtn, 'Registration Paused by Admin');
+          } else {
+            // CLOSED
+            isScheduleActive = false;
+            banner.style.background = '#FEF2F2';
+            banner.style.borderLeftColor = '#DC2626';
+            statusTitle.innerHTML = `<i class="fa-solid fa-lock" style="color: #DC2626;"></i> Registration Slot Closed`;
+            statusTitle.style.color = '#991B1B';
+            statusDesc.textContent = `The registration window concluded on ${scheduleConfig.formattedEndDate}. Outside your allotted slot, registrations are not permitted.`;
+            statusPill.textContent = 'WINDOW CLOSED';
+            statusPill.style.background = '#FEE2E2';
+            statusPill.style.color = '#991B1B';
+            disableRegistrationControls(submitBtn, 'Registration Window Closed');
+          }
+        }
+      } catch (err) {
+        console.warn('Could not load schedule config:', err);
+      }
+    }
+
+    function disableRegistrationControls(submitBtn, buttonText) {
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.6';
+        submitBtn.style.cursor = 'not-allowed';
+        submitBtn.textContent = buttonText;
+      }
+      document.querySelectorAll('input[type="radio"]').forEach(r => {
+        r.disabled = true;
+        r.style.cursor = 'not-allowed';
+      });
+    }
 
     async function loadCourseSlots(courseCode) {
       try {
@@ -418,70 +531,135 @@
         const res = await courseApi.getByCode(courseCode, user ? user.username : '');
         if (res && res.success && res.data) {
           currentCourse = res.data;
-          document.getElementById('slot-course-title').textContent = `${currentCourse.code} - ${currentCourse.title}`;
-          
-          // Render Theory Slots
-          const theoryTbody = document.querySelectorAll('.slot-selection-table tbody')[0];
-          if (theoryTbody && currentCourse.theorySlots && currentCourse.theorySlots.length > 0) {
-            theoryTbody.innerHTML = '';
-            currentCourse.theorySlots.forEach((s, idx) => {
-              const tr = document.createElement('tr');
-              tr.innerHTML = `
-                <td style="font-weight: 700; color: var(--vit-maroon);">${s.slotCode}</td>
-                <td>${s.venue}</td>
-                <td>${s.facultyName}</td>
-                <td>
-                  <div class="radio-availability-cell">
-                    <span>${s.availableSeats}</span>
-                    <input type="radio" name="theory_slot" value="${s.id}" data-slot-code="${s.slotCode}" class="radio-custom" ${idx === 0 ? 'checked' : ''}>
-                  </div>
-                </td>
-              `;
-              theoryTbody.appendChild(tr);
-            });
-          }
-
-          // Render Lab Slots
-          const labTbody = document.querySelectorAll('.slot-selection-table tbody')[1];
-          if (labTbody) {
-            if (currentCourse.labSlots && currentCourse.labSlots.length > 0) {
-              labTbody.innerHTML = '';
-              currentCourse.labSlots.forEach((s, idx) => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                  <td style="font-weight: 700; color: var(--vit-maroon);">${s.slotCode}</td>
-                  <td>${s.venue}</td>
-                  <td>${s.facultyName}</td>
-                  <td>
-                    <div class="radio-availability-cell">
-                      <span>${s.availableSeats}</span>
-                      <input type="radio" name="lab_slot" value="${s.id}" data-slot-code="${s.slotCode}" class="radio-custom" ${idx === 0 ? 'checked' : ''}>
-                    </div>
-                  </td>
-                `;
-                labTbody.appendChild(tr);
-              });
-            } else {
-              // No lab component for this course
-              const labSection = labTbody.closest('.slot-table-wrapper');
-              const labHeader = labSection ? labSection.previousElementSibling : null;
-              if (labSection) labSection.style.display = 'none';
-              if (labHeader) labHeader.style.display = 'none';
-            }
-          }
         }
       } catch (err) {
         console.warn('Could not fetch course slots from backend:', err);
+      }
+
+      if (!currentCourse) {
+        const savedCourses = JSON.parse(localStorage.getItem('vitap_admin_courses') || 'null') || [];
+        const found = savedCourses.find(c => c.code.toUpperCase() === courseCode.toUpperCase());
+        if (found) {
+          const offerings = found.offerings || [{ slot: found.slot || 'A1+TA1', faculty: found.faculty || 'Faculty', venue: found.venue || 'CB-201', capacity: found.capacity || 60, available: found.capacity || 60 }];
+          currentCourse = {
+            id: found.id || 999,
+            code: found.code,
+            title: found.title,
+            basket: found.basket,
+            credits: found.credits,
+            componentType: found.type,
+            theorySlots: offerings
+              .filter(o => !o.slot.toUpperCase().startsWith('L'))
+              .map((o, i) => ({ id: i + 1, slotCode: o.slot, facultyName: o.faculty, venue: o.venue, totalSeats: o.capacity, availableSeats: o.available != null ? o.available : o.capacity })),
+            labSlots: offerings
+              .filter(o => o.slot.toUpperCase().startsWith('L'))
+              .map((o, i) => ({ id: i + 100, slotCode: o.slot, facultyName: o.faculty, venue: o.venue, totalSeats: o.capacity, availableSeats: o.available != null ? o.available : o.capacity }))
+          };
+        }
+      }
+
+      if (currentCourse) {
+        renderCourseSlotsUI();
+      }
+    }
+
+    function renderCourseSlotsUI() {
+      if (!currentCourse) return;
+      document.getElementById('slot-course-title').textContent = `${currentCourse.code} - ${currentCourse.title}`;
+      
+      // Render Theory Slots
+      const theoryTbody = document.querySelectorAll('.slot-selection-table tbody')[0];
+      if (theoryTbody) {
+        if (currentCourse.theorySlots && currentCourse.theorySlots.length > 0) {
+          theoryTbody.innerHTML = '';
+          currentCourse.theorySlots.forEach((s, idx) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td style="font-weight: 700; color: var(--vit-maroon);">${s.slotCode}</td>
+              <td>${s.venue}</td>
+              <td>${s.facultyName}</td>
+              <td>
+                <div class="radio-availability-cell">
+                  <span>${s.availableSeats}</span>
+                  <input type="radio" name="theory_slot" value="${s.id}" data-slot-code="${s.slotCode}" class="radio-custom" ${idx === 0 ? 'checked' : ''} ${!isScheduleActive ? 'disabled style="cursor: not-allowed;"' : ''}>
+                </div>
+              </td>
+            `;
+            theoryTbody.appendChild(tr);
+          });
+        } else {
+          theoryTbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 16px;">No theory slots available.</td></tr>';
+        }
+      }
+
+      // Render Lab Slots
+      const labTbody = document.querySelectorAll('.slot-selection-table tbody')[1];
+      if (labTbody) {
+        if (currentCourse.labSlots && currentCourse.labSlots.length > 0) {
+          const labSection = labTbody.closest('.slot-table-wrapper');
+          const labHeader = labSection ? labSection.previousElementSibling : null;
+          if (labSection) labSection.style.display = 'block';
+          if (labHeader) labHeader.style.display = 'block';
+
+          labTbody.innerHTML = '';
+          currentCourse.labSlots.forEach((s, idx) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td style="font-weight: 700; color: var(--vit-maroon);">${s.slotCode}</td>
+              <td>${s.venue}</td>
+              <td>${s.facultyName}</td>
+              <td>
+                <div class="radio-availability-cell">
+                  <span>${s.availableSeats}</span>
+                  <input type="radio" name="lab_slot" value="${s.id}" data-slot-code="${s.slotCode}" class="radio-custom" ${idx === 0 ? 'checked' : ''} ${!isScheduleActive ? 'disabled style="cursor: not-allowed;"' : ''}>
+                </div>
+              </td>
+            `;
+            labTbody.appendChild(tr);
+          });
+        } else {
+          // No lab component for this course
+          const labSection = labTbody.closest('.slot-table-wrapper');
+          const labHeader = labSection ? labSection.previousElementSibling : null;
+          if (labSection) labSection.style.display = 'none';
+          if (labHeader) labHeader.style.display = 'none';
+        }
+      }
+
+      if (!isScheduleActive) {
+        const submitBtn = document.getElementById('btn-register-slots');
+        disableRegistrationControls(submitBtn, submitBtn ? submitBtn.textContent : 'Slot Inactive');
       }
     }
 
     async function handleSlotRegistration(e) {
       e.preventDefault();
+
+      if (!isScheduleActive) {
+        const msg = scheduleConfig
+          ? `Registration is restricted to your allotted time slot. Window status: ${scheduleConfig.status}`
+          : 'Registration is not permitted outside your allotted time slot.';
+        showNotification(msg, 'danger');
+        return;
+      }
+
       const user = getCurrentUser();
       const username = user ? user.username : '21BCE0000';
 
       const selectedTheory = document.querySelector('input[name="theory_slot"]:checked');
       const selectedLab = document.querySelector('input[name="lab_slot"]:checked');
+
+      if (!selectedTheory && !selectedLab) {
+        showNotification('Please select at least one theory or lab slot.', 'danger');
+        return;
+      }
+
+      const submitBtn = document.getElementById('btn-register-slots');
+      const originalText = submitBtn ? submitBtn.textContent : 'Register Selected Slots';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Registering...';
+      }
 
       const payload = {
         username: username,
@@ -500,13 +678,18 @@
             window.location.href = 'view_registered.html';
           }, 800);
         } else {
-          showNotification(res.message || 'Registration failed.', 'danger');
+          showNotification(res.message || 'Registration failed: Not in allotted time slot.', 'danger');
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+          }
         }
       } catch (err) {
-        showNotification('Successfully registered selected slots for ' + code + '!', 'success');
-        setTimeout(() => {
-          window.location.href = 'view_registered.html';
-        }, 800);
+        showNotification(err.message || 'Registration failed.', 'danger');
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+        }
       }
     }
   </script>

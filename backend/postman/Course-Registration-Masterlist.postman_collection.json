@@ -1,0 +1,402 @@
+{
+  "info": {
+    "name": "Course Registration - Masterlist API Tests",
+    "description": "Runnable Postman flow for the Masterlist API. It creates a disposable student, verifies login and course lookup, saves and reads a masterlist, clears it, exercises the FCFS endpoint with an empty masterlist, and deletes the disposable student. The FCFS call is intentionally made after clearing the masterlist so it cannot register courses. Requires the backend on localhost:8080 and seeded course CSE1001.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "testUsername",
+      "value": ""
+    },
+    {
+      "key": "testPassword",
+      "value": "Postman-Test-Password-123"
+    },
+    {
+      "key": "testStudentId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Masterlist API flow",
+      "item": [
+        {
+          "name": "01 - Create disposable student",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Postman API Test Student\",\n  \"username\": \"{{testUsername}}\",\n  \"email\": \"{{testUsername}}@example.test\",\n  \"password\": \"{{testPassword}}\",\n  \"program\": \"B.Tech Computer Science\",\n  \"semester\": \"Semester 6\",\n  \"cgpa\": 8.5,\n  \"earnedCredits\": 120,\n  \"maxCredits\": 27,\n  \"minCredits\": 16\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/admin/students"
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const username = \"PMT\" + Date.now().toString();",
+                  "pm.collectionVariables.set(\"testUsername\", username);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"A temporary student is created\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.success).to.eql(true);",
+                  "  pm.expect(body.data.id).to.exist;",
+                  "  pm.collectionVariables.set(\"testStudentId\", String(body.data.id));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02 - Login with valid test credentials",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{testUsername}}\",\n  \"password\": \"{{testPassword}}\",\n  \"role\": \"STUDENT\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/auth/login"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Student login succeeds\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.success).to.eql(true);",
+                  "  pm.expect(body.username).to.eql(pm.collectionVariables.get(\"testUsername\"));",
+                  "  pm.expect(body.role).to.eql(\"STUDENT\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03 - Reject invalid password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{testUsername}}\",\n  \"password\": \"incorrect-password\",\n  \"role\": \"STUDENT\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/auth/login"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Invalid credentials are rejected\", function () {",
+                  "  pm.response.to.have.status(400);",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.success).to.eql(false);",
+                  "  pm.expect(body.message).to.include(\"password\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04 - Get seeded course and available slots",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/courses/CSE1001?username={{testUsername}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"CSE1001 is available with testable slots\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.success).to.eql(true);",
+                  "  pm.expect(body.data.code).to.eql(\"CSE1001\");",
+                  "  pm.expect(body.data.theorySlots.some(function (slot) { return slot.slotCode === \"A2+TA2\"; })).to.eql(true);",
+                  "  pm.expect(body.data.theorySlots.some(function (slot) { return slot.slotCode === \"B2+TB2\"; })).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05 - Save ranked masterlist with slot choices",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"rank\": 1,\n    \"code\": \"CSE1001\",\n    \"choice1\": { \"slot\": \"A2+TA2\" },\n    \"choice2\": { \"slot\": \"B2+TB2\" },\n    \"choice3\": { \"slot\": \"L1+L2\" }\n  }\n]",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/masterlist/student/{{testUsername}}/save"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Masterlist saves with the requested rank and choices\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.success).to.eql(true);",
+                  "  pm.expect(body.data).to.have.lengthOf(1);",
+                  "  pm.expect(body.data[0].code).to.eql(\"CSE1001\");",
+                  "  pm.expect(body.data[0].rank).to.eql(1);",
+                  "  pm.expect(body.data[0].choice1.slot).to.eql(\"A2+TA2\");",
+                  "  pm.expect(body.data[0].choice2.slot).to.eql(\"B2+TB2\");",
+                  "  pm.expect(body.data[0].choice3.slot).to.eql(\"L1+L2\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "06 - Read masterlist and verify persistence",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masterlist/student/{{testUsername}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Saved masterlist and slot choices persist on read-back\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.success).to.eql(true);",
+                  "  pm.expect(body.data).to.have.lengthOf(1);",
+                  "  pm.expect(body.data[0].code).to.eql(\"CSE1001\");",
+                  "  pm.expect(body.data[0].rank).to.eql(1);",
+                  "  pm.expect(body.data[0].choice1.slot).to.eql(\"A2+TA2\");",
+                  "  pm.expect(body.data[0].choice2.slot).to.eql(\"B2+TB2\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07 - Clear masterlist",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masterlist/student/{{testUsername}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Masterlist clears successfully\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "08 - Confirm masterlist is empty",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masterlist/student/{{testUsername}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Cleared masterlist stays empty\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.success).to.eql(true);",
+                  "  pm.expect(body.data).to.be.an(\"array\").that.is.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "09 - Execute FCFS with empty masterlist (safe no-op)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/masterlist/student/{{testUsername}}/execute",
+            "description": "This runs after the test masterlist has been cleared, so an ACTIVE registration window produces an empty successful result without registering courses. If registration is not ACTIVE, the API should return HTTP 400 with its schedule/window explanation."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"FCFS empty-list response matches registration-window state\", function () {",
+                  "  const body = pm.response.json();",
+                  "  if (pm.response.code === 200) {",
+                  "    pm.expect(body.success).to.eql(true);",
+                  "    pm.expect(body.data).to.be.an(\"array\").that.is.empty;",
+                  "  } else {",
+                  "    pm.expect(pm.response.code).to.eql(400);",
+                  "    pm.expect(body.success).to.eql(false);",
+                  "    pm.expect(body.message.toLowerCase()).to.match(/registration|scheduled|paused|closed|active/);",
+                  "  }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "10 - Delete disposable student",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/admin/students/{{testStudentId}}",
+            "description": "Final cleanup: deletes the temporary account after its masterlist is empty and the FCFS no-op has been exercised."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Temporary student is deleted\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.success).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

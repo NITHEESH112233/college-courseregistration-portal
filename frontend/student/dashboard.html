@@ -382,15 +382,15 @@
               <div class="timer-label" id="student-timer-label">TIME REMAINING</div>
               <div class="timer-digits">
                 <div class="digit-card">
-                  <div class="digit-val" id="timer-hours">02</div>
+                  <div class="digit-val" id="timer-hours">--</div>
                   <div class="digit-unit">HRS</div>
                 </div>
                 <div class="digit-card">
-                  <div class="digit-val" id="timer-mins">45</div>
+                  <div class="digit-val" id="timer-mins">--</div>
                   <div class="digit-unit">MIN</div>
                 </div>
                 <div class="digit-card">
-                  <div class="digit-val" id="timer-secs">00</div>
+                  <div class="digit-val" id="timer-secs">--</div>
                   <div class="digit-unit">SEC</div>
                 </div>
               </div>
@@ -510,6 +510,7 @@
   <script src="../js/api.js"></script>
   <script>
     let countdownInterval = null;
+    let currentScheduleStatus = 'INACTIVE';
 
     document.addEventListener('DOMContentLoaded', async () => {
       const user = getCurrentUser();
@@ -567,6 +568,7 @@
         const res = await configApi.get();
         if (res && res.success && res.data) {
           const cfg = res.data;
+          currentScheduleStatus = cfg.status;
           
           const semTitle = document.getElementById('student-semester-title');
           if (semTitle) semTitle.textContent = cfg.semesterName || 'Winter Semester 2024';
@@ -648,19 +650,50 @@
       }
     }
 
-    function startLiveCountdown(targetIso) {
-      if (countdownInterval) clearInterval(countdownInterval);
-      if (!targetIso) return;
+    window.__hasLiveCountdown = true;
 
-      const targetDate = new Date(targetIso).getTime();
+    function parseTargetDate(isoStr) {
+      if (!isoStr) return null;
+      const cleaned = String(isoStr).replace(' ', 'T');
+      const d = new Date(cleaned);
+      if (!isNaN(d.getTime())) return d.getTime();
+      const m = cleaned.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?/);
+      if (m) {
+        return new Date(m[1], m[2] - 1, m[3], m[4], m[5], m[6] || 0).getTime();
+      }
+      return null;
+    }
+
+    function startLiveCountdown(targetIso) {
+      if (countdownInterval) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+      }
+      if (window.__staticTimerInterval) {
+        clearInterval(window.__staticTimerInterval);
+        window.__staticTimerInterval = null;
+      }
+      if (!targetIso) {
+        setStaticTimer(0, 0, 0);
+        return;
+      }
+
+      const targetTime = parseTargetDate(targetIso);
+      if (!targetTime) {
+        setStaticTimer(0, 0, 0);
+        return;
+      }
 
       function update() {
-        const now = new Date().getTime();
-        const diff = targetDate - now;
+        const now = Date.now();
+        const diff = targetTime - now;
 
         if (diff <= 0) {
           setStaticTimer(0, 0, 0);
-          clearInterval(countdownInterval);
+          if (countdownInterval) {
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+          }
           loadLiveRegistrationSchedule();
           return;
         }
@@ -680,9 +713,12 @@
       const hElem = document.getElementById('timer-hours');
       const mElem = document.getElementById('timer-mins');
       const sElem = document.getElementById('timer-secs');
-      if (hElem) hElem.textContent = String(h).padStart(2, '0');
-      if (mElem) mElem.textContent = String(m).padStart(2, '0');
-      if (sElem) sElem.textContent = String(s).padStart(2, '0');
+      const safeH = isNaN(h) ? 0 : Math.max(0, h);
+      const safeM = isNaN(m) ? 0 : Math.max(0, m);
+      const safeS = isNaN(s) ? 0 : Math.max(0, s);
+      if (hElem) hElem.textContent = String(safeH).padStart(2, '0');
+      if (mElem) mElem.textContent = String(safeM).padStart(2, '0');
+      if (sElem) sElem.textContent = String(safeS).padStart(2, '0');
     }
 
     function renderMiniTimetable(registrations) {
@@ -726,15 +762,22 @@
             const card = document.createElement('div');
             card.className = 'course-item-card';
             const isReg = c.registered || c.isRegistered;
+            let actionBtn = '';
+            if (isReg) {
+              actionBtn = `<button class="btn-primary" style="padding: 8px 14px; font-size: 0.8rem; background: #166534; border-color: #166534;" onclick="window.location.href='slot_selection.html?code=${c.code}'"><i class="fa-solid fa-check"></i> Enrolled</button>`;
+            } else if (currentScheduleStatus !== 'ACTIVE') {
+              actionBtn = `<button class="btn-outline" style="padding: 8px 14px; font-size: 0.8rem; opacity: 0.6; cursor: not-allowed;" onclick="showNotification('Registration is locked outside your allotted time slot.', 'danger')"><i class="fa-solid fa-lock"></i> Slot Inactive</button>`;
+            } else {
+              actionBtn = `<button class="btn-primary action-register-btn" style="padding: 8px 14px; font-size: 0.8rem;" onclick="window.location.href='slot_selection.html?code=${c.code}'">Register</button>`;
+            }
+
             card.innerHTML = `
               <div>
                 <div class="course-code">${c.code} • ${c.credits} Credits • <span class="badge badge-${(c.basket || 'PC').toLowerCase()}">${c.basket || 'PC'}</span></div>
                 <div class="course-name">${c.title}</div>
                 <div class="course-meta">${c.componentType || 'Theory + Lab'}</div>
               </div>
-              <button class="btn-primary action-register-btn" style="padding: 8px 14px; font-size: 0.8rem; ${isReg ? 'background: #166534; border-color: #166534;' : ''}" onclick="window.location.href='slot_selection.html?code=${c.code}'">
-                ${isReg ? '<i class="fa-solid fa-check"></i> Enrolled' : 'Register'}
-              </button>
+              ${actionBtn}
             `;
             container.appendChild(card);
           });
