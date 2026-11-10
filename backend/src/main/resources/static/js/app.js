@@ -83,11 +83,21 @@ function initCountdownTimer() {
 
   if (!hoursElem || !minsElem) return;
 
+  // Prevent competing timer intervals on pages that manage their own live countdown (e.g. Student Dashboard)
+  if (document.getElementById('student-timer-label') || window.__hasLiveCountdown) {
+    return;
+  }
+
   let totalSeconds = 2 * 3600 + 45 * 60 + 30; // 02 HRS 45 MIN 30 SEC
 
-  const timerInterval = setInterval(() => {
+  if (window.__staticTimerInterval) {
+    clearInterval(window.__staticTimerInterval);
+  }
+
+  window.__staticTimerInterval = setInterval(() => {
     if (totalSeconds <= 0) {
-      clearInterval(timerInterval);
+      clearInterval(window.__staticTimerInterval);
+      window.__staticTimerInterval = null;
       hoursElem.textContent = '00';
       minsElem.textContent = '00';
       if (secsElem) secsElem.textContent = '00';

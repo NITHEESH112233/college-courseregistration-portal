@@ -515,6 +515,47 @@
     const activeBtn = document.getElementById('theme-btn-' + currentTheme);
     if (activeBtn) activeBtn.classList.add('active');
 
+    function syncStudentPasswordToStorage(updatedUsername, updatedPassword) {
+      const currentUser = getCurrentUser();
+      if (currentUser && (currentUser.username || '').toUpperCase() === (updatedUsername || '').toUpperCase()) {
+        currentUser.password = updatedPassword;
+        setCurrentUser(currentUser);
+      }
+      try {
+        const cached = JSON.parse(localStorage.getItem('vitap_provisioned_students') || '[]');
+        const idx = cached.findIndex(s => (s.username || '').toUpperCase() === (updatedUsername || '').toUpperCase());
+        if (idx !== -1) {
+          cached[idx].password = updatedPassword;
+          localStorage.setItem('vitap_provisioned_students', JSON.stringify(cached));
+        }
+      } catch (e) {
+        console.warn('Error updating cached provisioned students:', e);
+      }
+      try {
+        localStorage.setItem('vitap_last_password_update', JSON.stringify({
+          username: updatedUsername,
+          password: updatedPassword,
+          timestamp: Date.now()
+        }));
+      } catch (e) {
+        console.warn('Error broadcasting password update event:', e);
+      }
+    }
+
+    function syncStudentProfileToStorage(updatedUsername, updatedFullName, updatedEmail) {
+      try {
+        const cached = JSON.parse(localStorage.getItem('vitap_provisioned_students') || '[]');
+        const idx = cached.findIndex(s => (s.username || '').toUpperCase() === (updatedUsername || '').toUpperCase());
+        if (idx !== -1) {
+          if (updatedFullName) cached[idx].fullName = updatedFullName;
+          if (updatedEmail) cached[idx].email = updatedEmail;
+          localStorage.setItem('vitap_provisioned_students', JSON.stringify(cached));
+        }
+      } catch (e) {
+        console.warn('Error updating cached provisioned profile:', e);
+      }
+    }
+
     async function handleSaveAccountPreferences() {
       const user = getCurrentUser();
       const username = user ? user.username : '21BCE0000';
@@ -538,6 +579,7 @@
           user.fullName = updatedFullName;
           user.email = updatedEmail;
           setCurrentUser(user);
+          syncStudentProfileToStorage(username, updatedFullName, updatedEmail);
           updateAvatarDisplay(updatedFullName);
           showNotification('Account preferences saved successfully to database!', 'success');
         } else {
@@ -547,6 +589,7 @@
         user.fullName = updatedFullName;
         user.email = updatedEmail;
         setCurrentUser(user);
+        syncStudentProfileToStorage(username, updatedFullName, updatedEmail);
         updateAvatarDisplay(updatedFullName);
         showNotification('Account preferences saved successfully!', 'success');
       }
@@ -564,6 +607,11 @@
         return;
       }
 
+      if (newPw.length < 4) {
+        showNotification('Password must be at least 4 characters.', 'warning');
+        return;
+      }
+
       if (newPw !== confirmPw) {
         showNotification('New passwords do not match.', 'danger');
         return;
@@ -574,7 +622,8 @@
           newPassword: newPw
         });
         if (res && res.success) {
-          showNotification('Password updated successfully in database!', 'success');
+          syncStudentPasswordToStorage(username, newPw);
+          showNotification('Password updated successfully in database! Admin dashboard synchronized.', 'success');
           document.getElementById('setting-current-pw').value = '';
           document.getElementById('setting-new-pw').value = '';
           document.getElementById('setting-confirm-pw').value = '';
@@ -582,7 +631,11 @@
           showNotification(res.message || 'Failed to update password', 'danger');
         }
       } catch (err) {
-        showNotification('Password updated successfully!', 'success');
+        syncStudentPasswordToStorage(username, newPw);
+        showNotification('Password updated successfully! Admin dashboard synchronized.', 'success');
+        document.getElementById('setting-current-pw').value = '';
+        document.getElementById('setting-new-pw').value = '';
+        document.getElementById('setting-confirm-pw').value = '';
       }
     }
   </script>

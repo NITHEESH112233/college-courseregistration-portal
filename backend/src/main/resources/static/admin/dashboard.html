@@ -223,6 +223,114 @@
       background-color: var(--bg-card);
     }
 
+    /* Smart Credential Generator Styles */
+    .generator-hero-box {
+      background: linear-gradient(135deg, #EFF6FF 0%, #F8FAFC 100%);
+      border: 1.5px solid #BFDBFE;
+      border-radius: var(--radius-md);
+      padding: 18px 22px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 6px rgba(0, 51, 102, 0.04);
+    }
+
+    .generator-grid-hero {
+      display: grid;
+      grid-template-columns: 1.2fr 1.2fr auto;
+      gap: 14px;
+      align-items: flex-end;
+    }
+
+    @media (max-width: 992px) {
+      .generator-grid-hero {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .generator-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
+    .generator-input-wrapper input {
+      width: 100%;
+      padding: 11px 72px 11px 38px !important;
+      font-size: 0.92rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      outline: none;
+      background: #FFFFFF !important;
+      transition: all 0.2s ease;
+      color: var(--text-dark);
+      font-weight: 500;
+    }
+
+    .generator-input-wrapper input:focus {
+      border-color: var(--primary-navy);
+      box-shadow: 0 0 0 3px rgba(0, 51, 102, 0.12);
+    }
+
+    .generator-input-wrapper .input-prefix-icon {
+      position: absolute;
+      left: 12px;
+      color: var(--primary-navy);
+      font-size: 0.95rem;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .generator-input-wrapper .input-suffix-actions {
+      position: absolute;
+      right: 6px;
+      display: flex;
+      gap: 4px;
+      z-index: 2;
+    }
+
+    .icon-action-btn {
+      background: #F1F5F9;
+      border: 1px solid #CBD5E1;
+      border-radius: 4px;
+      color: var(--text-dark);
+      cursor: pointer;
+      width: 28px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      transition: all 0.15s ease;
+    }
+
+    .icon-action-btn:hover {
+      background: var(--primary-navy);
+      border-color: var(--primary-navy);
+      color: #FFFFFF;
+    }
+
+    .credentials-preview-card {
+      background: #F0FDF4;
+      border: 1.5px solid #86EFAC;
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 6px rgba(22, 101, 52, 0.05);
+    }
+
+    .preview-pill {
+      background: #FFFFFF;
+      border: 1px solid #BBF7D0;
+      padding: 5px 12px;
+      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+      color: #166534;
+      font-size: 0.82rem;
+    }
+
     /* Banner */
     .control-card-banner {
       background: linear-gradient(135deg, var(--primary-navy) 0%, #002B49 100%);
@@ -407,42 +515,163 @@
         <div id="section-create-user">
           
           <div class="create-user-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
               <div>
-                <h2 style="font-family: var(--font-serif); font-size: 1.35rem; color: var(--primary-navy);"><i class="fa-solid fa-user-plus"></i> Provision New Student Account</h2>
-                <div style="font-size: 0.85rem; color: var(--text-muted);">Create username and password credentials saved to the system database for student portal access.</div>
+                <h2 style="font-family: var(--font-serif); font-size: 1.35rem; color: var(--primary-navy); display: flex; align-items: center; gap: 10px;">
+                  <i class="fa-solid fa-user-plus"></i> Provision New Student Account
+                  <span class="badge" style="background-color: #E0F2FE; color: var(--primary-navy); font-size: 0.72rem; font-weight: 700; padding: 4px 10px; border-radius: 12px;">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Auto-Credential Generator
+                  </span>
+                </h2>
+                <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 3px;">
+                  Enter the student name — university email, registration number, and secure password are auto-generated instantly.
+                </div>
               </div>
-              <span class="badge" style="background-color: var(--accent-light-blue); color: var(--primary-navy);"><i class="fa-solid fa-database"></i> MySQL Sync Active</span>
+              <span class="badge" style="background-color: var(--accent-light-blue); color: var(--primary-navy); font-weight: 600;"><i class="fa-solid fa-database"></i> MySQL Sync Active</span>
             </div>
 
             <form id="create-student-form" onsubmit="handleCreateStudentCredentials(event)">
               
-              <div class="form-grid-3">
-                <div class="form-group-admin">
-                  <label>STUDENT FULL NAME *</label>
-                  <input type="text" id="new-student-name" placeholder="e.g. Rahul Sharma" required>
+              <!-- Hero Section: Student Name & Program (Drives Credential Generation) -->
+              <div class="generator-hero-box">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                  <div style="font-size: 0.82rem; font-weight: 700; color: var(--primary-navy); text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-user-gear"></i> Step 1: Enter Student Name &amp; Academic Program
+                  </div>
+                  <span style="font-size: 0.75rem; color: #0284C7; font-weight: 600; background: #E0F2FE; padding: 3px 10px; border-radius: 12px; display: inline-flex; align-items: center; gap: 5px;">
+                    <i class="fa-solid fa-bolt"></i> Auto-generates Email &amp; Reg No based on Program
+                  </span>
                 </div>
-                <div class="form-group-admin">
-                  <label>USERNAME / REGISTRATION NO *</label>
-                  <input type="text" id="new-student-username" placeholder="e.g. 21BCE1001" required>
+
+                <div class="generator-grid-hero">
+                  <!-- Student Full Name -->
+                  <div class="form-group-admin" style="margin-bottom: 0;">
+                    <label style="font-size: 0.75rem; font-weight: 700; color: var(--primary-navy);">STUDENT FULL NAME *</label>
+                    <div style="position: relative;">
+                      <input type="text" id="new-student-name" placeholder="Type student name (e.g. Rahul Sharma)" required 
+                        style="width: 100%; font-size: 0.95rem; font-weight: 600; padding: 11px 14px 11px 38px; border: 2px solid #93C5FD; border-radius: 6px; outline: none; background: #FFFFFF; color: var(--text-dark);">
+                      <i class="fa-solid fa-user" style="position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--primary-navy); font-size: 0.95rem;"></i>
+                    </div>
+                  </div>
+
+                  <!-- Academic Program Selection -->
+                  <div class="form-group-admin" style="margin-bottom: 0;">
+                    <label style="font-size: 0.75rem; font-weight: 700; color: var(--primary-navy);">ACADEMIC PROGRAM *</label>
+                    <div style="position: relative;">
+                      <select id="new-student-program" required 
+                        style="width: 100%; font-size: 0.92rem; font-weight: 600; padding: 11px 14px 11px 38px; border: 2px solid #93C5FD; border-radius: 6px; outline: none; background: #FFFFFF; color: var(--text-dark);">
+                        <option value="B.Tech Computer Science & Engineering">B.Tech Computer Science &amp; Engineering (BCE)</option>
+                        <option value="B.Tech CSE (AI & Machine Learning)">B.Tech CSE (AI &amp; Machine Learning) (BAI)</option>
+                        <option value="B.Tech CSE (Data Science)">B.Tech CSE (Data Science) (BDS)</option>
+                        <option value="B.Tech Electronics & Communication">B.Tech Electronics &amp; Communication (BEC)</option>
+                        <option value="B.Tech Mechanical Engineering">B.Tech Mechanical Engineering (BME)</option>
+                        <option value="B.Tech Electrical & Electronics">B.Tech Electrical &amp; Electronics (BEE)</option>
+                        <option value="B.Tech Software Engineering">B.Tech Software Engineering (BSE)</option>
+                        <option value="Integrated M.Tech Software Engineering">Integrated M.Tech Software Engineering (MIS)</option>
+                      </select>
+                      <i class="fa-solid fa-graduation-cap" style="position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--primary-navy); font-size: 0.95rem;"></i>
+                    </div>
+                  </div>
+
+                  <!-- Quick Action Buttons -->
+                  <div style="display: flex; gap: 8px;">
+                    <button type="button" class="btn-primary" onclick="generateAllStudentCredentials(true)" title="Click to Generate Email, Reg No & Password" style="padding: 11px 18px; white-space: nowrap; display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.9rem; background-color: var(--primary-navy); box-shadow: 0 2px 6px rgba(0,51,102,0.25);">
+                      <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Credentials
+                    </button>
+                    <button type="button" class="btn-outline" onclick="clearStudentForm()" title="Clear Form" style="padding: 11px 14px; white-space: nowrap; font-weight: 600; font-size: 0.88rem;">
+                      <i class="fa-solid fa-eraser"></i> Clear
+                    </button>
+                  </div>
                 </div>
-                <div class="form-group-admin">
-                  <label>UNIVERSITY EMAIL *</label>
-                  <input type="email" id="new-student-email" placeholder="e.g. rahul.sharma@vitap.ac.in" required>
+              </div>
+
+              <!-- Auto-Generated Credentials Grid -->
+              <div style="margin-bottom: 8px;">
+                <div style="font-size: 0.82rem; font-weight: 700; color: var(--primary-navy); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+                  <i class="fa-solid fa-key"></i> Step 2: Generated Credentials (Click 'Generate Credentials' to Populate)
                 </div>
               </div>
 
               <div class="form-grid-3">
                 <div class="form-group-admin">
-                  <label>PROGRAM</label>
-                  <select id="new-student-program">
-                    <option value="B.Tech Computer Science & Engineering">B.Tech Computer Science & Engineering</option>
-                    <option value="B.Tech Electronics & Communication">B.Tech Electronics & Communication</option>
-                    <option value="B.Tech Mechanical Engineering">B.Tech Mechanical Engineering</option>
-                    <option value="B.Tech Electrical & Electronics">B.Tech Electrical & Electronics</option>
-                  </select>
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <label>UNIVERSITY EMAIL *</label>
+                    <span style="font-size: 0.68rem; background: #DCFCE7; color: #15803D; padding: 2px 6px; border-radius: 4px; font-weight: 700;">GENERATED</span>
+                  </div>
+                  <div class="generator-input-wrapper">
+                    <i class="fa-solid fa-envelope input-prefix-icon"></i>
+                    <input type="email" id="new-student-email" placeholder="Click 'Generate Credentials' above to create" required oninput="this.dataset.autoGen='false'; updateCredentialsPreview();">
+                    <div class="input-suffix-actions">
+                      <button type="button" class="icon-action-btn" onclick="regenerateEmail()" title="Generate Alternate Email Format">
+                        <i class="fa-solid fa-rotate"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <small style="font-size: 0.72rem; color: var(--text-muted);">Institutional email generated from student name</small>
                 </div>
+
                 <div class="form-group-admin">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <label>REGISTRATION NO / USERNAME *</label>
+                    <span style="font-size: 0.68rem; background: #E0F2FE; color: #0369A1; padding: 2px 6px; border-radius: 4px; font-weight: 700;">FROM PROGRAM</span>
+                  </div>
+                  <div class="generator-input-wrapper">
+                    <i class="fa-solid fa-id-card input-prefix-icon"></i>
+                    <input type="text" id="new-student-username" placeholder="Click 'Generate Credentials' above to create" required oninput="this.dataset.autoGen='false'; updateCredentialsPreview();">
+                    <div class="input-suffix-actions">
+                      <button type="button" class="icon-action-btn" onclick="regenerateRegNo()" title="Regenerate Registration Number">
+                        <i class="fa-solid fa-rotate"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <small style="font-size: 0.72rem; color: var(--text-muted);">Roll number matching selected degree branch</small>
+                </div>
+
+                <div class="form-group-admin">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <label>TEMPORARY PASSWORD *</label>
+                    <span style="font-size: 0.68rem; background: #FEF3C7; color: #B45309; padding: 2px 6px; border-radius: 4px; font-weight: 700;">SECURE GENERATED</span>
+                  </div>
+                  <div class="generator-input-wrapper">
+                    <i class="fa-solid fa-lock input-prefix-icon"></i>
+                    <input type="password" id="new-student-password" placeholder="Click 'Generate Credentials' above to create" required oninput="syncManualPassword(this.value)">
+                    <div class="input-suffix-actions">
+                      <button type="button" class="icon-action-btn" onclick="togglePasswordVisibility('new-student-password', 'toggle-pass-icon')" title="Show / Hide Password">
+                        <i class="fa-solid fa-eye" id="toggle-pass-icon"></i>
+                      </button>
+                      <button type="button" class="icon-action-btn" onclick="regeneratePassword()" title="Regenerate Strong Password">
+                        <i class="fa-solid fa-dice"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <!-- Hidden / Auto-synced Confirm Password to satisfy verification -->
+                  <input type="hidden" id="new-student-confirm">
+                  <small style="font-size: 0.72rem; color: var(--text-muted);">Secure temporary password provided to student</small>
+                </div>
+              </div>
+
+              <!-- Live Credentials Preview & Quick Copy Bar (shows when name is entered) -->
+              <div id="credentials-preview-card" class="credentials-preview-card" style="display: none;">
+                <div>
+                  <div style="font-size: 0.78rem; font-weight: 700; color: #166534; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-clipboard-check"></i> Generated Student Credentials Ready to Share
+                  </div>
+                  <div class="credentials-preview-items">
+                    <span class="preview-pill"><i class="fa-solid fa-user"></i> <span id="preview-badge-name">—</span></span>
+                    <span class="preview-pill"><i class="fa-solid fa-graduation-cap"></i> <span id="preview-badge-program">—</span></span>
+                    <span class="preview-pill"><i class="fa-solid fa-id-badge"></i> <span id="preview-badge-username">—</span></span>
+                    <span class="preview-pill"><i class="fa-solid fa-envelope"></i> <span id="preview-badge-email">—</span></span>
+                    <span class="preview-pill"><i class="fa-solid fa-key"></i> <span id="preview-badge-password">—</span></span>
+                  </div>
+                </div>
+                <button type="button" class="btn-primary" onclick="copyGeneratedCredentials()" style="background-color: #166534; border-color: #14532D; padding: 9px 16px; font-size: 0.82rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                  <i class="fa-solid fa-copy"></i> Copy Credentials
+                </button>
+              </div>
+
+              <!-- Academic Settings (Semester, CGPA, Credit Limit) -->
+              <div class="form-grid-3" style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 14px 18px; margin-bottom: 20px;">
+                <div class="form-group-admin" style="margin-bottom: 0;">
                   <label>SEMESTER</label>
                   <select id="new-student-semester">
                     <option value="Semester 6">Semester 6 (Winter 2024)</option>
@@ -451,31 +680,21 @@
                     <option value="Semester 3">Semester 3</option>
                   </select>
                 </div>
-                <div class="form-group-admin">
+                <div class="form-group-admin" style="margin-bottom: 0;">
                   <label>CURRENT CGPA</label>
                   <input type="number" step="0.01" min="0" max="10" id="new-student-cgpa" value="8.50" required>
                 </div>
-              </div>
-
-              <div class="form-grid-3">
-                <div class="form-group-admin">
+                <div class="form-group-admin" style="margin-bottom: 0;">
                   <label>MAX CREDIT LIMIT</label>
                   <input type="number" min="16" max="32" id="new-student-maxcredits" value="27" required>
                 </div>
-                <div class="form-group-admin">
-                  <label>STUDENT PASSWORD *</label>
-                  <input type="password" id="new-student-password" placeholder="Assign student password" required>
-                </div>
-                <div class="form-group-admin">
-                  <label>CONFIRM PASSWORD *</label>
-                  <input type="password" id="new-student-confirm" placeholder="Confirm password" required>
-                </div>
               </div>
 
-              <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
-                <button type="reset" class="btn-outline">Clear Form</button>
-                <button type="submit" class="btn-primary" id="btn-save-student" style="padding: 12px 24px;">
-                  <i class="fa-solid fa-floppy-disk"></i> Provision & Save to Database
+              <!-- Submit and Action Buttons -->
+              <div style="display: flex; justify-content: flex-end; align-items: center; gap: 12px; margin-top: 10px;">
+                <button type="button" class="btn-outline" onclick="clearStudentForm()">Clear Form</button>
+                <button type="submit" class="btn-primary" id="btn-save-student" style="padding: 12px 28px; font-size: 0.92rem; font-weight: 700; display: inline-flex; align-items: center; gap: 8px;">
+                  <i class="fa-solid fa-user-plus"></i> Provision &amp; Save Student Account
                 </button>
               </div>
 
@@ -495,12 +714,12 @@
             <table class="admin-table">
               <thead>
                 <tr>
-                  <th style="width: 15%;">REG NO</th>
-                  <th style="width: 22%;">STUDENT NAME</th>
-                  <th style="width: 25%;">EMAIL ADDRESS</th>
-                  <th style="width: 18%;">PROGRAM & SEM</th>
-                  <th style="width: 8%;">CGPA</th>
-                  <th style="width: 12%; text-align: center;">ACTIONS</th>
+                  <th style="width: 13%;">REG NO</th>
+                  <th style="width: 20%;">STUDENT NAME</th>
+                  <th style="width: 24%;">EMAIL ADDRESS</th>
+                  <th style="width: 17%;">PROGRAM & SEM</th>
+                  <th style="width: 7%;">CGPA</th>
+                  <th style="width: 19%; text-align: center;">ACTIONS</th>
                 </tr>
               </thead>
               <tbody id="student-credentials-tbody">
@@ -600,10 +819,10 @@
                 <div class="form-group-admin">
                   <label>TARGET COURSE BASKET *</label>
                   <select id="admin-course-basket" required>
-                    <option value="Program Core (PC)">Program Core (PC)</option>
-                    <option value="Program Elective (PE)">Program Elective (PE)</option>
-                    <option value="University Core (UC)">University Core (UC)</option>
-                    <option value="University Elective (UE)">University Elective (UE)</option>
+                    <option value="PC">Program Core (PC)</option>
+                    <option value="PE">Program Elective (PE)</option>
+                    <option value="UC">University Core (UC)</option>
+                    <option value="UE">University Elective (UE)</option>
                   </select>
                 </div>
                 <div class="form-group-admin">
@@ -710,7 +929,7 @@
               <h2 style="font-family: var(--font-serif); font-size: 1.3rem; color: var(--primary-navy);">Faculty & Venue Slot Assignments</h2>
               <div style="font-size: 0.82rem; color: var(--text-muted);">Manage real-time faculty allocations, lecture hall classrooms, and seat limits across slots.</div>
             </div>
-            <button class="btn-primary" onclick="openAssignSlotModal()"><i class="fa-solid fa-calendar-plus"></i> Assign New Slot</button>
+            <button class="btn-primary" onclick="openAssignSlotModal()"><i class="fa-solid fa-calendar-plus"></i> Assign New Slot(s)</button>
           </div>
 
           <div class="admin-table-card">
@@ -780,48 +999,60 @@
     </div>
   </div>
 
-  <!-- ASSIGN NEW SLOT MODAL -->
-  <div id="assign-slot-modal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; padding: 16px;">
-    <div class="modal-card" style="background: #FFF; max-width: 520px; width: 100%; border-radius: var(--radius); padding: 24px; border: 1px solid var(--border-color); box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
-      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px;">
-        <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--primary-navy); display: flex; align-items: center; gap: 8px;">
-          <i class="fa-solid fa-calendar-plus"></i> Assign New Slot to Faculty
-        </h3>
-        <button class="close-modal-btn" onclick="closeAssignSlotModal()" style="background: transparent; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+  <!-- ASSIGN NEW SLOT(S) MODAL (Add 1 or More Slots per Course) -->
+  <div id="assign-slot-modal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.55); z-index: 9999; justify-content: center; align-items: center; padding: 16px;">
+    <div class="modal-card" style="background: #FFF; max-width: 780px; width: 100%; max-height: 90vh; border-radius: var(--radius); padding: 24px; border: 1px solid var(--border-color); box-shadow: 0 12px 30px rgba(0,0,0,0.25); display: flex; flex-direction: column;">
+      
+      <!-- Modal Header -->
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px; flex-shrink: 0;">
+        <div>
+          <h3 style="font-size: 1.2rem; font-weight: 700; color: var(--primary-navy); display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-calendar-plus"></i> Assign Slots to Course (1 or More Offerings)
+          </h3>
+          <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">
+            Configure one or more faculty, classroom venues, and seat limits for any course offering.
+          </div>
+        </div>
+        <button class="close-modal-btn" onclick="closeAssignSlotModal()" style="background: transparent; border: none; font-size: 1.3rem; cursor: pointer; color: var(--text-muted);">&times;</button>
       </div>
 
-      <form id="assign-slot-form" onsubmit="handleAssignSlotSubmit(event)">
-        <div class="form-group-admin" style="margin-bottom: 14px;">
-          <label>SELECT COURSE *</label>
-          <select id="modal-assign-course" required onchange="onCourseSelectedForSlot(this.value)">
-            <option value="">-- Choose Course --</option>
-          </select>
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
-          <div class="form-group-admin">
-            <label>SLOT CODE *</label>
-            <input type="text" id="modal-assign-slot" placeholder="e.g. B2 + TB2" required>
+      <!-- Modal Body (Scrollable) -->
+      <form id="assign-slot-form" onsubmit="handleAssignSlotSubmit(event)" style="display: flex; flex-direction: column; overflow-y: auto; padding-right: 4px; flex-grow: 1;">
+        
+        <!-- Course Selection & Context -->
+        <div style="background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 14px 16px; margin-bottom: 16px;">
+          <div class="form-group-admin" style="margin-bottom: 8px;">
+            <label style="font-weight: 700; color: var(--primary-navy); font-size: 0.78rem;">SELECT TARGET COURSE *</label>
+            <select id="modal-assign-course" required onchange="onCourseSelectedForSlot(this.value)" style="width: 100%; padding: 9px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.88rem; font-weight: 600;">
+              <option value="">-- Choose Course from Catalog --</option>
+            </select>
           </div>
-          <div class="form-group-admin">
-            <label>SEAT CAPACITY *</label>
-            <input type="number" id="modal-assign-capacity" placeholder="60" min="1" max="250" required value="60">
+          <div id="modal-course-summary-badge" style="display: none; font-size: 0.8rem; color: var(--text-dark); background: #EFF6FF; border-left: 3px solid #2563EB; padding: 8px 12px; border-radius: 2px; margin-top: 6px;">
+            <!-- Populated dynamically via JS -->
           </div>
         </div>
 
-        <div class="form-group-admin" style="margin-bottom: 14px;">
-          <label>FACULTY NAME *</label>
-          <input type="text" id="modal-assign-faculty" placeholder="e.g. Dr. K. Raman" required>
+        <!-- Slots List Header & Add Another Button -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <label style="font-size: 0.82rem; font-weight: 700; color: var(--primary-navy); text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px;">
+            <i class="fa-solid fa-layer-group"></i> Slot &amp; Faculty Offerings (<span id="modal-slot-count-badge">1</span>)
+          </label>
+          <button type="button" class="btn-outline" onclick="addModalSlotRow()" style="padding: 5px 12px; font-size: 0.78rem; font-weight: 600; border-radius: 4px; display: inline-flex; align-items: center; gap: 6px;">
+            <i class="fa-solid fa-plus"></i> Add Another Slot
+          </button>
         </div>
 
-        <div class="form-group-admin" style="margin-bottom: 18px;">
-          <label>VENUE / CLASSROOM *</label>
-          <input type="text" id="modal-assign-venue" placeholder="e.g. CB-208 / TT-301" required value="CB-208">
+        <!-- Dynamic Slots Rows Container -->
+        <div id="modal-slots-container" style="margin-bottom: 16px;">
+          <!-- Slot rows generated dynamically -->
         </div>
 
-        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <!-- Modal Footer -->
+        <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px; border-top: 1px solid var(--border-color); padding-top: 16px; margin-top: auto; flex-shrink: 0;">
           <button type="button" class="btn-outline" onclick="closeAssignSlotModal()">Cancel</button>
-          <button type="submit" class="btn-primary"><i class="fa-solid fa-check"></i> Save & Assign Slot</button>
+          <button type="submit" id="btn-save-assign-slots" class="btn-primary" style="padding: 10px 22px;">
+            <i class="fa-solid fa-check"></i> Save &amp; Assign All Slots
+          </button>
         </div>
       </form>
     </div>
@@ -862,61 +1093,157 @@
   </div>
 
   <!-- Modal: Configure Registration Schedule & Date/Time -->
-  <div id="schedule-config-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.55); z-index: 9999; justify-content: center; align-items: center; padding: 16px;">
-    <div style="background: #FFFFFF; border-radius: var(--radius); width: 100%; max-width: 560px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); overflow: hidden; animation: fadeIn 0.2s ease;">
-      <div style="background-color: #003366; color: #FFFFFF; padding: 18px 22px; display: flex; justify-content: space-between; align-items: center;">
+  <div id="schedule-config-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; justify-content: center; align-items: center; padding: 16px;">
+    <div style="background: #FFFFFF; border-radius: var(--radius); width: 100%; max-width: 580px; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 12px 36px rgba(0,0,0,0.3); overflow: hidden; animation: fadeIn 0.2s ease;">
+      <div style="background-color: #003366; color: #FFFFFF; padding: 18px 22px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; border-bottom: 2px solid #2563EB;">
         <h3 style="font-size: 1.15rem; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px;">
-          <i class="fa-regular fa-calendar-days"></i> Configure Registration Schedule & Time
+          <i class="fa-regular fa-calendar-days"></i> Configure Registration Schedule &amp; Time
         </h3>
-        <button style="background: transparent; border: none; color: #FFFFFF; font-size: 1.3rem; cursor: pointer;" onclick="closeScheduleConfigModal()">&times;</button>
+        <button type="button" style="background: transparent; border: none; color: #FFFFFF; font-size: 1.4rem; cursor: pointer; line-height: 1; padding: 0 4px;" onclick="closeScheduleConfigModal()">&times;</button>
       </div>
 
-      <form id="schedule-config-form" style="padding: 22px;" onsubmit="handleSaveScheduleConfig(event)">
-        <div class="form-group" style="margin-bottom: 16px;">
-          <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-dark); margin-bottom: 4px;">SEMESTER NAME / SESSION</label>
-          <input type="text" id="modal-config-semester" class="form-control" style="width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-weight: 600;" required placeholder="e.g. Winter Semester 2024">
-        </div>
+      <form id="schedule-config-form" style="display: flex; flex-direction: column; flex: 1; overflow: hidden; margin: 0;" onsubmit="handleSaveScheduleConfig(event)">
+        <div style="padding: 22px; overflow-y: auto; flex: 1;">
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-dark); margin-bottom: 5px;">SEMESTER NAME / SESSION</label>
+            <input type="text" id="modal-config-semester" class="form-control" style="width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-weight: 600;" required placeholder="e.g. Winter Semester 2024">
+          </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
-          <div class="form-group">
-            <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-dark); margin-bottom: 4px;">START DATE & TIME</label>
-            <input type="datetime-local" id="modal-config-start" class="form-control" style="width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 4px;" required>
-          </div>
-          <div class="form-group">
-            <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-dark); margin-bottom: 4px;">END DATE & TIME</label>
-            <input type="datetime-local" id="modal-config-end" class="form-control" style="width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 4px;" required>
-          </div>
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
-          <div class="form-group">
-            <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-dark); margin-bottom: 4px;">REGISTRATION STATUS</label>
-            <select id="modal-config-status" class="form-control" style="width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-weight: 600;">
-              <option value="true">Active / Open</option>
-              <option value="false">Paused / Inactive</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-dark); margin-bottom: 4px;">CREDIT LIMITS (MIN / MAX)</label>
-            <div style="display: flex; gap: 8px;">
-              <input type="number" id="modal-config-min-credits" style="width: 50%; padding: 10px 8px; border: 1px solid var(--border-color); border-radius: 4px;" placeholder="Min 16" value="16">
-              <input type="number" id="modal-config-max-credits" style="width: 50%; padding: 10px 8px; border: 1px solid var(--border-color); border-radius: 4px;" placeholder="Max 27" value="27">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
+            <div class="form-group">
+              <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-dark); margin-bottom: 5px;">START DATE &amp; TIME</label>
+              <input type="datetime-local" id="modal-config-start" class="form-control" style="width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 4px;" required>
+            </div>
+            <div class="form-group">
+              <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-dark); margin-bottom: 5px;">END DATE &amp; TIME</label>
+              <input type="datetime-local" id="modal-config-end" class="form-control" style="width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 4px;" required>
             </div>
           </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
+            <div class="form-group">
+              <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-dark); margin-bottom: 5px;">REGISTRATION STATUS</label>
+              <select id="modal-config-status" class="form-control" style="width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-weight: 600;">
+                <option value="true">Active / Open</option>
+                <option value="false">Paused / Inactive</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-dark); margin-bottom: 5px;">CREDIT LIMITS (MIN / MAX)</label>
+              <div style="display: flex; gap: 8px;">
+                <input type="number" id="modal-config-min-credits" style="width: 50%; padding: 10px 8px; border: 1px solid var(--border-color); border-radius: 4px;" placeholder="Min 16" value="16">
+                <input type="number" id="modal-config-max-credits" style="width: 50%; padding: 10px 8px; border: 1px solid var(--border-color); border-radius: 4px;" placeholder="Max 27" value="27">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 8px;">
+            <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-dark); margin-bottom: 5px;">ANNOUNCEMENT / BANNER MESSAGE</label>
+            <textarea id="modal-config-announcement" class="form-control" style="width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.85rem;" rows="2" placeholder="Your registration slot is currently active. Ensure minimum credits are met."></textarea>
+          </div>
         </div>
 
-        <div class="form-group" style="margin-bottom: 20px;">
-          <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-dark); margin-bottom: 4px;">ANNOUNCEMENT / BANNER MESSAGE</label>
-          <textarea id="modal-config-announcement" class="form-control" style="width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.85rem;" rows="2" placeholder="Your registration slot is currently active. Ensure minimum credits are met."></textarea>
-        </div>
-
-        <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid var(--border-color); padding-top: 16px;">
-          <button type="button" class="btn-outline" onclick="closeScheduleConfigModal()">Cancel</button>
-          <button type="submit" class="btn-primary" style="background-color: var(--vit-maroon); border-color: var(--vit-maroon); padding: 10px 22px;">
-            <i class="fa-solid fa-check"></i> Save Schedule & Settings
+        <div style="display: flex; justify-content: flex-end; align-items: center; gap: 12px; border-top: 1px solid var(--border-color); padding: 16px 22px; background: #F8FAFC; flex-shrink: 0;">
+          <button type="button" class="btn-outline" onclick="closeScheduleConfigModal()" style="padding: 10px 22px; font-size: 0.88rem; font-weight: 600; cursor: pointer; border-radius: 4px;">
+            Cancel
+          </button>
+          <button type="submit" id="btn-save-schedule-config" class="btn-primary" style="background-color: #003366; border: 1px solid #002244; color: #FFFFFF; padding: 10px 26px; font-size: 0.88rem; font-weight: 700; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 6px rgba(0, 51, 102, 0.25);">
+            <i class="fa-solid fa-floppy-disk"></i> Save Schedule &amp; Settings
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- STUDENT CREDENTIALS / RESET PASSWORD MODAL -->
+  <div id="student-credential-modal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; padding: 16px;">
+    <div class="modal-card" style="background: #FFF; max-width: 480px; width: 100%; border-radius: var(--radius-md); padding: 24px; border: 1px solid var(--border-color); box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 16px;">
+        <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--primary-navy); display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-key"></i> Student Credentials &amp; Password
+        </h3>
+        <button class="close-modal-btn" onclick="closeStudentCredentialModal()" style="background: transparent; border: none; font-size: 1.3rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <div style="background: #F8FAFC; border: 1px solid var(--border-color); border-radius: 6px; padding: 12px 16px; margin-bottom: 16px;">
+          <div style="font-size: 0.95rem; font-weight: 700; color: var(--primary-navy);" id="modal-cred-name">Rahul Sharma</div>
+          <div style="font-size: 0.82rem; color: var(--text-muted);" id="modal-cred-info">Reg No: 24BCE1001 • rahul.sharma@vitap.ac.in</div>
+        </div>
+
+        <div class="form-group-admin" style="margin-bottom: 14px;">
+          <label>TEMPORARY / ACTIVE PASSWORD</label>
+          <div class="generator-input-wrapper">
+            <i class="fa-solid fa-lock input-prefix-icon"></i>
+            <input type="text" id="modal-cred-password" style="font-weight: 600; font-family: monospace; font-size: 1rem;">
+            <div class="input-suffix-actions">
+              <button type="button" class="icon-action-btn" onclick="generateModalPassword()" title="Generate New Secure Password">
+                <i class="fa-solid fa-dice"></i>
+              </button>
+            </div>
+          </div>
+          <small style="font-size: 0.72rem; color: var(--text-muted);">Click the dice icon to auto-generate a fresh temporary password.</small>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 16px;">
+        <button type="button" class="btn-outline" onclick="copyModalCredentials()" style="display: inline-flex; align-items: center; gap: 6px;">
+          <i class="fa-solid fa-copy"></i> Copy Credentials
+        </button>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn-outline" onclick="closeStudentCredentialModal()">Close</button>
+          <button type="button" class="btn-primary" onclick="saveModalPassword()" id="btn-save-modal-password" style="display: inline-flex; align-items: center; gap: 6px;">
+            <i class="fa-solid fa-floppy-disk"></i> Update Password
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUCCESS POPUP MODAL AFTER CREATING STUDENT -->
+  <div id="student-success-modal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; padding: 16px;">
+    <div class="modal-card" style="background: #FFF; max-width: 500px; width: 100%; border-radius: var(--radius-md); padding: 26px; border: 1px solid var(--border-color); box-shadow: 0 12px 30px rgba(0,0,0,0.25);">
+      <div style="text-align: center; margin-bottom: 18px;">
+        <div style="width: 54px; height: 54px; background: #DCFCE7; color: #166534; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 1.6rem; margin-bottom: 10px;">
+          <i class="fa-solid fa-check"></i>
+        </div>
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--primary-navy); margin-bottom: 4px;">Student Account Provisioned!</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">The credentials have been saved to MySQL database and are ready to share with the student.</p>
+      </div>
+
+      <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 6px; padding: 16px; margin-bottom: 20px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 0.85rem;">
+          <div>
+            <span style="font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Student Name</span>
+            <div style="font-weight: 600; color: var(--primary-navy);" id="success-modal-name">—</div>
+          </div>
+          <div>
+            <span style="font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Academic Program</span>
+            <div style="font-weight: 600; color: var(--primary-navy);" id="success-modal-program">—</div>
+          </div>
+          <div>
+            <span style="font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Registration No</span>
+            <div style="font-weight: 700; color: var(--primary-navy);" id="success-modal-username">—</div>
+          </div>
+          <div>
+            <span style="font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Temporary Password</span>
+            <div style="font-weight: 700; color: #B45309; font-family: monospace; font-size: 0.95rem;" id="success-modal-password">—</div>
+          </div>
+          <div style="grid-column: span 2;">
+            <span style="font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">University Email</span>
+            <div style="font-weight: 600; color: var(--text-dark); word-break: break-all;" id="success-modal-email">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+        <button type="button" class="btn-primary" onclick="copySuccessModalCredentials()" style="flex: 1; padding: 11px 16px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700;">
+          <i class="fa-solid fa-copy"></i> Copy Login Details
+        </button>
+        <button type="button" class="btn-outline" onclick="closeCreatedStudentSuccessModal()" style="padding: 11px 20px; font-weight: 600;">
+          Done
+        </button>
+      </div>
     </div>
   </div>
 
@@ -1054,14 +1381,21 @@
 
     async function handleSaveScheduleConfig(e) {
       e.preventDefault();
+      const saveBtn = document.getElementById('btn-save-schedule-config');
+      const originalText = saveBtn ? saveBtn.innerHTML : '<i class="fa-solid fa-floppy-disk"></i> Save Schedule &amp; Settings';
+      if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving Schedule...';
+      }
+
       const payload = {
-        semesterName: document.getElementById('modal-config-semester').value,
+        semesterName: document.getElementById('modal-config-semester').value.trim(),
         startDateTime: document.getElementById('modal-config-start').value,
         endDateTime: document.getElementById('modal-config-end').value,
         isRegistrationOpen: document.getElementById('modal-config-status').value === 'true',
         minCredits: parseInt(document.getElementById('modal-config-min-credits').value) || 16,
         maxCredits: parseInt(document.getElementById('modal-config-max-credits').value) || 27,
-        announcement: document.getElementById('modal-config-announcement').value
+        announcement: document.getElementById('modal-config-announcement').value.trim()
       };
 
       try {
@@ -1070,12 +1404,17 @@
           currentRegConfig = res.data;
           renderAdminRegBanner(currentRegConfig);
           closeScheduleConfigModal();
-          showNotification('Registration schedule & date/time updated successfully!', 'success');
+          showNotification('Registration schedule & date/time updated and saved successfully!', 'success');
         } else {
-          showNotification(res.message || 'Error updating schedule', 'danger');
+          showNotification((res && res.message) ? res.message : 'Error updating schedule in database', 'danger');
         }
       } catch (err) {
         showNotification('Error updating schedule: ' + err.message, 'danger');
+      } finally {
+        if (saveBtn) {
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = originalText;
+        }
       }
     }
 
@@ -1167,85 +1506,329 @@
       }
     ];
 
-    function loadAdminSlots() {
+    async function loadAdminSlots() {
       const tbody = document.getElementById('admin-slots-table-body');
       if (!tbody) return;
 
+      let slots = [];
+      try {
+        const res = await adminApi.getAllSlots();
+        if (res && res.success && Array.isArray(res.data) && res.data.length > 0) {
+          slots = res.data.map(s => ({
+            id: s.id,
+            slot: s.slotCode,
+            slotType: s.slotType,
+            venue: s.venue,
+            faculty: s.facultyName,
+            courseCode: s.courseCode || 'GENERAL',
+            courseName: s.courseName || 'Curriculum Course',
+            capacity: s.totalSeats || 60,
+            available: s.availableSeats != null ? s.availableSeats : (s.totalSeats || 60)
+          }));
+          localStorage.setItem('vitap_admin_slots', JSON.stringify(slots));
+        }
+      } catch (err) {
+        console.warn('Backend loadAdminSlots error:', err);
+      }
+
+      if (slots.length === 0) {
+        slots = JSON.parse(localStorage.getItem('vitap_admin_slots') || 'null') || defaultAdminSlots;
+      }
+
       tbody.innerHTML = '';
-      const slots = JSON.parse(localStorage.getItem('vitap_admin_slots') || 'null') || defaultAdminSlots;
+      if (slots.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:24px; color:var(--text-muted);"><i class="fa-regular fa-folder-open"></i> No slots configured yet. Click "Assign New Slot(s)" above to add 1 or more slots.</td></tr>`;
+        return;
+      }
 
       slots.forEach((s, idx) => {
         const tr = document.createElement('tr');
+        const isLab = s.slotType === 'LAB' || (s.slot && s.slot.toUpperCase().startsWith('L'));
+        const typeBadge = isLab
+          ? '<span class="badge" style="background:#FEE2E2; color:#991B1B; font-size:0.65rem; margin-left:4px;">LAB</span>'
+          : '<span class="badge" style="background:#EFF6FF; color:#1D4ED8; font-size:0.65rem; margin-left:4px;">THEORY</span>';
+
         tr.innerHTML = `
-          <td style="font-weight: 700; color: var(--primary-navy);">${s.slot}</td>
+          <td style="font-weight: 700; color: var(--primary-navy);">
+            ${s.slot} ${typeBadge}
+          </td>
           <td>${s.venue}</td>
           <td style="font-weight: 600;">${s.faculty}</td>
           <td><strong style="color: var(--accent-blue);">${s.courseCode}</strong> - ${s.courseName}</td>
-          <td><span class="badge badge-available-green">${s.available || s.capacity} Available</span></td>
-          <td style="text-align: center;">
-            <button class="btn-outline action-btn-sm" onclick="openReassignModal(${idx})">Reassign</button>
+          <td><span class="badge badge-available-green">${s.available != null ? s.available : s.capacity} Available</span></td>
+          <td style="text-align: center; white-space: nowrap;">
+            <button class="btn-outline action-btn-sm" style="margin-right: 4px;" onclick="openReassignModal(${idx})">Reassign</button>
+            <button class="btn-outline action-btn-sm" style="color: #DC2626; border-color: #FECACA;" onclick="handleDeleteSlot(${s.id || 0}, '${s.slot}', '${s.courseCode}', ${idx})" title="Delete Slot">
+              <i class="fa-solid fa-trash"></i>
+            </button>
           </td>
         `;
         tbody.appendChild(tr);
       });
     }
 
-    function openAssignSlotModal() {
+    async function handleDeleteSlot(slotId, slotCode, courseCode, idx) {
+      if (!confirm(`Are you sure you want to delete slot ${slotCode} for ${courseCode}?`)) {
+        return;
+      }
+      try {
+        if (slotId) {
+          await adminApi.deleteSlot(slotId);
+        }
+      } catch (err) {
+        console.warn('Backend delete slot error:', err);
+      }
+
+      // Update local storage
+      const slots = JSON.parse(localStorage.getItem('vitap_admin_slots') || 'null') || [...defaultAdminSlots];
+      const filtered = slots.filter((s, i) => i !== idx && !(s.id && s.id === slotId));
+      localStorage.setItem('vitap_admin_slots', JSON.stringify(filtered));
+
+      showNotification(`Slot ${slotCode} deleted successfully.`, 'success');
+      await loadAdminSlots();
+      await loadAdminCourses();
+    }
+
+    function openAssignSlotModal(preselectedCourseCode = '') {
       const modal = document.getElementById('assign-slot-modal');
       const select = document.getElementById('modal-assign-course');
       
       // Populate course options
       const savedCourses = JSON.parse(localStorage.getItem('vitap_admin_courses') || 'null') || defaultAdminCourses;
-      select.innerHTML = '<option value="">-- Choose Course --</option>';
+      select.innerHTML = '<option value="">-- Choose Course from Catalog --</option>';
       savedCourses.forEach(c => {
-        select.innerHTML += `<option value="${c.code}|${c.title}">${c.code} - ${c.title}</option>`;
+        const isSel = preselectedCourseCode && c.code.toUpperCase() === preselectedCourseCode.toUpperCase();
+        select.innerHTML += `<option value="${c.code}|${c.title}" ${isSel ? 'selected' : ''}>${c.code} - ${c.title}</option>`;
       });
+
+      // Clear slot rows and insert row 1
+      const container = document.getElementById('modal-slots-container');
+      if (container) {
+        container.innerHTML = '';
+        addModalSlotRow();
+      }
+
+      if (preselectedCourseCode) {
+        onCourseSelectedForSlot(preselectedCourseCode);
+      } else {
+        const summary = document.getElementById('modal-course-summary-badge');
+        if (summary) summary.style.display = 'none';
+      }
 
       modal.style.display = 'flex';
     }
 
     function closeAssignSlotModal() {
-      document.getElementById('assign-slot-modal').style.display = 'none';
-      document.getElementById('assign-slot-form').reset();
+      const modal = document.getElementById('assign-slot-modal');
+      if (modal) modal.style.display = 'none';
+      const form = document.getElementById('assign-slot-form');
+      if (form) form.reset();
+      const container = document.getElementById('modal-slots-container');
+      if (container) container.innerHTML = '';
     }
 
     function onCourseSelectedForSlot(val) {
-      if (!val) return;
-      const [code, title] = val.split('|');
-      document.getElementById('modal-assign-slot').value = 'B2 + TB2';
+      const summary = document.getElementById('modal-course-summary-badge');
+      if (!val) {
+        if (summary) summary.style.display = 'none';
+        return;
+      }
+      const code = val.includes('|') ? val.split('|')[0] : val;
+      const savedCourses = JSON.parse(localStorage.getItem('vitap_admin_courses') || 'null') || defaultAdminCourses;
+      const c = savedCourses.find(item => item.code.toUpperCase() === code.toUpperCase());
+      if (c && summary) {
+        const existingCount = c.offerings ? c.offerings.length : 1;
+        summary.innerHTML = `<strong>${c.code}:</strong> ${c.title} • Basket: <span class="badge ${getBasketBadgeClass(c.basket || 'PC')}">${c.basket || 'PC'}</span> • Credits: ${c.credits || 4.0} • Current Offerings in Catalog: <strong>${existingCount}</strong>`;
+        summary.style.display = 'block';
+      }
     }
 
-    function handleAssignSlotSubmit(e) {
+    function addModalSlotRow(initial = {}) {
+      const container = document.getElementById('modal-slots-container');
+      if (!container) return;
+      const rowCount = container.querySelectorAll('.modal-slot-row').length + 1;
+      const slotCodeVal = initial.slotCode || (rowCount === 1 ? 'A1+TA1' : (rowCount === 2 ? 'B1+TB1' : `C${rowCount}+TC${rowCount}`));
+      const slotTypeVal = initial.slotType || (slotCodeVal.toUpperCase().startsWith('L') ? 'LAB' : 'THEORY');
+      const facultyVal = initial.facultyName || '';
+      const venueVal = initial.venue || (slotTypeVal === 'LAB' ? 'LAB-1' : 'CB-204');
+      const capacityVal = initial.capacity || 60;
+
+      const div = document.createElement('div');
+      div.className = 'modal-slot-row';
+      div.style = 'background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 8px; display: grid; grid-template-columns: 1.2fr 1fr 1.6fr 1fr 0.9fr 36px; gap: 8px; align-items: center;';
+      div.innerHTML = `
+        <div>
+          <label style="font-size: 0.68rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 3px;">SLOT CODE *</label>
+          <input type="text" class="modal-input-slot-code" placeholder="e.g. A1+TA1" required value="${slotCodeVal}" oninput="autoDetectModalSlotType(this)" style="width: 100%; padding: 7px 8px; font-size: 0.82rem; border: 1px solid var(--border-color); border-radius: 4px; font-weight: 700; color: var(--primary-navy);">
+        </div>
+        <div>
+          <label style="font-size: 0.68rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 3px;">TYPE *</label>
+          <select class="modal-input-slot-type" style="width: 100%; padding: 7px 6px; font-size: 0.82rem; border: 1px solid var(--border-color); border-radius: 4px; font-weight: 600;">
+            <option value="THEORY" ${slotTypeVal === 'THEORY' ? 'selected' : ''}>Theory</option>
+            <option value="LAB" ${slotTypeVal === 'LAB' ? 'selected' : ''}>Practical Lab</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size: 0.68rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 3px;">FACULTY NAME *</label>
+          <input type="text" class="modal-input-faculty" placeholder="e.g. Dr. Raghavendra Rao" required value="${facultyVal}" style="width: 100%; padding: 7px 8px; font-size: 0.82rem; border: 1px solid var(--border-color); border-radius: 4px;">
+        </div>
+        <div>
+          <label style="font-size: 0.68rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 3px;">VENUE *</label>
+          <input type="text" class="modal-input-venue" placeholder="e.g. CB-204" required value="${venueVal}" style="width: 100%; padding: 7px 8px; font-size: 0.82rem; border: 1px solid var(--border-color); border-radius: 4px;">
+        </div>
+        <div>
+          <label style="font-size: 0.68rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 3px;">CAPACITY *</label>
+          <input type="number" class="modal-input-capacity" placeholder="60" min="1" max="250" required value="${capacityVal}" style="width: 100%; padding: 7px 8px; font-size: 0.82rem; border: 1px solid var(--border-color); border-radius: 4px;">
+        </div>
+        <div style="text-align: center; padding-top: 16px;">
+          <button type="button" class="action-icon-btn" onclick="removeModalSlotRow(this)" title="Remove Slot Row" style="color: #DC2626; background: transparent; border: none; cursor: pointer; font-size: 0.95rem;">
+            <i class="fa-regular fa-trash-can"></i>
+          </button>
+        </div>
+      `;
+      container.appendChild(div);
+      updateModalSlotCountBadge();
+    }
+
+    function autoDetectModalSlotType(inputElem) {
+      const row = inputElem.closest('.modal-slot-row');
+      if (!row) return;
+      const typeSelect = row.querySelector('.modal-input-slot-type');
+      if (typeSelect && inputElem.value.trim().toUpperCase().startsWith('L')) {
+        typeSelect.value = 'LAB';
+      }
+    }
+
+    function removeModalSlotRow(btn) {
+      const container = document.getElementById('modal-slots-container');
+      if (container.querySelectorAll('.modal-slot-row').length <= 1) {
+        showNotification('A course slot assignment requires at least 1 slot offering.', 'warning');
+        return;
+      }
+      btn.closest('.modal-slot-row').remove();
+      updateModalSlotCountBadge();
+    }
+
+    function updateModalSlotCountBadge() {
+      const container = document.getElementById('modal-slots-container');
+      const badge = document.getElementById('modal-slot-count-badge');
+      if (container && badge) {
+        badge.textContent = container.querySelectorAll('.modal-slot-row').length;
+      }
+    }
+
+    async function handleAssignSlotSubmit(e) {
       e.preventDefault();
       const courseVal = document.getElementById('modal-assign-course').value;
       if (!courseVal) {
-        showNotification('Please select a course to assign slot', 'danger');
+        showNotification('Please select a course to assign slot(s)', 'danger');
         return;
       }
 
       const [code, title] = courseVal.split('|');
-      const slot = document.getElementById('modal-assign-slot').value.trim();
-      const faculty = document.getElementById('modal-assign-faculty').value.trim();
-      const venue = document.getElementById('modal-assign-venue').value.trim();
-      const capacity = parseInt(document.getElementById('modal-assign-capacity').value) || 60;
+      const rows = document.querySelectorAll('#modal-slots-container .modal-slot-row');
+      const slotList = [];
 
-      const slots = JSON.parse(localStorage.getItem('vitap_admin_slots') || 'null') || [...defaultAdminSlots];
+      rows.forEach(row => {
+        const sCode = row.querySelector('.modal-input-slot-code').value.trim();
+        const sType = row.querySelector('.modal-input-slot-type').value;
+        const sFaculty = row.querySelector('.modal-input-faculty').value.trim();
+        const sVenue = row.querySelector('.modal-input-venue').value.trim();
+        const sCap = parseInt(row.querySelector('.modal-input-capacity').value) || 60;
 
-      const newSlotItem = {
-        courseCode: code,
-        courseName: title,
-        slot,
-        faculty,
-        venue,
-        capacity,
-        available: capacity
-      };
+        if (sCode && sFaculty) {
+          slotList.push({
+            slotCode: sCode,
+            slotType: sType || (sCode.toUpperCase().startsWith('L') ? 'LAB' : 'THEORY'),
+            facultyName: sFaculty,
+            venue: sVenue,
+            capacity: sCap
+          });
+        }
+      });
 
-      slots.unshift(newSlotItem);
-      localStorage.setItem('vitap_admin_slots', JSON.stringify(slots));
-      loadAdminSlots();
+      if (slotList.length === 0) {
+        showNotification('Please provide at least 1 valid slot with Slot Code and Faculty Name.', 'danger');
+        return;
+      }
+
+      const submitBtn = document.getElementById('btn-save-assign-slots');
+      const origText = submitBtn ? submitBtn.innerHTML : '<i class="fa-solid fa-check"></i> Save &amp; Assign All Slots';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving Slots...';
+      }
+
+      try {
+        // 1. Call Backend Batch Assign API
+        const batchRes = await adminApi.assignSlotsBatch({
+          courseCode: code,
+          slots: slotList
+        });
+
+        if (!batchRes || !batchRes.success) {
+          // Fallback to single assignSlot in parallel if batch was not recognized
+          for (const s of slotList) {
+            await adminApi.assignSlot({
+              courseCode: code,
+              slotCode: s.slotCode,
+              slotType: s.slotType,
+              facultyName: s.facultyName,
+              venue: s.venue,
+              capacity: s.capacity
+            });
+          }
+        }
+      } catch (err) {
+        console.warn('Backend slot assign error:', err);
+      }
+
+      // 2. Sync to localStorage vitap_admin_slots
+      const existingAdminSlots = JSON.parse(localStorage.getItem('vitap_admin_slots') || 'null') || [...defaultAdminSlots];
+      slotList.forEach(s => {
+        existingAdminSlots.unshift({
+          courseCode: code,
+          courseName: title,
+          slot: s.slotCode,
+          slotType: s.slotType,
+          faculty: s.facultyName,
+          venue: s.venue,
+          capacity: s.capacity,
+          available: s.capacity
+        });
+      });
+      localStorage.setItem('vitap_admin_slots', JSON.stringify(existingAdminSlots));
+
+      // 3. Sync to localStorage vitap_admin_courses
+      const savedCourses = JSON.parse(localStorage.getItem('vitap_admin_courses') || 'null') || [...defaultAdminCourses];
+      const targetCourse = savedCourses.find(c => c.code.toUpperCase() === code.toUpperCase());
+      if (targetCourse) {
+        if (!targetCourse.offerings) targetCourse.offerings = [];
+        slotList.forEach(s => {
+          targetCourse.offerings.push({
+            slot: s.slotCode,
+            faculty: s.facultyName,
+            venue: s.venue,
+            capacity: s.capacity,
+            available: s.capacity,
+            enrolled: 0
+          });
+        });
+        targetCourse.capacity = targetCourse.offerings.reduce((sum, o) => sum + (o.capacity || 0), 0);
+        localStorage.setItem('vitap_admin_courses', JSON.stringify(savedCourses));
+      }
+
+      // 4. Reload Tables & UI
+      await loadAdminCourses();
+      await loadAdminSlots();
       closeAssignSlotModal();
-      showNotification(`Slot ${slot} assigned to ${faculty} for ${code}!`, 'success');
+
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = origText;
+      }
+
+      showNotification(`Successfully assigned ${slotList.length} slot(s) to ${code} - ${title}!`, 'success');
     }
 
     function openReassignModal(idx) {
@@ -1522,7 +2105,10 @@
               <button class="btn-outline action-btn-sm" style="padding: 2px 8px; font-size: 0.7rem;" onclick="expandCapacity(${idx})">+ Cap</button>
             </div>
           </td>
-          <td style="vertical-align: top; text-align: center;">
+          <td style="vertical-align: top; text-align: center; white-space: nowrap;">
+            <button class="btn-outline action-btn-sm" style="color: var(--primary-navy); border-color: var(--border-color); margin-right: 4px;" onclick="openAssignSlotModal('${c.code}')" title="Add 1 or More Slots to ${c.code}">
+              <i class="fa-solid fa-plus"></i> Slot(s)
+            </button>
             <button class="btn-outline action-btn-sm" style="color: #DC2626; border-color: #FECACA;" onclick="handleDeleteCourse('${c.code}', ${c.id || 0})" title="Delete Course">
               <i class="fa-solid fa-trash"></i>
             </button>
@@ -1539,7 +2125,13 @@
       e.preventDefault();
       const code = document.getElementById('admin-course-code').value.trim().toUpperCase();
       const title = document.getElementById('admin-course-title').value.trim();
-      const basket = document.getElementById('admin-course-basket').value;
+      const rawBasket = document.getElementById('admin-course-basket').value;
+      let basket = 'PC';
+      if (rawBasket.includes('UE') || rawBasket.toUpperCase().includes('UNIVERSITY ELECTIVE')) basket = 'UE';
+      else if (rawBasket.includes('UC') || rawBasket.toUpperCase().includes('UNIVERSITY CORE')) basket = 'UC';
+      else if (rawBasket.includes('PE') || rawBasket.toUpperCase().includes('PROGRAM ELECTIVE')) basket = 'PE';
+      else if (rawBasket.includes('PC') || rawBasket.toUpperCase().includes('PROGRAM CORE')) basket = 'PC';
+      else basket = rawBasket;
       const credits = document.getElementById('admin-course-credits').value + '.0';
       const type = document.getElementById('admin-course-type').value;
 
@@ -1606,7 +2198,24 @@
       filtered.unshift(newCourse);
       localStorage.setItem('vitap_admin_courses', JSON.stringify(filtered));
 
+      // Also sync all offerings to vitap_admin_slots!
+      const existingSlots = JSON.parse(localStorage.getItem('vitap_admin_slots') || 'null') || [...defaultAdminSlots];
+      offerings.forEach(o => {
+        existingSlots.unshift({
+          courseCode: code,
+          courseName: title,
+          slot: o.slot,
+          slotType: o.slot.toUpperCase().startsWith('L') ? 'LAB' : 'THEORY',
+          faculty: o.faculty,
+          venue: o.venue,
+          capacity: o.capacity,
+          available: o.capacity
+        });
+      });
+      localStorage.setItem('vitap_admin_slots', JSON.stringify(existingSlots));
+
       await loadAdminCourses();
+      await loadAdminSlots();
       document.getElementById('admin-add-course-form').reset();
       resetSlotOfferings();
       showNotification(`Successfully added ${code} - ${title} with ${offerings.length} faculty/slot offering(s) to catalog!`, 'success');
@@ -1649,6 +2258,351 @@
       }
     }
 
+    // ==========================================
+    // AUTO-CREDENTIAL GENERATOR FOR STUDENTS
+    // ==========================================
+    let emailVariantIndex = 0;
+    let currentModalStudent = null;
+    let lastCreatedStudent = null;
+
+    function cleanStudentName(name) {
+      if (!name) return '';
+      return name.replace(/^(mr\.|mrs\.|ms\.|dr\.)\s+/i, '').trim();
+    }
+
+    function generateStudentEmail(name, variant = 0) {
+      const clean = cleanStudentName(name).toLowerCase();
+      if (!clean) return '';
+      const parts = clean.replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(Boolean);
+      if (parts.length === 0) return '';
+
+      const firstName = parts[0];
+      const lastName = parts.length > 1 ? parts[parts.length - 1] : '';
+
+      if (!lastName) {
+        const variants = [
+          `${firstName}@vitap.ac.in`,
+          `${firstName}24@vitap.ac.in`,
+          `${firstName}.student@vitap.ac.in`
+        ];
+        return variants[Math.abs(variant) % variants.length];
+      }
+
+      const variants = [
+        `${firstName}.${lastName}@vitap.ac.in`,
+        `${firstName}${lastName}@vitap.ac.in`,
+        `${firstName}.${lastName}24@vitap.ac.in`,
+        `${firstName[0]}.${lastName}@vitap.ac.in`
+      ];
+      return variants[Math.abs(variant) % variants.length];
+    }
+
+    function generateSecurePassword() {
+      const symbols = ['@', '#', '$', '!'];
+      const sym = symbols[Math.floor(Math.random() * symbols.length)];
+      const num = Math.floor(1000 + Math.random() * 9000);
+      return `Vitap${sym}${num}`;
+    }
+
+    function getBranchCodeFromProgram(program) {
+      if (!program) return 'BCE';
+      const p = program.toUpperCase();
+      if (p.includes('DATA SCIENCE') || p.includes('BDS')) return 'BDS';
+      if (p.includes('AI') || p.includes('MACHINE LEARNING') || p.includes('BAI')) return 'BAI';
+      if (p.includes('ELECTRICAL') || p.includes('BEE') || p.includes('EEE')) return 'BEE';
+      if (p.includes('ELECTRONIC') || p.includes('COMMUNICATION') || p.includes('BEC') || p.includes('ECE')) return 'BEC';
+      if (p.includes('MECHANICAL') || p.includes('BME')) return 'BME';
+      if (p.includes('INTEGRATED M.TECH') || p.includes('MIS') || p.includes('MIC')) return 'MIS';
+      if (p.includes('SOFTWARE') || p.includes('BSE')) return 'BSE';
+      return 'BCE';
+    }
+
+    function generateRegNo(program) {
+      const year = '24';
+      const branchCode = getBranchCodeFromProgram(program);
+      const randomSeq = Math.floor(1000 + Math.random() * 9000);
+      return `${year}${branchCode}${randomSeq}`;
+    }
+
+    function handleStudentInput() {
+      // Credentials are now generated exclusively on clicking "Generate Credentials"
+    }
+
+    const handleStudentNameInput = handleStudentInput;
+
+    function regenerateEmail() {
+      const name = document.getElementById('new-student-name').value.trim();
+      if (!name) {
+        showNotification('Please enter the Student Full Name and click Generate Credentials first.', 'info');
+        document.getElementById('new-student-name').focus();
+        return;
+      }
+      emailVariantIndex++;
+      const emailInput = document.getElementById('new-student-email');
+      emailInput.value = generateStudentEmail(name, emailVariantIndex);
+      emailInput.dataset.autoGen = 'true';
+      updateCredentialsPreview();
+      showNotification('Generated alternate email format!', 'info');
+    }
+
+    function regenerateRegNo() {
+      const name = document.getElementById('new-student-name').value.trim();
+      const prog = document.getElementById('new-student-program') ? document.getElementById('new-student-program').value : '';
+      if (!name) {
+        showNotification('Please enter the Student Full Name and click Generate Credentials first.', 'info');
+        document.getElementById('new-student-name').focus();
+        return;
+      }
+      const usernameInput = document.getElementById('new-student-username');
+      usernameInput.value = generateRegNo(prog);
+      usernameInput.dataset.autoGen = 'true';
+      updateCredentialsPreview();
+      showNotification('Generated new registration number for ' + getBranchCodeFromProgram(prog) + '!', 'info');
+    }
+
+    function regeneratePassword() {
+      const name = document.getElementById('new-student-name').value.trim();
+      if (!name) {
+        showNotification('Please enter the Student Full Name and click Generate Credentials first.', 'info');
+        document.getElementById('new-student-name').focus();
+        return;
+      }
+      const passInput = document.getElementById('new-student-password');
+      const confirmInput = document.getElementById('new-student-confirm');
+      const genPass = generateSecurePassword();
+      passInput.value = genPass;
+      confirmInput.value = genPass;
+      passInput.dataset.autoGen = 'true';
+      updateCredentialsPreview();
+      showNotification('Generated new secure password!', 'info');
+    }
+
+    function generateAllStudentCredentials(showToast = true) {
+      const name = document.getElementById('new-student-name').value.trim();
+      const prog = document.getElementById('new-student-program') ? document.getElementById('new-student-program').value : '';
+
+      if (!name) {
+        showNotification('Please enter the Student Full Name before generating credentials.', 'warning');
+        document.getElementById('new-student-name').focus();
+        return false;
+      }
+
+      emailVariantIndex++;
+      const emailInput = document.getElementById('new-student-email');
+      emailInput.value = generateStudentEmail(name, emailVariantIndex);
+      emailInput.dataset.autoGen = 'true';
+
+      const usernameInput = document.getElementById('new-student-username');
+      usernameInput.value = generateRegNo(prog);
+      usernameInput.dataset.autoGen = 'true';
+
+      const pass = generateSecurePassword();
+      const passInput = document.getElementById('new-student-password');
+      const confirmInput = document.getElementById('new-student-confirm');
+      passInput.value = pass;
+      confirmInput.value = pass;
+      passInput.dataset.autoGen = 'true';
+
+      updateCredentialsPreview();
+      if (showToast) {
+        const branch = getBranchCodeFromProgram(prog);
+        showNotification(`Credentials generated for ${name} (${branch})!`, 'success');
+      }
+      return true;
+    }
+
+    function syncManualPassword(val) {
+      document.getElementById('new-student-confirm').value = val;
+      document.getElementById('new-student-password').dataset.autoGen = 'false';
+      updateCredentialsPreview();
+    }
+
+    function togglePasswordVisibility(inputId = 'new-student-password', iconId = 'toggle-pass-icon') {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      if (!input) return;
+      if (input.type === 'password') {
+        input.type = 'text';
+        if (icon) icon.className = 'fa-solid fa-eye-slash';
+      } else {
+        input.type = 'password';
+        if (icon) icon.className = 'fa-solid fa-eye';
+      }
+    }
+
+    function copyGeneratedCredentials() {
+      const name = document.getElementById('new-student-name').value.trim() || 'Student';
+      const prog = document.getElementById('new-student-program') ? document.getElementById('new-student-program').value : '';
+      const username = document.getElementById('new-student-username').value.trim();
+      const email = document.getElementById('new-student-email').value.trim();
+      const password = document.getElementById('new-student-password').value;
+
+      if (!username || !email || !password) {
+        showNotification('Please generate or fill in student credentials first.', 'warning');
+        return;
+      }
+
+      const text = `VIT-AP Course Registration Portal Credentials:\nStudent Name: ${name}\nProgram: ${prog}\nRegistration No: ${username}\nUniversity Email: ${email}\nInitial Password: ${password}\nPortal URL: ${window.location.origin}/student/login.html`;
+      
+      navigator.clipboard.writeText(text).then(() => {
+        showNotification('Student credentials copied to clipboard!', 'success');
+      }).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showNotification('Student credentials copied to clipboard!', 'success');
+      });
+    }
+
+    function updateCredentialsPreview() {
+      const name = document.getElementById('new-student-name').value.trim();
+      const prog = document.getElementById('new-student-program') ? document.getElementById('new-student-program').value : '';
+      const username = document.getElementById('new-student-username').value.trim();
+      const email = document.getElementById('new-student-email').value.trim();
+      const password = document.getElementById('new-student-password').value;
+      const previewCard = document.getElementById('credentials-preview-card');
+
+      if (!previewCard) return;
+
+      if (name && (email || password || username)) {
+        previewCard.style.display = 'flex';
+        document.getElementById('preview-badge-name').textContent = name;
+        if (document.getElementById('preview-badge-program')) {
+          document.getElementById('preview-badge-program').textContent = prog || '—';
+        }
+        document.getElementById('preview-badge-username').textContent = username || '—';
+        document.getElementById('preview-badge-email').textContent = email || '—';
+        document.getElementById('preview-badge-password').textContent = password || '••••••••';
+      } else {
+        previewCard.style.display = 'none';
+      }
+    }
+
+    function clearStudentForm() {
+      document.getElementById('create-student-form').reset();
+      document.getElementById('new-student-email').dataset.autoGen = 'true';
+      document.getElementById('new-student-username').dataset.autoGen = 'true';
+      document.getElementById('new-student-password').dataset.autoGen = 'true';
+      document.getElementById('new-student-confirm').value = '';
+      const previewCard = document.getElementById('credentials-preview-card');
+      if (previewCard) previewCard.style.display = 'none';
+    }
+
+    // Modal Helpers
+    function openCreatedStudentSuccessModal(name, program, username, email, password) {
+      lastCreatedStudent = { name, program, username, email, password };
+      document.getElementById('success-modal-name').textContent = name;
+      if (document.getElementById('success-modal-program')) {
+        document.getElementById('success-modal-program').textContent = program;
+      }
+      document.getElementById('success-modal-username').textContent = username;
+      document.getElementById('success-modal-email').textContent = email;
+      document.getElementById('success-modal-password').textContent = password;
+      const modal = document.getElementById('student-success-modal');
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function closeCreatedStudentSuccessModal() {
+      const modal = document.getElementById('student-success-modal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function copySuccessModalCredentials() {
+      if (!lastCreatedStudent) return;
+      const text = `VIT-AP Course Registration Credentials:\nStudent: ${lastCreatedStudent.name}\nProgram: ${lastCreatedStudent.program || 'N/A'}\nRegistration No: ${lastCreatedStudent.username}\nUniversity Email: ${lastCreatedStudent.email}\nTemporary Password: ${lastCreatedStudent.password}\nPortal URL: ${window.location.origin}/student/login.html`;
+      navigator.clipboard.writeText(text).then(() => {
+        showNotification('Login credentials copied to clipboard!', 'success');
+      }).catch(() => {
+        showNotification('Login credentials copied to clipboard!', 'success');
+      });
+    }
+
+    function openStudentCredentialModal(id, username, name, email, currentPassword) {
+      currentModalStudent = { id, username, name, email };
+      document.getElementById('modal-cred-name').textContent = name || username;
+      document.getElementById('modal-cred-info').textContent = `Reg No: ${username} • ${email || username.toLowerCase() + '@vitap.ac.in'}`;
+      document.getElementById('modal-cred-password').value = currentPassword || generateSecurePassword();
+      const modal = document.getElementById('student-credential-modal');
+      if (modal) modal.style.display = 'flex';
+    }
+
+    function closeStudentCredentialModal() {
+      const modal = document.getElementById('student-credential-modal');
+      if (modal) modal.style.display = 'none';
+      currentModalStudent = null;
+    }
+
+    function generateModalPassword() {
+      document.getElementById('modal-cred-password').value = generateSecurePassword();
+      showNotification('Generated new secure password!', 'info');
+    }
+
+    function copyModalCredentials() {
+      if (!currentModalStudent) return;
+      const pass = document.getElementById('modal-cred-password').value;
+      const text = `VIT-AP Portal Credentials:\nStudent: ${currentModalStudent.name}\nReg No: ${currentModalStudent.username}\nEmail: ${currentModalStudent.email}\nPassword: ${pass}\nPortal: ${window.location.origin}/student/login.html`;
+      navigator.clipboard.writeText(text).then(() => {
+        showNotification('Credentials copied to clipboard!', 'success');
+      }).catch(() => {
+        showNotification('Credentials copied to clipboard!', 'success');
+      });
+    }
+
+    async function saveModalPassword() {
+      if (!currentModalStudent) return;
+      const newPass = document.getElementById('modal-cred-password').value.trim();
+      if (!newPass) {
+        showNotification('Password cannot be empty.', 'warning');
+        return;
+      }
+
+      const btn = document.getElementById('btn-save-modal-password');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Updating...';
+      btn.disabled = true;
+
+      const payload = {
+        name: currentModalStudent.name,
+        fullName: currentModalStudent.name,
+        email: currentModalStudent.email,
+        password: newPass
+      };
+
+      try {
+        if (currentModalStudent.id && currentModalStudent.id !== '0') {
+          await adminApi.updateStudent(currentModalStudent.id, payload);
+        }
+      } catch (err) {
+        console.warn('Backend update error:', err);
+      }
+
+      // Update cached
+      const cached = JSON.parse(localStorage.getItem('vitap_provisioned_students') || '[]');
+      const st = cached.find(s => s.username === currentModalStudent.username);
+      if (st) {
+        st.password = newPass;
+        localStorage.setItem('vitap_provisioned_students', JSON.stringify(cached));
+      }
+
+      showNotification(`Password updated for ${currentModalStudent.username}!`, 'success');
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+      closeStudentCredentialModal();
+      loadProvisionedCredentials();
+    }
+
+    function copySingleStudentCreds(username, name, email, pass) {
+      const text = `VIT-AP Portal Credentials:\nStudent: ${name}\nReg No: ${username}\nEmail: ${email || username.toLowerCase() + '@vitap.ac.in'}\nPassword: ${pass}\nPortal: ${window.location.origin}/student/login.html`;
+      navigator.clipboard.writeText(text).then(() => {
+        showNotification(`Copied credentials for ${username} to clipboard!`, 'success');
+      }).catch(() => {
+        showNotification(`Copied credentials for ${username}!`, 'success');
+      });
+    }
+
     function renderStudentRows(students) {
       const tbody = document.getElementById('student-credentials-tbody');
       if (!tbody) return;
@@ -1657,7 +2611,7 @@
         tbody.innerHTML = `
           <tr>
             <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">
-              <i class="fa-regular fa-folder-open" style="margin-right: 6px;"></i> No students provisioned yet. Fill the form above to add a student.
+              <i class="fa-regular fa-folder-open" style="margin-right: 6px;"></i> No students provisioned yet. Type a student name above to generate and save.
             </td>
           </tr>
         `;
@@ -1667,6 +2621,7 @@
       tbody.innerHTML = '';
       students.forEach(user => {
         const name = user.fullName || user.name || user.username;
+        const pass = user.password || 'password123';
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td style="font-weight: 700; color: var(--primary-navy);">${user.username}</td>
@@ -1675,10 +2630,16 @@
           <td>${user.program || 'B.Tech CSE'} <br><small style="color:var(--text-muted);">${user.semester || 'Sem 6'}</small></td>
           <td><strong style="color: var(--primary-navy);">${user.cgpa ? Number(user.cgpa).toFixed(2) : '8.50'}</strong></td>
           <td style="text-align: center; white-space: nowrap;">
-            <button class="btn-outline action-btn-sm" style="margin-right: 6px;" onclick="openEditStudentModal(${user.id || 0}, '${user.username}', '${(name || '').replace(/'/g, "\\'")}', '${user.email || ''}', '${user.program || ''}', '${user.semester || ''}', ${user.cgpa || 8.5}, ${user.maxCredits || 27})">
-              <i class="fa-solid fa-pen-to-square"></i> Edit
+            <button class="btn-outline action-btn-sm" style="margin-right: 4px; color: var(--primary-navy); border-color: #93C5FD;" title="View / Reset Password" onclick="openStudentCredentialModal('${user.id || 0}', '${user.username}', '${(name || '').replace(/'/g, "\\'")}', '${user.email || ''}', '${pass.replace(/'/g, "\\'")}')">
+              <i class="fa-solid fa-key"></i> Pass
             </button>
-            <button class="btn-outline action-btn-sm" style="color: #DC2626; border-color: #FECACA;" onclick="handleDeleteStudent(${user.id || 0}, '${user.username}')">
+            <button class="btn-outline action-btn-sm" style="margin-right: 4px;" title="Copy Login Info" onclick="copySingleStudentCreds('${user.username}', '${(name || '').replace(/'/g, "\\'")}', '${user.email || ''}', '${pass.replace(/'/g, "\\'")}')">
+              <i class="fa-solid fa-copy"></i>
+            </button>
+            <button class="btn-outline action-btn-sm" style="margin-right: 4px;" title="Edit Student" onclick="openEditStudentModal(${user.id || 0}, '${user.username}', '${(name || '').replace(/'/g, "\\'")}', '${user.email || ''}', '${user.program || ''}', '${user.semester || ''}', ${user.cgpa || 8.5}, ${user.maxCredits || 27})">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <button class="btn-outline action-btn-sm" style="color: #DC2626; border-color: #FECACA;" title="Delete Student" onclick="handleDeleteStudent(${user.id || 0}, '${user.username}')">
               <i class="fa-solid fa-trash"></i>
             </button>
           </td>
@@ -1752,14 +2713,29 @@
     async function handleCreateStudentCredentials(e) {
       e.preventDefault();
       const name = document.getElementById('new-student-name').value.trim();
-      const username = document.getElementById('new-student-username').value.trim().toUpperCase();
-      const email = document.getElementById('new-student-email').value.trim();
+      let username = document.getElementById('new-student-username').value.trim().toUpperCase();
+      let email = document.getElementById('new-student-email').value.trim();
       const program = document.getElementById('new-student-program').value;
       const semester = document.getElementById('new-student-semester').value;
       const cgpa = parseFloat(document.getElementById('new-student-cgpa').value) || 8.50;
       const maxCredits = parseInt(document.getElementById('new-student-maxcredits').value) || 27;
-      const pass = document.getElementById('new-student-password').value;
-      const confirmPass = document.getElementById('new-student-confirm').value;
+      let pass = document.getElementById('new-student-password').value;
+      let confirmPass = document.getElementById('new-student-confirm').value;
+
+      if (!name) {
+        showNotification('Please enter the Student Full Name.', 'warning');
+        document.getElementById('new-student-name').focus();
+        return;
+      }
+
+      // If user hasn't clicked 'Generate Credentials' yet, generate them now before saving
+      if (!username || !email || !pass) {
+        generateAllStudentCredentials(false);
+        username = document.getElementById('new-student-username').value.trim().toUpperCase();
+        email = document.getElementById('new-student-email').value.trim();
+        pass = document.getElementById('new-student-password').value;
+        confirmPass = document.getElementById('new-student-confirm').value;
+      }
 
       if (pass !== confirmPass) {
         showNotification('Passwords do not match. Please verify and re-enter.', 'danger');
@@ -1804,7 +2780,16 @@
       filtered.unshift(newStudentObj);
       localStorage.setItem('vitap_provisioned_students', JSON.stringify(filtered));
 
-      document.getElementById('create-student-form').reset();
+      // Copy credentials to clipboard automatically for convenient sharing
+      try {
+        const credText = `VIT-AP Portal Credentials:\nStudent: ${name}\nReg No: ${username}\nEmail: ${email}\nPassword: ${pass}\nPortal: ${window.location.origin}/student/login.html`;
+        navigator.clipboard.writeText(credText);
+      } catch (e) {}
+
+      // Open Success Modal with credentials & copy button
+      openCreatedStudentSuccessModal(name, program, username, email, pass);
+
+      clearStudentForm();
       await loadProvisionedCredentials();
       await loadStudentRoster();
       await loadAdminDashboardStats();
@@ -1837,8 +2822,14 @@
     }
 
     function openEditStudentModal(id, username, name, email, program, semester, cgpa, maxCredits) {
-      const newPassword = prompt(`Change Password for ${username} (${name})\nLeave blank to keep existing password, or enter new password:`);
+      const newPassword = prompt(`Change Password for ${username} (${name})\nLeave blank to keep existing password, or enter new password (type 'GEN' to auto-generate):`);
       if (newPassword === null) return; // User cancelled
+
+      let finalPassword = newPassword.trim();
+      if (finalPassword.toUpperCase() === 'GEN') {
+        finalPassword = generateSecurePassword();
+        alert(`Generated new password for ${username}: ${finalPassword}`);
+      }
 
       const payload = {
         name,
@@ -1849,8 +2840,8 @@
         cgpa,
         maxCredits
       };
-      if (newPassword.trim().length > 0) {
-        payload.password = newPassword.trim();
+      if (finalPassword.length > 0) {
+        payload.password = finalPassword;
       }
 
       if (id) {
@@ -1871,7 +2862,7 @@
         st.semester = semester;
         st.cgpa = cgpa;
         st.maxCredits = maxCredits;
-        if (newPassword.trim().length > 0) st.password = newPassword.trim();
+        if (finalPassword.length > 0) st.password = finalPassword;
         localStorage.setItem('vitap_provisioned_students', JSON.stringify(cached));
       }
       loadProvisionedCredentials();

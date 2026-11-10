@@ -13,6 +13,7 @@ public class RegistrationResponseDTO {
     private String courseTitle;
     private String basket;
     private String componentType; // "Theory" or "Lab"
+    private Long slotId;
     private String slotCode;
     private String facultyName;
     private String venue;

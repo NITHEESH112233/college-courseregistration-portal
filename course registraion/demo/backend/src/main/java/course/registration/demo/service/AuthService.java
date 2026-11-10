@@ -8,7 +8,9 @@ import course.registration.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -27,32 +29,39 @@ public class AuthService {
 
         String username = request.getUsername().trim().toUpperCase();
         String password = request.getPassword().trim();
-        String requestedRole = request.getRole() != null ? request.getRole().trim().toUpperCase() : "STUDENT";
 
         Optional<User> userOpt = userRepository.findByUsername(username);
 
         if (userOpt.isEmpty()) {
-            if ("STUDENT".equalsIgnoreCase(requestedRole)) {
+            if (request.getRole() != null && "STUDENT".equalsIgnoreCase(request.getRole().trim())) {
                 return LoginResponse.builder()
                         .success(false)
                         .message("Student record not found. Only students provisioned by the Administrator can access the portal.")
                         .build();
-            } else {
+            } else if (request.getRole() != null && "ADMIN".equalsIgnoreCase(request.getRole().trim())) {
                 return LoginResponse.builder()
                         .success(false)
                         .message("Administrator account not found: " + username)
+                        .build();
+            } else {
+                return LoginResponse.builder()
+                        .success(false)
+                        .message("Account not found: " + username)
                         .build();
             }
         }
 
         User user = userOpt.get();
 
-        // Check role permission
-        if (!user.getRole().equalsIgnoreCase(requestedRole)) {
-            return LoginResponse.builder()
-                    .success(false)
-                    .message("Access denied: Account " + username + " is registered as " + user.getRole() + ", not " + requestedRole + ".")
-                    .build();
+        // Check role permission only if explicitly specified in request
+        if (request.getRole() != null && !request.getRole().isBlank()) {
+            String requestedRole = request.getRole().trim().toUpperCase();
+            if (!user.getRole().equalsIgnoreCase(requestedRole)) {
+                return LoginResponse.builder()
+                        .success(false)
+                        .message("Access denied: Account " + username + " is registered as " + user.getRole() + ", not " + requestedRole + ".")
+                        .build();
+            }
         }
 
         // Verify password
@@ -71,11 +80,14 @@ public class AuthService {
                     .build();
         }
 
-        // Calculate registered credits
-        int registeredCredits = registrationRepository.findByStudentUsernameAndStatus(username, "REGISTERED")
-                .stream()
-                .mapToInt(r -> r.getCourse().getCredits().intValue())
-                .sum();
+        // Calculate registered credits (deduplicate course components)
+        Set<String> countedCourses = new HashSet<>();
+        int registeredCredits = 0;
+        for (course.registration.demo.model.Registration r : registrationRepository.findByStudentUsernameAndStatus(username, "REGISTERED")) {
+            if (r.getCourse() != null && countedCourses.add(r.getCourse().getCode())) {
+                registeredCredits += (r.getCourse().getCredits() != null ? r.getCourse().getCredits().intValue() : 0);
+            }
+        }
 
         return LoginResponse.builder()
                 .success(true)

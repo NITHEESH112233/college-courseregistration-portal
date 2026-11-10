@@ -170,6 +170,9 @@
         <h1 class="page-title">Delete Registered Courses</h1>
         <p class="page-subtitle">Select registered courses you wish to drop from your current semester schedule.</p>
 
+        <!-- Schedule Status Banner -->
+        <div id="delete-schedule-banner" style="display: none; margin-bottom: 20px;"></div>
+
         <!-- Red Alert Warning -->
         <div class="danger-alert-banner">
           <i class="fa-solid fa-triangle-exclamation" style="font-size: 1.2rem;"></i>
@@ -231,6 +234,8 @@
   <script src="../js/app.js"></script>
   <script src="../js/api.js"></script>
   <script>
+    let isDeleteScheduleActive = false;
+
     document.addEventListener('DOMContentLoaded', async () => {
       const user = getCurrentUser();
       if (user && user.fullName) {
@@ -238,8 +243,88 @@
         if (avatar) avatar.textContent = user.fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'JD';
       }
 
+      await checkDeleteSchedule();
       await loadRegisteredCoursesForDeletion();
     });
+
+    async function checkDeleteSchedule() {
+      const banner = document.getElementById('delete-schedule-banner');
+      const submitBtn = document.getElementById('delete-submit-btn');
+      if (!banner) return;
+
+      try {
+        const res = await configApi.get();
+        if (res && res.success && res.data) {
+          const cfg = res.data;
+          const user = getCurrentUser();
+          const isUserSlotActive = user && user.slotActive !== false;
+
+          if (!isUserSlotActive) {
+            isDeleteScheduleActive = false;
+            banner.style.display = 'block';
+            banner.innerHTML = `
+              <div style="background-color: #FEF2F2; border: 1.5px solid #F87171; border-left: 5px solid #DC2626; border-radius: 8px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <i class="fa-solid fa-lock" style="font-size: 1.3rem; color: #DC2626;"></i>
+                  <div>
+                    <strong style="color: #991B1B; font-size: 0.95rem;">Registration & Modification Window Locked for Your Account</strong>
+                    <div style="color: #B91C1C; font-size: 0.82rem; margin-top: 2px;">Your allotted time slot has not arrived yet or has expired. Dropping courses is disabled outside your slot.</div>
+                  </div>
+                </div>
+                <span class="badge" style="background: #FEE2E2; color: #DC2626; font-weight: 700; padding: 6px 12px; border-radius: 6px;">Slot Inactive</span>
+              </div>
+            `;
+            if (submitBtn) {
+              submitBtn.disabled = true;
+              submitBtn.style.opacity = '0.6';
+              submitBtn.style.cursor = 'not-allowed';
+            }
+            return;
+          }
+
+          if (cfg.status !== 'ACTIVE') {
+            isDeleteScheduleActive = false;
+            banner.style.display = 'block';
+            let labelText = cfg.status === 'UPCOMING' ? 'Registration Starts Soon' : (cfg.status === 'PAUSED' ? 'Registration Paused' : 'Registration Closed');
+            let descText = cfg.status === 'UPCOMING' ? 'The course registration and drop window is not active yet.' : 'The course registration window is currently not active.';
+            banner.innerHTML = `
+              <div style="background-color: #FFFBEB; border: 1.5px solid #FCD34D; border-left: 5px solid #D97706; border-radius: 8px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <i class="fa-solid fa-clock-rotate-left" style="font-size: 1.3rem; color: #D97706;"></i>
+                  <div>
+                    <strong style="color: #92400E; font-size: 0.95rem;">${labelText} (System Status: ${cfg.status})</strong>
+                    <div style="color: #B45309; font-size: 0.82rem; margin-top: 2px;">${descText} Changes to registered courses are disabled outside the allotted window.</div>
+                  </div>
+                </div>
+                <span class="badge" style="background: #FEF3C7; color: #92400E; font-weight: 700; padding: 6px 12px; border-radius: 6px;">Window Inactive</span>
+              </div>
+            `;
+            if (submitBtn) {
+              submitBtn.disabled = true;
+              submitBtn.style.opacity = '0.6';
+              submitBtn.style.cursor = 'not-allowed';
+            }
+          } else {
+            isDeleteScheduleActive = true;
+            banner.style.display = 'block';
+            banner.innerHTML = `
+              <div style="background-color: #ECFDF5; border: 1.5px solid #6EE7B7; border-left: 5px solid #059669; border-radius: 8px; padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <i class="fa-solid fa-circle-check" style="font-size: 1.2rem; color: #059669;"></i>
+                  <div>
+                    <strong style="color: #065F46; font-size: 0.92rem;">Registration Window is Active</strong>
+                    <div style="color: #047857; font-size: 0.82rem;">You may drop or modify registered courses during your active allotted slot.</div>
+                  </div>
+                </div>
+                <span class="badge" style="background: #D1FAE5; color: #065F46; font-weight: 700; padding: 5px 10px; border-radius: 6px;">Active Slot</span>
+              </div>
+            `;
+          }
+        }
+      } catch (e) {
+        console.warn('Delete schedule check failed:', e);
+      }
+    }
 
     async function loadRegisteredCoursesForDeletion() {
       const user = getCurrentUser();
@@ -289,6 +374,11 @@
 
     async function handleConfirmDeletion(e) {
       e.preventDefault();
+      if (!isDeleteScheduleActive) {
+        showNotification('Course dropping is locked. Registration window is not active for your slot.', 'danger');
+        return;
+      }
+
       const user = getCurrentUser();
       const username = user ? user.username : '21BCE0000';
 
@@ -300,17 +390,32 @@
 
       const codes = Array.from(checkedBoxes).map(cb => cb.value);
       if (confirm(`Are you sure you want to drop selected courses: ${codes.join(', ')}?`)) {
+        const submitBtn = document.getElementById('delete-submit-btn');
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Dropping...';
+        }
+
         try {
-          await registrationApi.batchDrop(username, codes);
-          showNotification(`Successfully dropped ${codes.length} course(s). Seats released.`, 'success');
-          setTimeout(() => {
-            window.location.href = 'view_registered.html';
-          }, 800);
+          const res = await registrationApi.batchDrop(username, codes);
+          if (res && res.success) {
+            showNotification(`Successfully dropped ${codes.length} course(s). Seats released.`, 'success');
+            setTimeout(() => {
+              window.location.href = 'view_registered.html';
+            }, 800);
+          } else {
+            showNotification(res.message || 'Failed to drop courses. Window may be closed.', 'danger');
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = '<i class="fa-solid fa-trash-can"></i> Confirm & Delete Selected Courses';
+            }
+          }
         } catch (err) {
-          showNotification(`Successfully dropped ${codes.length} course(s). Seats released.`, 'success');
-          setTimeout(() => {
-            window.location.href = 'view_registered.html';
-          }, 800);
+          showNotification(err.message || 'Failed to drop courses: System error or window inactive.', 'danger');
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fa-solid fa-trash-can"></i> Confirm & Delete Selected Courses';
+          }
         }
       }
     }

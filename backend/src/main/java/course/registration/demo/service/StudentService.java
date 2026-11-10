@@ -7,6 +7,7 @@ import course.registration.demo.repository.RegistrationRepository;
 import course.registration.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -37,7 +38,7 @@ public class StudentService {
                 countedCourses.add(courseCode);
                 int cr = r.getCourse().getCredits() != null ? r.getCourse().getCredits().intValue() : 0;
                 registeredCredits += cr;
-                String b = r.getCourse().getBasket() != null ? r.getCourse().getBasket().toUpperCase() : "PC";
+                String b = CourseService.normalizeBasket(r.getCourse() != null ? r.getCourse().getBasket() : "PC");
                 basketCredits.put(b, basketCredits.getOrDefault(b, 0) + cr);
             }
         }
@@ -62,6 +63,7 @@ public class StudentService {
                 .build();
     }
 
+    @Transactional
     public StudentProfileDTO updatePreferences(String username, String fullName, String email, String newPassword) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Student not found: " + username));

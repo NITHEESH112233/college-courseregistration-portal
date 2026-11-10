@@ -21,12 +21,43 @@ public class CourseService {
     private final CourseSlotRepository courseSlotRepository;
     private final RegistrationRepository registrationRepository;
 
+    public static String normalizeBasket(String raw) {
+        if (raw == null || raw.isBlank()) return "PC";
+        String upper = raw.trim().toUpperCase();
+        if (upper.contains("UE") || upper.contains("UNIVERSITY ELECTIVE") || upper.contains("OPEN ELECTIVE")) {
+            return "UE";
+        }
+        if (upper.contains("UC") || upper.contains("UNIVERSITY CORE")) {
+            return "UC";
+        }
+        if (upper.contains("PE") || upper.contains("PROGRAM ELECTIVE") || upper.contains("SPECIALIZED ELECTIVE")) {
+            return "PE";
+        }
+        if (upper.contains("PC") || upper.contains("PROGRAM CORE") || upper.contains("MAJOR CORE")) {
+            return "PC";
+        }
+        return upper;
+    }
+
     public List<CourseDTO> getAllCourses(String basket, String username) {
-        List<Course> courses;
+        List<Course> courses = courseRepository.findAll();
+
+        // Self-heal and normalize any unnormalized course basket strings in database
+        for (Course c : courses) {
+            String norm = normalizeBasket(c.getBasket());
+            if (!norm.equals(c.getBasket())) {
+                c.setBasket(norm);
+                try {
+                    courseRepository.save(c);
+                } catch (Exception ignored) {}
+            }
+        }
+
         if (basket != null && !basket.isBlank()) {
-            courses = courseRepository.findByBasketIgnoreCase(basket.trim());
-        } else {
-            courses = courseRepository.findAll();
+            String target = normalizeBasket(basket);
+            courses = courses.stream()
+                    .filter(c -> target.equalsIgnoreCase(normalizeBasket(c.getBasket())))
+                    .collect(Collectors.toList());
         }
 
         return courses.stream()
@@ -62,7 +93,7 @@ public class CourseService {
                 .id(course.getId())
                 .code(course.getCode())
                 .title(course.getTitle())
-                .basket(course.getBasket())
+                .basket(normalizeBasket(course.getBasket()))
                 .credits(course.getCredits())
                 .ltpjc(course.getLtpjc())
                 .componentType(course.getComponentType())
@@ -76,6 +107,9 @@ public class CourseService {
     public CourseSlotDTO toSlotDTO(CourseSlot slot) {
         return CourseSlotDTO.builder()
                 .id(slot.getId())
+                .courseId(slot.getCourse() != null ? slot.getCourse().getId() : null)
+                .courseCode(slot.getCourse() != null ? slot.getCourse().getCode() : null)
+                .courseName(slot.getCourse() != null ? slot.getCourse().getTitle() : null)
                 .slotType(slot.getSlotType())
                 .slotCode(slot.getSlotCode())
                 .venue(slot.getVenue())

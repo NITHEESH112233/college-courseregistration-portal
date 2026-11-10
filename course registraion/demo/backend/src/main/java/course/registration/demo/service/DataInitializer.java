@@ -51,11 +51,17 @@ public class DataInitializer implements CommandLineRunner {
             userRepository.save(adminUser);
         }
 
+        // Initialize Default Demo Students
+        initStudentIfNotExists("23MIC7129", "Nitheesh K. Reddy", "nitheesh@vitap.ac.in", "password123", "B.Tech CSE (Specialization in AI & ML)", "Semester 6", 8.95, 120);
+        initStudentIfNotExists("21BCE0000", "Aditya Sharma", "aditya.sharma@vitap.ac.in", "password123", "B.Tech Computer Science & Engineering", "Semester 6", 8.50, 118);
+
         // 2. Initialize Registration Config
         if (configRepository.count() == 0) {
             RegistrationConfig cfg = RegistrationConfig.builder()
                     .semesterName("Winter Semester 2024")
                     .isRegistrationOpen(true)
+                    .startDateTime(LocalDateTime.now().minusHours(1))
+                    .endDateTime(LocalDateTime.now().plusDays(7))
                     .remainingHours(2)
                     .remainingMinutes(45)
                     .remainingSeconds(30)
@@ -63,6 +69,14 @@ public class DataInitializer implements CommandLineRunner {
                     .maxCredits(27)
                     .build();
             configRepository.save(cfg);
+        } else {
+            RegistrationConfig cfg = configRepository.findAll().get(0);
+            if (cfg.getEndDateTime() == null || cfg.getEndDateTime().isBefore(LocalDateTime.now())) {
+                cfg.setStartDateTime(LocalDateTime.now().minusHours(1));
+                cfg.setEndDateTime(LocalDateTime.now().plusDays(7));
+                cfg.setIsRegistrationOpen(true);
+                configRepository.save(cfg);
+            }
         }
 
         // 3. Initialize Courses & Slots
@@ -358,5 +372,25 @@ public class DataInitializer implements CommandLineRunner {
                 .actionLink("settings.html")
                 .createdAt(LocalDateTime.now().minusDays(3))
                 .build());
+    }
+
+    private void initStudentIfNotExists(String username, String fullName, String email, String password, String program, String semester, double cgpa, int earnedCredits) {
+        if (!userRepository.existsByUsername(username)) {
+            User student = User.builder()
+                    .username(username)
+                    .fullName(fullName)
+                    .email(email)
+                    .password(password)
+                    .role("STUDENT")
+                    .program(program)
+                    .semester(semester)
+                    .cgpa(cgpa)
+                    .earnedCredits(earnedCredits)
+                    .minCredits(16)
+                    .maxCredits(27)
+                    .slotActive(true)
+                    .build();
+            userRepository.save(student);
+        }
     }
 }

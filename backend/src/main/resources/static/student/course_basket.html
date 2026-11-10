@@ -267,6 +267,20 @@
           </div>
         </div>
 
+        <!-- Live Registration Schedule / Slot Status Banner -->
+        <div id="basket-schedule-banner" class="hero-registration-card" style="margin-bottom: 24px; padding: 18px 24px; border-left: 4px solid var(--primary-navy); background: #EFF6FF; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+          <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; flex-wrap: wrap; gap: 14px;">
+            <div>
+              <div style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted);">REGISTRATION TIME SLOT STATUS</div>
+              <div style="font-size: 1.15rem; font-weight: 700; color: var(--primary-navy); margin: 3px 0;" id="basket-schedule-title"><i class="fa-solid fa-spinner fa-spin"></i> Checking slot status...</div>
+              <div style="font-size: 0.82rem; color: #475569;" id="basket-schedule-desc">Verifying your allotted registration time window.</div>
+            </div>
+            <div>
+              <span class="badge" id="basket-status-pill" style="font-size: 0.82rem; padding: 6px 14px; background: #DBEAFE; color: #1D4ED8;">Checking Slot</span>
+            </div>
+          </div>
+        </div>
+
         <!-- 2x2 Basket Grid -->
         <div class="basket-grid">
           
@@ -382,22 +396,116 @@
       const user = getCurrentUser();
       if (user) {
         const greeting = document.querySelector('.user-greeting-badge');
-        if (greeting) greeting.innerHTML = `<i class="fa-solid fa-hand-wave" style="color: #F59E0B;"></i> Good Morning, ${user.fullName.split(' ')[0] || user.fullName}`;
+        if (greeting && user.fullName) {
+          greeting.innerHTML = `<i class="fa-solid fa-hand-wave" style="color: #F59E0B;"></i> Good Morning, ${user.fullName.split(' ')[0] || user.fullName}`;
+        }
         const avatar = document.querySelector('.avatar-circle');
         if (avatar && user.fullName) {
           avatar.textContent = user.fullName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'JD';
         }
 
+        await checkBasketSchedule();
+
         try {
           const res = await studentApi.getProfile(user.username);
           if (res && res.success && res.data) {
-            // Updated dynamic credits from backend
+            // Update dynamic basket credits if available
+            const b = res.data.basketCredits;
+            if (b) {
+              const fills = document.querySelectorAll('.progress-bar-fill');
+              const metas = document.querySelectorAll('.basket-progress-meta span:last-child');
+              if (b.UC !== undefined) {
+                if (fills[0]) fills[0].style.width = Math.min(100, Math.round((b.UC / 24) * 100)) + '%';
+                if (metas[0]) metas[0].textContent = `${b.UC} / 24`;
+              }
+              if (b.UE !== undefined) {
+                if (fills[1]) fills[1].style.width = Math.min(100, Math.round((b.UE / 12) * 100)) + '%';
+                if (metas[1]) metas[1].textContent = `${b.UE} / 12`;
+              }
+              if (b.PC !== undefined) {
+                if (fills[2]) fills[2].style.width = Math.min(100, Math.round((b.PC / 60) * 100)) + '%';
+                if (metas[2]) metas[2].textContent = `${b.PC} / 60`;
+              }
+              if (b.PE !== undefined) {
+                if (fills[3]) fills[3].style.width = Math.min(100, Math.round((b.PE / 24) * 100)) + '%';
+                if (metas[3]) metas[3].textContent = `${b.PE} / 24`;
+              }
+            }
           }
         } catch (e) {
           console.warn('Backend sync:', e);
         }
       }
     });
+
+    async function checkBasketSchedule() {
+      const banner = document.getElementById('basket-schedule-banner');
+      const title = document.getElementById('basket-schedule-title');
+      const desc = document.getElementById('basket-schedule-desc');
+      const pill = document.getElementById('basket-status-pill');
+
+      try {
+        const res = await configApi.get();
+        if (res && res.success && res.data) {
+          const cfg = res.data;
+          const user = getCurrentUser();
+          const isSlotActive = user && user.slotActive !== false;
+
+          if (!isSlotActive) {
+            banner.style.background = '#FEF2F2';
+            banner.style.borderLeftColor = '#DC2626';
+            title.textContent = 'Student Registration Slot Inactive';
+            title.style.color = '#991B1B';
+            desc.textContent = 'Your student registration slot is currently disabled. Registration is locked outside your allotted time slot.';
+            pill.textContent = 'SLOT INACTIVE';
+            pill.style.background = '#FEE2E2';
+            pill.style.color = '#991B1B';
+            return;
+          }
+
+          if (cfg.status === 'ACTIVE') {
+            banner.style.background = '#F0FDF4';
+            banner.style.borderLeftColor = '#16A34A';
+            title.innerHTML = `<i class="fa-solid fa-circle-check" style="color: #16A34A;"></i> Allotted Slot Active (${cfg.remainingHours}h ${cfg.remainingMinutes}m remaining)`;
+            title.style.color = '#15803D';
+            desc.textContent = cfg.statusMessage || 'Your registration window is open. Select a basket below to register for courses.';
+            pill.textContent = 'SLOT ACTIVE ✓';
+            pill.style.background = '#DCFCE7';
+            pill.style.color = '#15803D';
+          } else if (cfg.status === 'UPCOMING') {
+            banner.style.background = '#FEF3C7';
+            banner.style.borderLeftColor = '#D97706';
+            title.innerHTML = `<i class="fa-solid fa-clock" style="color: #D97706;"></i> Registration Slot Not Open Yet`;
+            title.style.color = '#92400E';
+            desc.textContent = `Your allotted registration time slot opens on ${cfg.formattedStartDate}. Browsing baskets is permitted, but slot booking is locked until then.`;
+            pill.textContent = 'OPENS SOON';
+            pill.style.background = '#FDE68A';
+            pill.style.color = '#92400E';
+          } else if (cfg.status === 'PAUSED') {
+            banner.style.background = '#FEF3C7';
+            banner.style.borderLeftColor = '#D97706';
+            title.innerHTML = `<i class="fa-solid fa-pause" style="color: #D97706;"></i> Registration Paused`;
+            title.style.color = '#92400E';
+            desc.textContent = 'Registration has been temporarily paused by Administrator. Slot booking is currently locked.';
+            pill.textContent = 'PAUSED';
+            pill.style.background = '#FDE68A';
+            pill.style.color = '#92400E';
+          } else {
+            // CLOSED
+            banner.style.background = '#FEF2F2';
+            banner.style.borderLeftColor = '#DC2626';
+            title.innerHTML = `<i class="fa-solid fa-lock" style="color: #DC2626;"></i> Registration Slot Closed`;
+            title.style.color = '#991B1B';
+            desc.textContent = `The registration window concluded on ${cfg.formattedEndDate}. Outside your allotted slot, registrations are not permitted.`;
+            pill.textContent = 'WINDOW CLOSED';
+            pill.style.background = '#FEE2E2';
+            pill.style.color = '#991B1B';
+          }
+        }
+      } catch (err) {
+        console.warn('Could not load schedule config:', err);
+      }
+    }
   </script>
 </body>
 </html>
